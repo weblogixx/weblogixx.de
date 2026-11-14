@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import CompanyLogo from '../components/CompanyLogo.astro';
 import SkillChip from '../components/SkillChip.astro';
 import { career, skills, formatPeriod, yearOf, type Locale } from '../data';
-import { themeDataAttrs, vintera } from '../theme/color';
+import { brandScope, themeDataAttrs, vintera } from '../theme/color';
 import { useT } from '../i18n/ui';
 import { route } from '../i18n/routes';
 
@@ -28,13 +28,29 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
     <ol class="career">
       {
         career.map((e) => (
-          <li class="job" id={e.id} data-tint {...themeDataAttrs(e.colors ? e.name : 'Vintera', e.theme)}>
+          <li
+            class="job"
+            id={e.id}
+            data-tint
+            {...themeDataAttrs(e.colors ? e.name : 'Vintera', e.theme)}
+            {...brandScope(e.theme)}
+          >
             <aside class="meta">
               <div class="meta-sticky">
-                <CompanyLogo name={e.name} logo={e.logo} color={e.colors?.primary} size="l" />
-                <p class="period">{formatPeriod(e, lang)}</p>
-                {e.current && <p class="badge">{t('career.current')}</p>}
-                {e.location && <p class="location">{e.location}</p>}
+                <CompanyLogo
+                  name={e.name}
+                  logo={e.logo}
+                  mark={e.logoMark}
+                  background={e.logoBackground}
+                bleed={e.logoBleed}
+                  color={e.colors?.primary}
+                  variant="full"
+                />
+                <div class="meta-text">
+                  <p class="period">{formatPeriod(e, lang)}</p>
+                  {e.current && <p class="badge">{t('career.current')}</p>}
+                  {e.location && <p class="location">{e.location}</p>}
+                </div>
               </div>
             </aside>
 
@@ -92,6 +108,18 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
                 </ul>
               </section>
 
+              {e.links && e.links.length > 0 && (
+                <ul class="extra-links">
+                  {e.links.map((l) => (
+                    <li>
+                      <a href={l.url} rel="noopener" target="_blank">
+                        {l.label} ↗
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
               {e.url && (
                 <a class="site" href={e.url} rel="noopener" target="_blank">
                   {t('career.website')}: {new URL(e.url).host} ↗
@@ -138,6 +166,11 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
   .meta-sticky {
     position: sticky;
     top: 6rem;
+    display: grid;
+    gap: var(--space-2);
+    justify-items: start;
+  }
+  .meta-text {
     display: grid;
     gap: var(--space-2);
     justify-items: start;
@@ -285,6 +318,16 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
     margin: 0;
     padding: 0;
   }
+  .extra-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
   .site {
     justify-self: start;
     font-family: var(--font-mono);
@@ -299,12 +342,10 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
     }
     .meta-sticky {
       position: static;
-      grid-template-columns: auto 1fr;
+      display: flex;
+      flex-wrap: wrap;
       align-items: center;
-      column-gap: var(--space-4);
-    }
-    .meta-sticky > :global(.logo) {
-      grid-row: span 3;
+      gap: var(--space-3) var(--space-4);
     }
     .period {
       margin-top: 0;

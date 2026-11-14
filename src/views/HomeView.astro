@@ -5,6 +5,7 @@ import SkillChip from '../components/SkillChip.astro';
 import CompanyLogo from '../components/CompanyLogo.astro';
 import { profile, career, skillsByCategory, skillUsage, formatPeriod, type Locale } from '../data';
 import { route, href, routes } from '../i18n/routes';
+import { brandScope } from '../theme/color';
 import { useT } from '../i18n/ui';
 
 interface Props {
@@ -98,8 +99,14 @@ const stats = [
       {
         career.map((e) => (
           <li>
-            <a href={`${route('career', lang)}#${e.id}`} style={`--p-h:${e.theme.primary.h};--p-c:${e.theme.primary.c};--p-l:${e.theme.primary.l}`}>
-              <CompanyLogo name={e.name} logo={e.logo} color={e.colors?.primary} />
+            <a href={`${route('career', lang)}#${e.id}`} {...brandScope(e.theme)}>
+              <CompanyLogo
+                name={e.name}
+                mark={e.logoMark}
+                background={e.logoBackground}
+                bleed={e.logoBleed}
+                color={e.colors?.primary}
+              />
               <span class="tl-main">
                 <span class="tl-name">{e.name}</span>
                 <span class="tl-role">{e.role[lang]}</span>
@@ -270,9 +277,9 @@ const stats = [
     transition: border-color 200ms, background 200ms;
   }
   .timeline a:hover {
-    /* local preview of the company's tint */
-    border-color: oklch(var(--p-l) var(--p-c) var(--p-h));
-    background: oklch(var(--p-l) var(--p-c) var(--p-h) / 0.08);
+    /* local preview of the company's brand (data-brand scope) */
+    border-color: var(--primary);
+    background: var(--primary-soft);
   }
   .tl-main {
     display: grid;

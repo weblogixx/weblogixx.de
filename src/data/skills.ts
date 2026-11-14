@@ -4,8 +4,8 @@ export const skillCategories = {
   languages: { de: 'Sprachen', en: 'Languages' },
   frameworks: { de: 'Frameworks & Libraries', en: 'Frameworks & libraries' },
   design: { de: 'Design Systems & UI', en: 'Design systems & UI' },
-  tooling: { de: 'Tooling & Build', en: 'Tooling & build' },
-  quality: { de: 'Qualität & Testing', en: 'Quality & testing' },
+  architecture: { de: 'Architektur & Web', en: 'Architecture & web' },
+  infrastructure: { de: 'Infrastruktur & Daten', en: 'Infrastructure & data' },
   ai: { de: 'KI & Agentic', en: 'AI & agentic' },
 } satisfies Record<string, L10n>;
 
@@ -20,40 +20,50 @@ export interface Skill {
 
 /**
  * All skills. The key is the id you reference in employers.ts → `stack`.
- * TODO(chris): replace/extend with your real stack.
+ * Order within a category = display order on the home page.
+ * Mostly taken from LinkedIn; adjust freely.
  */
 export const skills = {
-  html: { name: 'HTML', category: 'languages', featured: true },
+  html: { name: 'HTML5', category: 'languages', featured: true },
   css: { name: 'CSS', category: 'languages', featured: true },
   javascript: { name: 'JavaScript', category: 'languages', featured: true },
   typescript: { name: 'TypeScript', category: 'languages', featured: true },
   php: { name: 'PHP', category: 'languages' },
+  sql: { name: 'SQL', category: 'languages' },
+  shell: { name: 'Shell Scripting', category: 'languages' },
 
-  react: { name: 'React', category: 'frameworks', featured: true },
-  vue: { name: 'Vue', category: 'frameworks' },
-  astro: { name: 'Astro', category: 'frameworks' },
+  lit: { name: 'Lit', category: 'frameworks', featured: true },
   webcomponents: { name: 'Web Components', category: 'frameworks', featured: true },
-  jquery: { name: 'jQuery', category: 'frameworks' },
+  react: { name: 'React', category: 'frameworks', featured: true },
+  redux: { name: 'Redux', category: 'frameworks' },
+  vue: { name: 'Vue.js', category: 'frameworks' },
+  node: { name: 'Node.js', category: 'frameworks' },
+  cakephp: { name: 'CakePHP', category: 'frameworks' },
 
-  designtokens: { name: 'Design Tokens', category: 'design', featured: true },
-  storybook: { name: 'Storybook', category: 'design', featured: true },
-  figma: { name: 'Figma', category: 'design' },
-  a11y: { name: 'Accessibility (WCAG)', category: 'design', featured: true },
+  designsystems: { name: 'Design Systems', category: 'design', featured: true },
+  designtokens: { name: 'Design Tokens', category: 'design' },
   sass: { name: 'Sass', category: 'design' },
+  less: { name: 'LESS', category: 'design' },
+  webdesign: { name: 'Web Design', category: 'design' },
+  photoshop: { name: 'Adobe Photoshop', category: 'design' },
+  fireworks: { name: 'Adobe Fireworks', category: 'design' },
 
-  vite: { name: 'Vite', category: 'tooling' },
-  webpack: { name: 'webpack', category: 'tooling' },
-  node: { name: 'Node.js', category: 'tooling' },
-  git: { name: 'Git', category: 'tooling' },
-  ci: { name: 'CI/CD', category: 'tooling' },
+  frontendarch: { name: 'Frontend Architecture', category: 'architecture', featured: true },
+  microfrontends: { name: 'Microfrontends', category: 'architecture' },
+  webapps: { name: 'Web Applications', category: 'architecture' },
+  webservices: { name: 'Web Services & APIs', category: 'architecture' },
+  embeddedui: { name: 'Embedded Web UIs', category: 'architecture' },
+  ecommerce: { name: 'E-Commerce', category: 'architecture' },
+  cms: { name: 'CMS', category: 'architecture' },
+  seo: { name: 'SEO', category: 'architecture' },
+  semanticweb: { name: 'Semantic Web', category: 'architecture' },
 
-  vitest: { name: 'Vitest', category: 'quality' },
-  playwright: { name: 'Playwright', category: 'quality' },
-  visualregression: { name: 'Visual Regression', category: 'quality' },
+  linux: { name: 'Linux / Unix', category: 'infrastructure' },
+  mysql: { name: 'MySQL', category: 'infrastructure' },
+  webserver: { name: 'Webserver & Hosting', category: 'infrastructure' },
+  networking: { name: 'Networking', category: 'infrastructure' },
 
   agents: { name: 'Agentic Workflows', category: 'ai', featured: true },
-  claudecode: { name: 'Claude Code', category: 'ai' },
-  mcp: { name: 'MCP', category: 'ai' },
 } as const satisfies Record<string, Skill>;
 
 export type SkillId = keyof typeof skills;

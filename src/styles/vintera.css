@@ -6,7 +6,9 @@
  *
  * Everything else (backgrounds, text, borders, swatches) is derived from these,
  * so re-tinting the whole page = changing six numbers on :root.
- * They're registered with @property so the browser can interpolate them.
+ * They're registered with @property (typed numbers + Vintera defaults). The
+ * animation between themes is a JS tween in src/theme/tint.ts, not a CSS
+ * transition — see the note there about :visited links in Chrome.
  * Defaults = Vintera (see src/theme/color.ts).
  */
 
@@ -42,21 +44,12 @@
 }
 
 :root {
-  color-scheme: dark;
-
-  --tint-duration: 900ms;
-  --tint-easing: cubic-bezier(0.65, 0, 0.35, 1);
-  transition:
-    --p-l var(--tint-duration) var(--tint-easing),
-    --p-c var(--tint-duration) var(--tint-easing),
-    --p-h var(--tint-duration) var(--tint-easing),
-    --a-l var(--tint-duration) var(--tint-easing),
-    --a-c var(--tint-duration) var(--tint-easing),
-    --a-h var(--tint-duration) var(--tint-easing);
+  /* Follows the OS setting; the toggle pins it via data-mode. */
+  color-scheme: light dark;
 
   /*
    * Every mode-dependent token is light-dark(<light>, <dark>), resolved by
-   * `color-scheme`: dark by default, light when <html data-mode="light">.
+   * `color-scheme`: the OS preference by default, or pinned via <html data-mode>.
    */
 
   /* ---- Neutrals: fixed lightness, faintly tinted toward the primary hue ---- */
@@ -97,28 +90,6 @@
     oklch(0.6 calc(var(--p-c) * 0.12) var(--p-h))
   );
   --shadow: light-dark(oklch(0.3 0.03 var(--p-h) / 0.14), oklch(0 0 0 / 0.45));
-
-  /* ---- Brand ----
-   * --primary       text, links, borders, outlines (contrast-safe on --bg)
-   * --primary-fill  the brand color itself, for filled areas; text on it uses --primary-contrast
-   * In dark mode they're the same; in light mode --primary is darkened for legibility.
-   */
-  --primary-fill: oklch(var(--p-l) var(--p-c) var(--p-h));
-  --primary-fill-strong: oklch(calc(var(--p-l) + 0.05) var(--p-c) var(--p-h));
-  --primary: light-dark(oklch(0.48 calc(var(--p-c) * 0.75) var(--p-h)), var(--primary-fill));
-  --primary-strong: light-dark(
-    oklch(0.4 calc(var(--p-c) * 0.7) var(--p-h)),
-    oklch(calc(var(--p-l) + 0.06) var(--p-c) var(--p-h))
-  );
-  --primary-contrast: oklch(0.17 calc(var(--p-c) * 0.25) var(--p-h)); /* text on --primary-fill */
-  --primary-soft: light-dark(
-    oklch(var(--p-l) var(--p-c) var(--p-h) / 0.24),
-    oklch(var(--p-l) var(--p-c) var(--p-h) / 0.14)
-  );
-  --primary-line: oklch(var(--p-l) var(--p-c) var(--p-h) / 0.35);
-
-  --accent: oklch(var(--a-l) var(--a-c) var(--a-h));
-  --accent-soft: oklch(var(--a-l) var(--a-c) var(--a-h) / 0.16);
 
   /* ---- Swatch scales (fixed lightness steps, theme hue/chroma) ---- */
   --primary-100: oklch(0.95 calc(var(--p-c) * 0.25) var(--p-h));
@@ -167,12 +138,46 @@
   --gutter: clamp(1rem, 4vw, 2.5rem);
 }
 
+/*
+ * Brand tokens are declared on :root AND on every [data-brand] element.
+ * A [data-brand] element sets its own --p-* / --a-* (inline, not animated) and
+ * gets its own --primary, --accent, … — e.g. each job on the career page keeps
+ * its brand colors while the page around it (neutrals on :root) is tinted.
+ */
+:root,
+[data-brand] {
+  /* ---- Brand ----
+   * --primary       text, links, borders, outlines (contrast-safe on --bg)
+   * --primary-fill  the brand color itself, for filled areas; text on it uses --primary-contrast
+   * In dark mode they're the same; in light mode --primary is darkened for legibility.
+   */
+  --primary-fill: oklch(var(--p-l) var(--p-c) var(--p-h));
+  --primary-fill-strong: oklch(calc(var(--p-l) + 0.05) var(--p-c) var(--p-h));
+  /* Written out instead of light-dark(…, var(--primary-fill)): Chrome resolves a token that
+     references another derived token as invalid while --p-* are mid-transition, so --primary
+     fell back to the inherited text color (white flash on hover/active states). */
+  --primary: light-dark(
+    oklch(0.48 calc(var(--p-c) * 0.75) var(--p-h)),
+    oklch(var(--p-l) var(--p-c) var(--p-h))
+  );
+  --primary-strong: light-dark(
+    oklch(0.4 calc(var(--p-c) * 0.7) var(--p-h)),
+    oklch(calc(var(--p-l) + 0.06) var(--p-c) var(--p-h))
+  );
+  --primary-contrast: oklch(0.17 calc(var(--p-c) * 0.25) var(--p-h)); /* text on --primary-fill */
+  --primary-soft: light-dark(
+    oklch(var(--p-l) var(--p-c) var(--p-h) / 0.24),
+    oklch(var(--p-l) var(--p-c) var(--p-h) / 0.14)
+  );
+  --primary-line: oklch(var(--p-l) var(--p-c) var(--p-h) / 0.35);
+
+  --accent: oklch(var(--a-l) var(--a-c) var(--a-h));
+  --accent-soft: oklch(var(--a-l) var(--a-c) var(--a-h) / 0.16);
+}
+
 :root[data-mode='light'] {
   color-scheme: light;
 }
-
-@media (prefers-reduced-motion: reduce) {
-  :root {
-    --tint-duration: 0ms;
-  }
+:root[data-mode='dark'] {
+  color-scheme: dark;
 }

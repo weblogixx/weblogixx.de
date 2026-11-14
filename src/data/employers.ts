@@ -5,151 +5,365 @@ import type { SkillId } from './skills';
  * Career entries. Order in this file doesn't matter — they're sorted by
  * start date (newest first) automatically.
  *
- * Promoted? Add another entry to `positions` — see the first template.
+ * Promoted? Add another entry to `positions` (see SICK / Hella Gutmann).
+ * No brand colors? Leave out `colors` and the section stays Vintera.
+ * Logos live in /public/logos/. `logo` is the full (wide) logo for the career
+ * page, `logoMark` a square-ish crop for small tiles.
  *
- * To add a company: copy an entry, give it a unique `id`, drop the logo into
- * /public/logos/ and set its brand colors. `stack` autocompletes from skills.ts.
- *
- * TODO(chris): all entries below are TEMPLATES with placeholder content.
+ * Content drafted from LinkedIn — TODO(chris): review wording.
  */
 export const employers: Employer<SkillId>[] = [
   {
-    id: 'blue-corp',
-    name: 'Blue Corp (Template)',
-    url: 'https://example.com',
-    location: 'Deutschland',
+    id: 'sick',
+    name: 'SICK',
+    url: 'https://www.sick.com',
+    logo: '/logos/sick.svg',
+    logoMark: '/logos/sick-mark.svg',
+    location: 'Freiburg im Breisgau · Hybrid',
+    colors: { primary: '#0059FF' },
     positions: [
       {
-        role: { de: 'Senior Frontend Engineer', en: 'Senior Frontend Engineer' },
-        start: '2019-04',
-        end: '2022-06',
+        role: {
+          de: 'Senior Architect – Expert Webtechnologies',
+          en: 'Senior Architect – Expert Web Technologies',
+        },
+        start: '2021-09',
+        end: '2023-08',
+        summary: {
+          de: 'Planung, Risikoanalyse, Architektur und Umsetzung von Frontend-Anwendungen, Microfrontends und Libraries.',
+          en: 'Planning, risk analysis, architecture and implementation of frontend applications, microfrontends and libraries.',
+        },
       },
       {
-        role: { de: 'Lead Frontend Engineer, Design System', en: 'Lead Frontend Engineer, Design System' },
-        start: '2022-07',
+        role: { de: 'Frontend Architect', en: 'Frontend Architect' },
+        start: '2023-08',
         summary: {
-          de: 'Technische Leitung des Design-System-Teams.',
-          en: 'Technical lead of the design system team.',
+          de: 'Verantwortlich für Synergy, das Open-Source Design System von SICK.',
+          en: 'Responsible for Synergy, SICK’s open source design system.',
         },
       },
     ],
-    colors: { primary: '#1D6FD8' },
     tagline: {
-      de: 'Aufbau und Skalierung eines konzernweiten Design Systems.',
-      en: 'Building and scaling a company-wide design system.',
+      de: 'Synergy – das Open-Source Design System von SICK.',
+      en: 'Synergy – SICK’s open source design system.',
     },
     about: {
       de: [
-        'Platzhalter: Ein paar Sätze über das Unternehmen — Branche, Größe, Produkte und was es besonders macht.',
-        'Platzhalter: Meine Rolle im Team, mit wem ich zusammenarbeite und wofür ich verantwortlich bin.',
+        'SICK ist einer der weltweit führenden Hersteller von Sensorlösungen für industrielle Anwendungen.',
+        'Als Frontend Architect verantworte ich Synergy, das Open-Source Design System von SICK, mit dem Teams im ganzen Unternehmen konsistente Oberflächen bauen.',
       ],
       en: [
-        'Placeholder: a few sentences about the company — industry, size, products and what makes it special.',
-        'Placeholder: my role in the team, who I work with and what I own.',
+        'SICK is one of the world’s leading manufacturers of sensor solutions for industrial applications.',
+        'As Frontend Architect I’m responsible for Synergy, SICK’s open source design system, which teams across the company use to build consistent interfaces.',
       ],
     },
     contributions: {
       de: [
-        'Design Tokens als Single Source of Truth für Web und Native eingeführt.',
-        'Komponentenbibliothek mit Web Components für mehrere Produktteams aufgebaut.',
-        'Barrierefreiheit (WCAG 2.2 AA) im Entwicklungsprozess verankert.',
+        'Verantwortung für Synergy, SICKs Open-Source Design System auf Basis von Web Components.',
+        'Planung, Risikoanalyse und Architektur von Frontend-Anwendungen, Microfrontends und Libraries.',
+        'Umsetzung und Begleitung von Frontend-Projekten von der Konzeption bis zur Auslieferung.',
       ],
       en: [
-        'Introduced design tokens as the single source of truth for web and native.',
-        'Built a Web Components library used by multiple product teams.',
-        'Made accessibility (WCAG 2.2 AA) part of the development workflow.',
+        'Owning Synergy, SICK’s open source design system built on Web Components.',
+        'Planning, risk analysis and architecture of frontend applications, microfrontends and libraries.',
+        'Implementing and guiding frontend projects from concept to delivery.',
       ],
     },
-    facts: [
-      { label: { de: 'Teamgröße', en: 'Team size' }, value: '8' },
-      { label: { de: 'Produkte', en: 'Products' }, value: '12+' },
+    links: [
+      {
+        label: 'Synergy Design System',
+        url: 'https://github.com/synergy-design-system/synergy-design-system',
+      },
     ],
     stack: [
-      'typescript',
+      'designsystems',
+      'frontendarch',
+      'lit',
       'webcomponents',
-      'react',
       'designtokens',
-      'storybook',
-      'a11y',
-      'vite',
-      'playwright',
-      'agents',
+      'typescript',
+      'javascript',
+      'html',
+      'css',
+      'sass',
+      'react',
+      'redux',
+      'vue',
+      'microfrontends',
+      'node',
+      'webdesign',
+      'linux',
+      'shell',
     ],
   },
   {
-    id: 'green-industries',
-    name: 'Green Industries (Template)',
-    url: 'https://example.com',
-    location: 'Deutschland',
+    id: 'hella-gutmann',
+    name: 'Hella Gutmann Solutions',
+    url: 'https://www.hella-gutmann.com',
+    logo: '/logos/hella-gutmann.svg',
+    logoMark: '/logos/hella-gutmann-mark.svg',
+    logoBackground: '#004521',
+    location: 'Ihringen',
+    colors: { primary: '#004521' },
     positions: [
       {
-        role: { de: 'Senior Frontend Developer', en: 'Senior Frontend Developer' },
-        start: '2011-09',
-        end: '2019-03',
+        role: { de: 'Fullstack Developer', en: 'Fullstack Developer' },
+        start: '2014-02',
+        end: '2014-11',
+        summary: {
+          de: 'Fullstack-Webentwicklung mit Schwerpunkt Frontend.',
+          en: 'Fullstack web development with a focus on frontend.',
+        },
+      },
+      {
+        role: { de: 'Software-Architekt – Web', en: 'Software Architect – Web' },
+        start: '2014-12',
+        end: '2021-09',
+        summary: {
+          de: 'Architektur, Core-Entwicklung, Performance-Optimierung und technische Teamleitung für webbasierte UIs auf Embedded-Geräten.',
+          en: 'Architecture, core development, performance optimization and technical team lead for web-based UIs on embedded devices.',
+        },
       },
     ],
-    colors: { primary: '#2E9E44' },
     tagline: {
-      de: 'Frontend-Architektur für eine große E-Commerce-Plattform.',
-      en: 'Frontend architecture for a large e-commerce platform.',
+      de: 'Web-Oberflächen für Embedded-Diagnosegeräte.',
+      en: 'Web UIs for embedded diagnostic devices.',
     },
     about: {
-      de: ['Platzhalter: Über das Unternehmen.', 'Platzhalter: Über meine Rolle.'],
-      en: ['Placeholder: about the company.', 'Placeholder: about my role.'],
+      de: [
+        'Hella Gutmann Solutions entwickelt Diagnosetechnik für Kfz-Werkstätten.',
+        'Dort habe ich die webbasierten Benutzeroberflächen der Embedded-Software-Geräte verantwortet – zunächst als Fullstack Developer, ab Ende 2014 als Software-Architekt.',
+      ],
+      en: [
+        'Hella Gutmann Solutions builds diagnostic equipment for automotive workshops.',
+        'I was responsible for the web-based user interfaces of their embedded software devices – first as a fullstack developer, from late 2014 as software architect.',
+      ],
     },
     contributions: {
       de: [
-        'Migration von jQuery zu einer komponentenbasierten Architektur geleitet.',
-        'Build-Zeiten durch neues Tooling halbiert.',
+        'Architektur und Core-Entwicklung der Web-UIs für Embedded-Software-Geräte.',
+        'Performance-Optimierung der Oberflächen.',
+        'Technische Leitung des Web-Teams.',
       ],
       en: [
-        'Led the migration from jQuery to a component-based architecture.',
-        'Cut build times in half with new tooling.',
+        'Architecture and core development of the web UIs for embedded software devices.',
+        'Performance optimization of the interfaces.',
+        'Technical lead of the web team.',
       ],
     },
-    stack: ['javascript', 'typescript', 'react', 'sass', 'webpack', 'node', 'jquery'],
+    stack: [
+      'frontendarch',
+      'embeddedui',
+      'javascript',
+      'react',
+      'node',
+      'html',
+      'css',
+      'sass',
+      'less',
+      'webapps',
+      'webservices',
+      'webdesign',
+      'sql',
+      'mysql',
+      'linux',
+      'shell',
+    ],
   },
   {
-    id: 'meadow-media',
-    name: 'Meadow Media (Template)',
-    url: 'https://example.com',
-    location: 'Deutschland',
-    positions: [{ role: { de: 'Webentwickler', en: 'Web Developer' }, start: '2005-01', end: '2011-08' }],
-    colors: { primary: '#7AB800' },
+    id: 'clicksports',
+    name: 'CLICKSPORTS',
+    url: 'https://www.clicksports.de',
+    // Square mark only → square tile everywhere.
+    logoMark: '/logos/clicksports.svg',
+    location: 'Coburg',
+    colors: { primary: '#C5E02D' },
+    positions: [
+      { role: { de: 'Senior Web Developer', en: 'Senior Web Developer' }, start: '2006-09', end: '2014-02' },
+    ],
     tagline: {
-      de: 'Websites und Web-Apps für Agenturkunden.',
-      en: 'Websites and web apps for agency clients.',
+      de: 'CMS, E-Commerce und Web-Applikationen – von der Konzeption bis zum Betrieb.',
+      en: 'CMS, e-commerce and web applications – from concept to operations.',
     },
     about: {
-      de: ['Platzhalter: Über das Unternehmen.'],
-      en: ['Placeholder: about the company.'],
+      de: [
+        'Konzeption und Realisierung von Webprojekten wie CMS-Systemen, E-Commerce-Plattformen und Web-Applikationen – inklusive Betrieb, Support und Projektplanung.',
+      ],
+      en: [
+        'Designing and building web projects such as CMS systems, e-commerce platforms and web applications – including operations, support and project planning.',
+      ],
     },
     contributions: {
-      de: ['Wiederverwendbares CSS-Framework für alle Kundenprojekte entwickelt.'],
-      en: ['Built a reusable CSS framework for all client projects.'],
+      de: [
+        'Konzeption und Realisierung von CMS-Systemen, E-Commerce-Plattformen und Web-Applikationen.',
+        'Management der Server-Infrastruktur.',
+        'First- und Second-Level-Support sowie Softwareschulungen.',
+        'Projektplanung und Kalkulation.',
+      ],
+      en: [
+        'Designed and built CMS systems, e-commerce platforms and web applications.',
+        'Managed the server infrastructure.',
+        'First- and second-level support and software training.',
+        'Project planning and estimation.',
+      ],
     },
-    stack: ['html', 'css', 'javascript', 'php', 'jquery'],
+    stack: [
+      'html',
+      'css',
+      'javascript',
+      'php',
+      'cakephp',
+      'sass',
+      'less',
+      'webdesign',
+      'webapps',
+      'webservices',
+      'cms',
+      'ecommerce',
+      'sql',
+      'mysql',
+      'linux',
+      'shell',
+    ],
   },
   {
-    id: 'freelance',
-    name: 'Freelance',
+    id: 'weblogixx',
+    name: 'Weblogixx',
+    logoMark: '/logos/weblogixx.svg',
+    logoBleed: true,
+    location: 'Coburg',
+    // That's me → Vintera.
     positions: [
       {
-        role: { de: 'Freiberuflicher Webentwickler', en: 'Freelance Web Developer' },
-        start: '2000-01',
-        end: '2004-12',
+        role: { de: 'Webentwickler (selbstständig)', en: 'Web Developer (self-employed)' },
+        start: '2005-09',
+        end: '2006-08',
       },
     ],
-    // No colors → stays Vintera.
     tagline: {
-      de: 'Die Anfänge: HTML, CSS und viel Neugier.',
-      en: 'Where it started: HTML, CSS and a lot of curiosity.',
+      de: 'Individuelle CMS- und E-Commerce-Lösungen für Kunden.',
+      en: 'Custom CMS and e-commerce solutions for clients.',
     },
     about: {
-      de: ['Platzhalter: Die ersten Projekte.'],
-      en: ['Placeholder: the first projects.'],
+      de: [
+        'Umsetzung individueller webbasierter Kundenprojekte mit Schwerpunkt auf maßgeschneiderten CMS- und E-Commerce-Lösungen.',
+      ],
+      en: ['Building custom web projects for clients, focused on bespoke CMS and e-commerce solutions.'],
     },
-    contributions: { de: [], en: [] },
-    stack: ['html', 'css', 'javascript', 'php'],
+    contributions: {
+      de: [
+        'Eigener E-Commerce-Stack und individuelle CMS-Lösungen mit PHP und MySQL.',
+        'Semantisches HTML und Suchmaschinenoptimierung.',
+        'Anbindung von Web-Services und APIs.',
+        'Design mit Adobe Photoshop und Fireworks.',
+      ],
+      en: [
+        'A custom e-commerce stack and bespoke CMS solutions built with PHP and MySQL.',
+        'Semantic HTML and search engine optimization.',
+        'Integrating web services and APIs.',
+        'Design with Adobe Photoshop and Fireworks.',
+      ],
+    },
+    stack: [
+      'php',
+      'mysql',
+      'html',
+      'css',
+      'javascript',
+      'cms',
+      'ecommerce',
+      'webservices',
+      'seo',
+      'semanticweb',
+      'photoshop',
+      'fireworks',
+    ],
+  },
+  {
+    id: 'hapo',
+    name: 'H.A.PO – Handelsagentur POPP',
+    logo: '/logos/hapo.jpg',
+    location: 'Coburg',
+    colors: { primary: '#70A8E0' },
+    positions: [{ role: { de: 'Webentwickler', en: 'Web Developer' }, start: '2004-08', end: '2005-11' }],
+    tagline: {
+      de: 'Multi-Channel-E-Commerce und Netzwerkadministration.',
+      en: 'Multi-channel e-commerce and network administration.',
+    },
+    about: {
+      de: ['Administration der Netzwerkinfrastruktur und Webentwicklung im E-Commerce-Bereich.'],
+      en: ['Network infrastructure administration and web development for e-commerce.'],
+    },
+    contributions: {
+      de: [
+        'Umsetzung einer Multi-Channel-E-Commerce-Lösung nach gängigen Web-Standards.',
+        'Konzeption und Implementierung von E-Commerce-Seiten.',
+        'Administration von Hosting und Datenbanken.',
+        'Suchmaschinenoptimierung und Netzwerkadministration.',
+      ],
+      en: [
+        'Built a multi-channel e-commerce solution following web standards.',
+        'Designed and implemented e-commerce sites.',
+        'Administered hosting and databases.',
+        'Search engine optimization and network administration.',
+      ],
+    },
+    stack: [
+      'php',
+      'mysql',
+      'html',
+      'css',
+      'javascript',
+      'ecommerce',
+      'seo',
+      'semanticweb',
+      'webserver',
+      'networking',
+      'photoshop',
+    ],
+  },
+  {
+    id: 'schlaeger',
+    name: 'Computersysteme R. Schläger',
+    location: 'Coburg',
+    // Typographic logo after the old employee badge; colors reconstructed from a photo of it
+    // (sampled hues kept, saturation restored for the faded print).
+    logo: '/logos/schlaeger.svg',
+    colors: { primary: '#233C8C', accent: '#C0302A' },
+    positions: [
+      {
+        role: {
+          de: 'Ausbildung zum Fachinformatiker – Systemintegration',
+          en: 'Apprenticeship: IT Specialist – System Integration',
+        },
+        start: '1999-09',
+        end: '2003-05',
+      },
+    ],
+    tagline: {
+      de: 'Die Ausbildung – Netzwerke, Server und Shell.',
+      en: 'The apprenticeship – networks, servers and shell.',
+    },
+    about: {
+      de: [
+        'Ausbildung zum Fachinformatiker mit Fachrichtung Systemintegration – das technische Fundament für alles danach.',
+      ],
+      en: [
+        'Apprenticeship as an IT specialist for system integration (Fachinformatiker) – the technical foundation for everything that followed.',
+      ],
+    },
+    contributions: {
+      de: [
+        'Netzwerktechnik: Windows NT/2000, Linux, Novell, Routing und Firewalls.',
+        'Linux-/Unix-Server: DHCP, Proxy, Webserver, Datenbanken, SMB.',
+        'Shell-Scripting.',
+      ],
+      en: [
+        'Networking: Windows NT/2000, Linux, Novell, routing and firewalls.',
+        'Linux/Unix servers: DHCP, proxy, web servers, databases, SMB.',
+        'Shell scripting.',
+      ],
+    },
+    stack: ['networking', 'linux', 'webserver', 'shell'],
   },
 ];

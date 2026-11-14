@@ -3,28 +3,50 @@ import { href } from '../i18n/routes';
 
 interface Props {
   name: string;
+  /** Full (often wide) logo, used for the `full` variant. */
   logo?: string;
+  /** Square-ish logo mark, used for the `mark` variant. */
+  mark?: string;
+  /** Tile background behind the logo (e.g. for white logos). Default: white. */
+  background?: string;
   /** Raw brand color for the lettermark fallback. */
   color?: string;
-  size?: 'm' | 'l';
+  /** `mark`: small square tile (timelines). `full`: wide logo (career page). */
+  variant?: 'mark' | 'full';
+  /** No padding: the logo fills the tile edge to edge. */
+  bleed?: boolean;
 }
-const { name, logo, color, size = 'm' } = Astro.props;
-const letters = name
+const { name, logo, mark, background, color, variant = 'mark', bleed = false } = Astro.props;
+const src = variant === 'mark' ? mark : (logo ?? mark);
+const isWide = variant === 'full' && Boolean(logo);
+// "H.A.PO – Handelsagentur POPP" → "HA", "Computersysteme R. Schläger" → "CR", "Weblogixx" → "W"
+const words = name
   .replace(/\(.*?\)/g, '')
+  .split(/\s+[–-]\s+/)[0]!
   .split(/\s+/)
-  .filter(Boolean)
-  .slice(0, 2)
-  .map((w) => w[0]?.toUpperCase())
-  .join('');
+  .filter((w) => /[\p{L}\d]/u.test(w));
+const acronym = words.length === 1 ? (words[0]!.match(/\p{Lu}/gu) ?? []) : [];
+const letters = (
+  acronym.length >= 2 ? acronym.slice(0, 2) : words.slice(0, 2).map((w) => w.match(/[\p{L}\d]/u)?.[0] ?? '')
+)
+  .join('')
+  .toUpperCase();
 ---
 
 {
-  logo ? (
-    <span class:list={['logo', size]}>
-      <img src={href(logo)} alt={name} loading="lazy" decoding="async" />
+  src ? (
+    <span
+      class:list={['logo', variant, { wide: isWide, bleed }]}
+      style={background ? `--logo-bg:${background}` : undefined}
+    >
+      <img src={href(src)} alt={name} loading="lazy" decoding="async" />
     </span>
   ) : (
-    <span class:list={['logo', 'lettermark', size]} style={color ? `--brand:${color}` : undefined} aria-hidden="true">
+    <span
+      class:list={['logo', 'lettermark', variant]}
+      style={color ? `--brand:${color}` : undefined}
+      aria-hidden="true"
+    >
       {letters}
     </span>
   )
@@ -38,14 +60,23 @@ const letters = name
     width: 3.5rem;
     height: 3.5rem;
     border-radius: var(--radius-m);
-    background: oklch(0.97 0 0);
-    box-shadow: inset 0 0 0 1px var(--border);
-    padding: 0.5rem;
+    background: var(--logo-bg, oklch(0.985 0 0));
+    box-shadow: inset 0 0 0 1px oklch(0 0 0 / 0.08);
+    padding: 0.45rem;
     overflow: hidden;
   }
-  .logo.l {
+  .logo.full {
     width: 5rem;
     height: 5rem;
+    padding: 0.75rem;
+  }
+  .logo.full.wide {
+    width: min(100%, 12rem);
+    height: 4.5rem;
+    padding: 0.9rem 1rem;
+  }
+  .logo.bleed {
+    padding: 0;
   }
   .logo img {
     width: 100%;
@@ -60,7 +91,7 @@ const letters = name
     font-size: 1.25rem;
     letter-spacing: -0.02em;
   }
-  .l.lettermark {
+  .full.lettermark {
     font-size: 1.6rem;
   }
 </style>

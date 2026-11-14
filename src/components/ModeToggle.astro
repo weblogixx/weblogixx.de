@@ -26,29 +26,51 @@ const t = useT(Astro.props.lang);
   const KEY = 'vintera-mode';
   const THEME_COLORS = { dark: '#1c1813', light: '#faf6ee' } as const;
   const root = document.documentElement;
-  const meta = document.querySelector('meta[name="theme-color"]');
+  const systemLight = matchMedia('(prefers-color-scheme: light)');
 
-  const isLight = () => root.dataset.mode === 'light';
+  /** Effective mode: pinned via data-mode, otherwise the OS setting. */
+  const isLight = () => (root.dataset.mode ? root.dataset.mode === 'light' : systemLight.matches);
 
-  const apply = (light: boolean) => {
-    if (light) root.dataset.mode = 'light';
-    else delete root.dataset.mode;
-    meta?.setAttribute('content', THEME_COLORS[light ? 'light' : 'dark']);
+  const syncButtons = () => {
     for (const b of document.querySelectorAll('[data-mode-toggle]')) {
-      b.setAttribute('aria-pressed', String(light));
-    }
-    try {
-      localStorage.setItem(KEY, light ? 'light' : 'dark');
-    } catch {
-      // storage unavailable (private mode etc.) — the toggle still works for this page
+      b.setAttribute('aria-pressed', String(isLight()));
     }
   };
 
+  const apply = (light: boolean) => {
+    // Choosing what the OS already prefers = back to "follow system".
+    const followSystem = light === systemLight.matches;
+    let stored = false;
+    try {
+      if (followSystem) localStorage.removeItem(KEY);
+      else localStorage.setItem(KEY, light ? 'light' : 'dark');
+      stored = true;
+    } catch {
+      // storage unavailable (private mode etc.) — pin it for this page only
+    }
+    if (followSystem && stored) delete root.dataset.mode;
+    else root.dataset.mode = light ? 'light' : 'dark';
+
+    for (const m of document.querySelectorAll('meta[name="theme-color"]')) {
+      const media = m.getAttribute('media') ?? '';
+      const ownMode = media.includes('light') ? 'light' : 'dark';
+      m.setAttribute('content', THEME_COLORS[root.dataset.mode ? (light ? 'light' : 'dark') : ownMode]);
+    }
+    syncButtons();
+    target = undefined; // applied → the DOM is the source of truth again
+  };
+
+  systemLight.addEventListener('change', syncButtons);
+
+  // Tracked synchronously: view-transition callbacks run on the next frame,
+  // so reading the DOM on a quick second click could see stale state.
+  let target: boolean | undefined;
+
   for (const button of document.querySelectorAll<HTMLButtonElement>('[data-mode-toggle]')) {
     button.hidden = false;
-    button.setAttribute('aria-pressed', String(isLight()));
     button.addEventListener('click', () => {
-      const next = !isLight();
+      const next = !(target ?? isLight());
+      target = next;
       const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (document.startViewTransition && !reduce) {
         document.startViewTransition(() => apply(next));
@@ -57,6 +79,7 @@ const t = useT(Astro.props.lang);
       }
     });
   }
+  syncButtons();
 </script>
 
 <style>
@@ -89,6 +112,7 @@ const t = useT(Astro.props.lang);
     stroke-linecap: round;
     stroke-linejoin: round;
   }
+  /* Dark: show the sun (→ light). Light: show the moon (→ dark). */
   .moon {
     display: none;
   }
@@ -97,5 +121,13 @@ const t = useT(Astro.props.lang);
   }
   :global([data-mode='light']) .moon {
     display: block;
+  }
+  @media (prefers-color-scheme: light) {
+    :global(:root:not([data-mode='dark'])) .sun {
+      display: none;
+    }
+    :global(:root:not([data-mode='dark'])) .moon {
+      display: block;
+    }
   }
 </style>

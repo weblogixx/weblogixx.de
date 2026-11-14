@@ -32,15 +32,18 @@ const site = Astro.site ?? new URL('https://weblogixx.github.io');
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={desc} />
-    <meta name="theme-color" content="#1c1813" />
+    <meta name="theme-color" content="#faf6ee" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1c1813" media="(prefers-color-scheme: dark)" />
     <script is:inline>
-      // Apply the saved light/dark choice before first paint (no flash). Default: dark.
+      // Apply a saved light/dark choice before first paint (no flash).
+      // Without one, CSS follows the OS setting.
       (() => {
         try {
           const mode = localStorage.getItem('vintera-mode');
-          if (mode === 'light') {
-            document.documentElement.dataset.mode = 'light';
-            document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#faf6ee');
+          if (mode === 'light' || mode === 'dark') {
+            document.documentElement.dataset.mode = mode;
+            const color = mode === 'light' ? '#faf6ee' : '#1c1813';
+            for (const m of document.querySelectorAll('meta[name="theme-color"]')) m.content = color;
           }
         } catch {}
       })();

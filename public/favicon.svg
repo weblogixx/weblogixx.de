@@ -1,5 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="7" fill="#FDB515"/>
-  <polygon points="0,10 22,32 16,32 0,16" fill="#F0532D"/>
-  <polygon points="0,19 13,32 10,32 0,22" fill="#F0532D"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Same artwork as /logos/weblogixx.svg: stripes rising from the bottom-left corner. -->
+  <clipPath id="r"><rect width="100" height="100" rx="22"/></clipPath>
+  <g clip-path="url(#r)">
+    <rect width="100" height="100" fill="#FDB515"/>
+    <g fill="#F0532D">
+      <polygon points="58,100 65,100 0,35 0,42"/>
+      <polygon points="69,100 87,100 0,13 0,31"/>
+      <polygon points="91,100 98,100 0,2 0,9"/>
+    </g>
+  </g>
 </svg>

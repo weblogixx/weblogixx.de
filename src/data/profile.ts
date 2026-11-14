@@ -6,8 +6,8 @@ export const profile = {
   /** Year I started building for the web. */
   since: 2000,
   title: {
-    de: 'Frontend Engineer & Design Systems',
-    en: 'Frontend Engineer & Design Systems',
+    de: 'Frontend Architect & Design Systems',
+    en: 'Frontend Architect & Design Systems',
   } satisfies L10n,
   intro: {
     de: 'Ich baue seit über zwei Jahrzehnten Oberflächen für das Web — heute vor allem Design Systems, die Teams schneller und Produkte konsistenter machen.',

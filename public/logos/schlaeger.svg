@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 74">
+  <!-- Typographic reconstruction after the ~1999 employee badge. -->
+  <rect x="8" y="4" width="224" height="2.5" fill="#233C8C"/>
+  <text x="120" y="30" text-anchor="middle" font-family="'Times New Roman', Times, Georgia, serif" font-size="25" font-weight="700" fill="#233C8C">Computersysteme</text>
+  <text x="120" y="58" text-anchor="middle" font-family="'Times New Roman', Times, Georgia, serif" font-size="23" font-weight="700" fill="#C0302A">R. Schläger GmbH</text>
+  <rect x="8" y="67.5" width="224" height="2.5" fill="#233C8C"/>
+</svg>

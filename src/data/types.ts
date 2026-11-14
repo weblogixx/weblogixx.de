@@ -30,8 +30,14 @@ export interface Employer<SkillId extends string = string> {
   id: string;
   name: string;
   url?: string;
-  /** File in /public, e.g. '/logos/acme.svg'. SVG or PNG. Falls back to a lettermark. */
+  /** Full logo in /public, e.g. '/logos/acme.svg' (SVG/PNG/JPG). Shown on the career page. */
   logo?: string;
+  /** Square-ish logo mark for small tiles (home timeline). Falls back to a lettermark. */
+  logoMark?: string;
+  /** Tile background behind the logo, e.g. the brand color for white logos. Default: white. */
+  logoBackground?: string;
+  /** Logo fills its tile edge to edge (no padding), e.g. for full-bleed marks. */
+  logoBleed?: boolean;
   location?: string;
   /** Roles held there, any order (sorted newest first). At least one. */
   positions: [Position, ...Position[]];
@@ -48,6 +54,8 @@ export interface Employer<SkillId extends string = string> {
   /** What I contributed / how I helped the company reach its goals. */
   contributions: L10n<string[]>;
   facts?: Fact[];
+  /** Extra links shown with the entry (projects, products, …). */
+  links?: { label: string; url: string }[];
   /** Skill ids from skills.ts — type-checked. */
   stack: SkillId[];
 }

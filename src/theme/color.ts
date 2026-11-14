@@ -72,6 +72,18 @@ export function themeFromBrand(primaryHex: string, accentHex?: string): ThemeCol
   return { primary: normalizePrimary(p), accent: normalizeAccent(a) };
 }
 
+/**
+ * Inline style + attribute that give an element its own brand tokens
+ * (see `[data-brand]` in vintera.css). Spread onto the element.
+ */
+export function brandScope(t: ThemeColors) {
+  const { primary: p, accent: a } = t;
+  return {
+    'data-brand': '',
+    style: `--p-l:${p.l};--p-c:${p.c};--p-h:${p.h};--a-l:${a.l};--a-c:${a.c};--a-h:${a.h}`,
+  };
+}
+
 /** Serialize a theme into data-* attributes the client script reads. */
 export function themeDataAttrs(name: string, t: ThemeColors) {
   return {

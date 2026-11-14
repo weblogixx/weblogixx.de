@@ -118,14 +118,17 @@ const switchHref = altPath ?? href(routes[page][other]);
     height: 1.75rem;
     border-radius: 7px;
     background:
-      /* stripes run top-left → bottom-right, like the hero and the guitar */
+      /* Same artwork as /logos/weblogixx.svg: bands 58–65, 69–87, 91–98 measured from the
+         bottom-left corner, mapped onto a 45° gradient (0% = bottom-left): position = band / 2. */
       linear-gradient(
         45deg,
-        transparent 18%,
-        var(--accent) 18% 30%,
-        transparent 30% 36%,
-        var(--accent) 36% 42%,
-        transparent 42%
+        transparent 29%,
+        var(--accent) 29% 32.5%,
+        transparent 32.5% 34.5%,
+        var(--accent) 34.5% 43.5%,
+        transparent 43.5% 45.5%,
+        var(--accent) 45.5% 49%,
+        transparent 49%
       ),
       var(--primary-fill);
   }
