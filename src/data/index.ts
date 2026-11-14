@@ -35,7 +35,7 @@ function resolve(e: Employer<SkillId>): ResolvedEmployer {
     start,
     end,
     role: latest.role,
-    current: !end,
+    current: !end && !e.selfEmployed,
     theme: e.colors ? themeFromBrand(e.colors.primary, e.colors.accent) : vintera,
   });
 }

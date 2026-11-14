@@ -6,12 +6,12 @@ export const profile = {
   /** Year I started building for the web. */
   since: 2000,
   title: {
-    de: 'Frontend Architect & Design Systems',
-    en: 'Frontend Architect & Design Systems',
+    de: 'Frontend und Design System Architektur',
+    en: 'Frontend and Design System Architecture',
   } satisfies L10n,
   intro: {
-    de: 'Ich baue seit über zwei Jahrzehnten Oberflächen für das Web — heute vor allem Design Systems, die Teams schneller und Produkte konsistenter machen.',
-    en: "I've been building interfaces for the web for more than two decades — these days mostly design systems that make teams faster and products more consistent.",
+    de: 'Ich baue seit über zwei Jahrzehnten Oberflächen für das Web. Mein Schwerpunkt sind Design Systeme, die Teams schneller und Produkte konsistenter machen.',
+    en: "I've been building interfaces for the web for more than two decades. My main focus are design systems that make teams faster and products more consistent.",
   } satisfies L10n,
   focus: [
     {
@@ -24,8 +24,8 @@ export const profile = {
     {
       title: { de: 'Design Systems', en: 'Design systems' },
       text: {
-        de: 'Tokens, Komponenten, Dokumentation und die Prozesse dazwischen — von Figma bis Produktion.',
-        en: 'Tokens, components, docs and the processes in between — from Figma to production.',
+        de: 'Tokens, Komponenten, Dokumentation und die Prozesse dazwischen - von Figma bis zur Produktivumgebung.',
+        en: 'Tokens, components, docs and the processes in between - from Figma to production.',
       },
     },
     {

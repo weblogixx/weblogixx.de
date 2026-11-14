@@ -18,20 +18,18 @@ const t = useT(lang);
     </header>
 
     <ul class="links">
-      {
-        links.map((l) => (
-          <li>
-            <a href={l.url} rel="me noopener" target="_blank">
-              <span class="label">{l.label}</span>
-              <span class="handle">{l.handle}</span>
-              {l.description && <span class="desc">{l.description[lang]}</span>}
-              <span class="arrow" aria-hidden="true">
-                ↗
-              </span>
-            </a>
-          </li>
-        ))
-      }
+      {links.map((l) => (
+        <li>
+          <a href={l.url} rel="me noopener" target="_blank">
+            <span class="label">{l.label}</span>
+            <span class="handle">{l.handle}</span>
+            {l.description && <span class="desc">{l.description[lang]}</span>}
+            <span class="arrow" aria-hidden="true">
+              ↗
+            </span>
+          </a>
+        </li>
+      ))}
     </ul>
   </div>
 </Base>

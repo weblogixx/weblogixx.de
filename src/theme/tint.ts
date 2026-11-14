@@ -12,7 +12,7 @@
  * transition ended. Setting inline values per frame forces a normal style recalc.
  */
 
-const DURATION = 900;
+const DURATION = 750;
 const PROPS = ['--p-l', '--p-c', '--p-h', '--a-l', '--a-c', '--a-h'] as const;
 type Values = [number, number, number, number, number, number];
 

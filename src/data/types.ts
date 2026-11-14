@@ -58,4 +58,7 @@ export interface Employer<SkillId extends string = string> {
   links?: { label: string; url: string }[];
   /** Skill ids from skills.ts — type-checked. */
   stack: SkillId[];
+
+  /** Whether the person was self-employed at this employer. */
+  selfEmployed?: boolean;
 }

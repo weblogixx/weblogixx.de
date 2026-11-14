@@ -14,6 +14,56 @@ import type { SkillId } from './skills';
  */
 export const employers: Employer<SkillId>[] = [
   {
+    id: 'weblogixx-new',
+    name: 'Weblogixx',
+    logoMark: '/logos/weblogixx.svg',
+    logoBleed: true,
+    location: 'Ihringen',
+    positions: [
+      {
+        role: {
+          de: 'Freelancer',
+          en: 'Freelancer',
+        },
+        start: '2026-11',
+      },
+    ],
+    tagline: {
+      de: 'Individuelle Frontend-Architekturen und Weblösungen für Kunden.',
+      en: 'Custom frontend architectures and web solutions for clients.',
+    },
+    about: {
+      de: [
+        'Umsetzung individueller webbasierter Kundenprojekte mit Schwerpunkt auf maßgeschneiderten Frontend-Architekturen und Weblösungen.',
+      ],
+      en: [
+        'Building custom web projects for clients, focused on bespoke frontend architectures and web solutions.',
+      ],
+    },
+    contributions: {
+      de: ['Entwicklung individueller Frontend-Architekturen und Weblösungen mit modernen Webtechnologien.'],
+      en: ['Development of custom frontend architectures and web solutions using modern web technologies.'],
+    },
+    selfEmployed: true,
+    stack: [
+      'typescript',
+      'javascript',
+      'react',
+      'redux',
+      'mcp',
+      'agents',
+      'playwright',
+      'html',
+      'css',
+      'astro',
+      'lit',
+      'webcomponents',
+      'designtokens',
+      'a11y',
+      'storybook',
+    ],
+  },
+  {
     id: 'sick',
     name: 'SICK',
     url: 'https://www.sick.com',
@@ -35,7 +85,7 @@ export const employers: Employer<SkillId>[] = [
         },
       },
       {
-        role: { de: 'Frontend Architect', en: 'Frontend Architect' },
+        role: { de: 'Frontend Architekt', en: 'Frontend Architect' },
         start: '2023-08',
         summary: {
           de: 'Verantwortlich für Synergy, das Open-Source Design System von SICK.',
@@ -59,12 +109,14 @@ export const employers: Employer<SkillId>[] = [
     },
     contributions: {
       de: [
-        'Verantwortung für Synergy, SICKs Open-Source Design System auf Basis von Web Components.',
+        'Technische Ownership für Synergy, SICKs Open-Source Design System',
+        'Ownership der agentischen Frontend-Entwicklung bei SICK.',
         'Planung, Risikoanalyse und Architektur von Frontend-Anwendungen, Microfrontends und Libraries.',
         'Umsetzung und Begleitung von Frontend-Projekten von der Konzeption bis zur Auslieferung.',
       ],
       en: [
-        'Owning Synergy, SICK’s open source design system built on Web Components.',
+        'Technical ownership of Synergy, SICK’s open source design system built on Web Components.',
+        'Ownership of agentic frontend development at SICK.',
         'Planning, risk analysis and architecture of frontend applications, microfrontends and libraries.',
         'Implementing and guiding frontend projects from concept to delivery.',
       ],
@@ -81,19 +133,30 @@ export const employers: Employer<SkillId>[] = [
       'lit',
       'webcomponents',
       'designtokens',
+      'a11y',
+      'storybook',
+      'figma',
+      'mcp',
+      'agents',
+      'astro',
       'typescript',
       'javascript',
       'html',
       'css',
       'sass',
+      'postcss',
       'react',
       'redux',
       'vue',
       'microfrontends',
+      'embeddedui',
       'node',
       'webdesign',
-      'linux',
       'shell',
+      'playwright',
+      'angular',
+      'linux',
+      'docker',
     ],
   },
   {
@@ -111,17 +174,20 @@ export const employers: Employer<SkillId>[] = [
         start: '2014-02',
         end: '2014-11',
         summary: {
-          de: 'Fullstack-Webentwicklung mit Schwerpunkt Frontend.',
-          en: 'Fullstack web development with a focus on frontend.',
+          de: 'Fullstack-Webentwicklung mit Schwerpunkt Frontend (LAMP Stack).',
+          en: 'Fullstack web development with a focus on frontend (LAMP Stack).',
         },
       },
       {
-        role: { de: 'Software-Architekt – Web', en: 'Software Architect – Web' },
+        role: {
+          de: 'Frontend Architekt',
+          en: 'Frontend Architect',
+        },
         start: '2014-12',
         end: '2021-09',
         summary: {
-          de: 'Architektur, Core-Entwicklung, Performance-Optimierung und technische Teamleitung für webbasierte UIs auf Embedded-Geräten.',
-          en: 'Architecture, core development, performance optimization and technical team lead for web-based UIs on embedded devices.',
+          de: 'Planung, Architektur, Performance-Optimierung und technische Ownership für SDI, die Web-Oberflächen der Embedded-Software-Geräte.',
+          en: 'Planning, architecture, performance optimization and technical ownership for SDI, the web interfaces of embedded software devices.',
         },
       },
     ],
@@ -132,23 +198,23 @@ export const employers: Employer<SkillId>[] = [
     about: {
       de: [
         'Hella Gutmann Solutions entwickelt Diagnosetechnik für Kfz-Werkstätten.',
-        'Dort habe ich die webbasierten Benutzeroberflächen der Embedded-Software-Geräte verantwortet – zunächst als Fullstack Developer, ab Ende 2014 als Software-Architekt.',
+        'Ursprünglich war ich als Fullstack Developer für hgs-data.com, eine SAAS-Plattform für Werkstätten, zuständig. Ab Ende 2014 übernahm ich die technische Leitung und Architektur der Web-Oberflächen der Embedded-Software-Geräte.',
       ],
       en: [
         'Hella Gutmann Solutions builds diagnostic equipment for automotive workshops.',
-        'I was responsible for the web-based user interfaces of their embedded software devices – first as a fullstack developer, from late 2014 as software architect.',
+        'Originally I was responsible as a fullstack developer for hgs-data.com, a SaaS platform for workshops. From the end of 2014 I took over the technical lead and architecture of the web interfaces of the embedded software devices.',
       ],
     },
     contributions: {
       de: [
-        'Architektur und Core-Entwicklung der Web-UIs für Embedded-Software-Geräte.',
+        'Architektur und Entwicklung der Web-UIs für Embedded-Software-Geräte.',
+        'Technische Ownership über die Frontend-Landschaft.',
         'Performance-Optimierung der Oberflächen.',
-        'Technische Leitung des Web-Teams.',
       ],
       en: [
-        'Architecture and core development of the web UIs for embedded software devices.',
+        'Architecture and development of the web UIs for embedded software devices.',
+        'Technical ownership over the frontend landscape.',
         'Performance optimization of the interfaces.',
-        'Technical lead of the web team.',
       ],
     },
     stack: [
@@ -156,6 +222,7 @@ export const employers: Employer<SkillId>[] = [
       'embeddedui',
       'javascript',
       'react',
+      'redux',
       'node',
       'html',
       'css',
@@ -168,6 +235,9 @@ export const employers: Employer<SkillId>[] = [
       'mysql',
       'linux',
       'shell',
+      'php',
+      'performance',
+      'a11y',
     ],
   },
   {
@@ -179,7 +249,19 @@ export const employers: Employer<SkillId>[] = [
     location: 'Coburg',
     colors: { primary: '#C5E02D' },
     positions: [
-      { role: { de: 'Senior Web Developer', en: 'Senior Web Developer' }, start: '2006-09', end: '2014-02' },
+      {
+        role: {
+          de: 'Ausbildung zum Mediengestalter',
+          en: 'Apprenticeship as a Media Designer',
+        },
+        start: '2006-09',
+        end: '2008-06',
+      },
+      {
+        role: { de: 'Senior Web Developer', en: 'Senior Web Developer' },
+        start: '2008-06',
+        end: '2014-02',
+      },
     ],
     tagline: {
       de: 'CMS, E-Commerce und Web-Applikationen – von der Konzeption bis zum Betrieb.',
@@ -187,20 +269,24 @@ export const employers: Employer<SkillId>[] = [
     },
     about: {
       de: [
-        'Konzeption und Realisierung von Webprojekten wie CMS-Systemen, E-Commerce-Plattformen und Web-Applikationen – inklusive Betrieb, Support und Projektplanung.',
+        'Ursprünglich als Mediengestalter ausgebildet, war ich bei CLICKSPORTS für die Konzeption und Umsetzung von Webprojekten zuständig.',
+        'Zusätzlich verantwortete ich die Administration und Wartung der Server-Infrastruktur, den First- und Second-Level-Support sowie die Projektplanung.',
       ],
       en: [
-        'Designing and building web projects such as CMS systems, e-commerce platforms and web applications – including operations, support and project planning.',
+        'Originally trained as a media designer, I was responsible at CLICKSPORTS for the concept and implementation of web projects.',
+        'Additionally, I was responsible for the administration and maintenance of the server infrastructure, first- and second-level support, as well as project planning.',
       ],
     },
     contributions: {
       de: [
+        'Aufbau der Agentur von einer Ein-Mann-Agentur zu einem Team von 5 Mitarbeitern.',
         'Konzeption und Realisierung von CMS-Systemen, E-Commerce-Plattformen und Web-Applikationen.',
         'Management der Server-Infrastruktur.',
         'First- und Second-Level-Support sowie Softwareschulungen.',
         'Projektplanung und Kalkulation.',
       ],
       en: [
+        'Built the agency from a one-man operation to a team of five.',
         'Designed and built CMS systems, e-commerce platforms and web applications.',
         'Managed the server infrastructure.',
         'First- and second-level support and software training.',
@@ -224,6 +310,8 @@ export const employers: Employer<SkillId>[] = [
       'mysql',
       'linux',
       'shell',
+      'frontendarch',
+      'seo',
     ],
   },
   {
@@ -235,7 +323,10 @@ export const employers: Employer<SkillId>[] = [
     // That's me → Vintera.
     positions: [
       {
-        role: { de: 'Webentwickler (selbstständig)', en: 'Web Developer (self-employed)' },
+        role: {
+          de: 'Webentwickler (selbstständig)',
+          en: 'Web Developer (self-employed)',
+        },
         start: '2005-09',
         end: '2006-08',
       },
@@ -264,6 +355,7 @@ export const employers: Employer<SkillId>[] = [
         'Design with Adobe Photoshop and Fireworks.',
       ],
     },
+    selfEmployed: true,
     stack: [
       'php',
       'mysql',
@@ -281,11 +373,17 @@ export const employers: Employer<SkillId>[] = [
   },
   {
     id: 'hapo',
-    name: 'H.A.PO – Handelsagentur POPP',
+    name: 'H.A.PO – Handelsagentur',
     logo: '/logos/hapo.jpg',
     location: 'Coburg',
     colors: { primary: '#70A8E0' },
-    positions: [{ role: { de: 'Webentwickler', en: 'Web Developer' }, start: '2004-08', end: '2005-11' }],
+    positions: [
+      {
+        role: { de: 'Full-Stack-Entwickler', en: 'Full-Stack Developer' },
+        start: '2004-08',
+        end: '2005-11',
+      },
+    ],
     tagline: {
       de: 'Multi-Channel-E-Commerce und Netzwerkadministration.',
       en: 'Multi-channel e-commerce and network administration.',

@@ -42,13 +42,14 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
                   logo={e.logo}
                   mark={e.logoMark}
                   background={e.logoBackground}
-                bleed={e.logoBleed}
+                  bleed={e.logoBleed}
                   color={e.colors?.primary}
                   variant="full"
                 />
                 <div class="meta-text">
                   <p class="period">{formatPeriod(e, lang)}</p>
                   {e.current && <p class="badge">{t('career.current')}</p>}
+                  {e.selfEmployed && <p class="badge">{t('career.selfEmployed')}</p>}
                   {e.location && <p class="location">{e.location}</p>}
                 </div>
               </div>

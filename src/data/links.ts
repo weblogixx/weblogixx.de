@@ -11,15 +11,30 @@ export interface ProfileLink {
 // TODO(chris): verify URLs, add more.
 export const links: ProfileLink[] = [
   {
-    label: 'GitHub',
+    label: 'GitHub (personal)',
     handle: '@weblogixx',
     url: 'https://github.com/weblogixx',
-    description: { de: 'Code, Experimente, Open Source.', en: 'Code, experiments, open source.' },
+    description: {
+      de: 'Code, Experimente, Open Source.',
+      en: 'Code, experiments, open source.',
+    },
+  },
+  {
+    label: 'GitHub (company)',
+    handle: '@schilchSICKAG',
+    url: 'https://github.com/schilchSICKAG',
+    description: {
+      de: 'Company account für Synergy, SICKs Open Source Design System',
+      en: 'Company account for Synergy, SICKs Open Source Design System',
+    },
   },
   {
     label: 'LinkedIn',
-    handle: 'TODO',
-    url: 'https://www.linkedin.com/',
-    description: { de: 'Beruflicher Werdegang und Kontakt.', en: 'Professional profile and contact.' },
+    handle: 'Christian Schilling',
+    url: 'https://www.linkedin.com/in/christian-schilling-b999a2b2/',
+    description: {
+      de: 'Beruflicher Werdegang und Kontakt.',
+      en: 'Professional profile and contact.',
+    },
   },
 ];

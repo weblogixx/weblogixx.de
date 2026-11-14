@@ -90,8 +90,10 @@ const switchHref = altPath ?? href(routes[page][other]);
     top: 0;
     z-index: 10;
     background: oklch(from var(--bg) l c h / 0.82);
-    backdrop-filter: blur(14px) saturate(1.4);
+    /* Prefixed first, standard last: the build minifier treats them as duplicates and keeps
+       only the last one, which must be the one Chrome/Firefox understand. */
     -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    backdrop-filter: blur(14px) saturate(1.4);
     border-bottom: 1px solid var(--border);
   }
   .bar {
