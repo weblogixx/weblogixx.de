@@ -1,0 +1,65 @@
+---
+import { render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import type { Locale } from '../data';
+import { type Post, postSlug } from '../i18n/blog';
+import { blogPostPath, route } from '../i18n/routes';
+import { useT } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+  post: Post;
+  /** Whether a translation with the same slug exists. */
+  hasTranslation: boolean;
+}
+const { lang, post, hasTranslation } = Astro.props;
+const t = useT(lang);
+const other: Locale = lang === 'de' ? 'en' : 'de';
+const { Content } = await render(post);
+const dateFmt = new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { dateStyle: 'long' });
+const altPath = hasTranslation ? blogPostPath(postSlug(post), other) : route('blog', other);
+---
+
+<Base lang={lang} page="blog" title={post.data.title} description={post.data.description} altPath={altPath}>
+  <article class="container post">
+    <header class="page-head">
+      <a class="back" href={route('blog', lang)}>← {t('blog.back')}</a>
+      <time datetime={post.data.date.toISOString()}>{dateFmt.format(post.data.date)}</time>
+      <h1>{post.data.title}</h1>
+      <p class="lede">{post.data.description}</p>
+    </header>
+    <div class="content">
+      <Content />
+    </div>
+  </article>
+</Base>
+
+<style>
+  .back,
+  time {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+  time {
+    color: var(--text-subtle);
+  }
+  .content {
+    max-width: 42em;
+    margin-bottom: var(--space-9);
+    display: grid;
+    gap: var(--space-4);
+  }
+  .content :global(h2) {
+    font-size: var(--step-2);
+    margin-top: var(--space-5);
+  }
+  .content :global(pre) {
+    padding: var(--space-4);
+    border-radius: var(--radius-m);
+    overflow-x: auto;
+    font-size: var(--step--1);
+  }
+  .content :global(code) {
+    font-family: var(--font-mono);
+  }
+</style>

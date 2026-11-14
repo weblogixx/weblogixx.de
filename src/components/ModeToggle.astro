@@ -1,0 +1,101 @@
+---
+import type { Locale } from '../data/types';
+import { useT } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+}
+const t = useT(Astro.props.lang);
+---
+
+<button class="mode-toggle" type="button" aria-pressed="false" data-mode-toggle hidden>
+  <span class="visually-hidden">{t('mode.light')}</span>
+  <!-- sun: shown in dark mode (→ switch to light) -->
+  <svg class="icon sun" viewBox="0 0 24 24" aria-hidden="true">
+    <circle cx="12" cy="12" r="4"></circle>
+    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
+    ></path>
+  </svg>
+  <!-- moon: shown in light mode (→ switch to dark) -->
+  <svg class="icon moon" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z"></path>
+  </svg>
+</button>
+
+<script>
+  const KEY = 'vintera-mode';
+  const THEME_COLORS = { dark: '#1c1813', light: '#faf6ee' } as const;
+  const root = document.documentElement;
+  const meta = document.querySelector('meta[name="theme-color"]');
+
+  const isLight = () => root.dataset.mode === 'light';
+
+  const apply = (light: boolean) => {
+    if (light) root.dataset.mode = 'light';
+    else delete root.dataset.mode;
+    meta?.setAttribute('content', THEME_COLORS[light ? 'light' : 'dark']);
+    for (const b of document.querySelectorAll('[data-mode-toggle]')) {
+      b.setAttribute('aria-pressed', String(light));
+    }
+    try {
+      localStorage.setItem(KEY, light ? 'light' : 'dark');
+    } catch {
+      // storage unavailable (private mode etc.) — the toggle still works for this page
+    }
+  };
+
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-mode-toggle]')) {
+    button.hidden = false;
+    button.setAttribute('aria-pressed', String(isLight()));
+    button.addEventListener('click', () => {
+      const next = !isLight();
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (document.startViewTransition && !reduce) {
+        document.startViewTransition(() => apply(next));
+      } else {
+        apply(next);
+      }
+    });
+  }
+</script>
+
+<style>
+  .mode-toggle {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-s);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+  .mode-toggle:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+  .mode-toggle[hidden] {
+    display: none;
+  }
+  .icon {
+    width: 1.1rem;
+    height: 1.1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .moon {
+    display: none;
+  }
+  :global([data-mode='light']) .sun {
+    display: none;
+  }
+  :global([data-mode='light']) .moon {
+    display: block;
+  }
+</style>

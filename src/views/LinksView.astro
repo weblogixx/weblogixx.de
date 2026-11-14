@@ -1,0 +1,94 @@
+---
+import Base from '../layouts/Base.astro';
+import { links, type Locale } from '../data';
+import { useT } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+---
+
+<Base lang={lang} page="links" title={t('links.title')}>
+  <div class="container">
+    <header class="page-head">
+      <h1>{t('links.title')}</h1>
+      <p class="lede">{t('links.lede')}</p>
+    </header>
+
+    <ul class="links">
+      {
+        links.map((l) => (
+          <li>
+            <a href={l.url} rel="me noopener" target="_blank">
+              <span class="label">{l.label}</span>
+              <span class="handle">{l.handle}</span>
+              {l.description && <span class="desc">{l.description[lang]}</span>}
+              <span class="arrow" aria-hidden="true">
+                ↗
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</Base>
+
+<style>
+  .links {
+    list-style: none;
+    margin: 0 0 var(--space-9);
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+    gap: var(--space-4);
+  }
+  a {
+    position: relative;
+    display: grid;
+    gap: var(--space-1);
+    height: 100%;
+    padding: var(--space-5);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-l);
+    background: var(--bg-raised);
+    color: var(--text);
+    text-decoration: none;
+    transition: border-color 200ms, transform 200ms;
+  }
+  a:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+  }
+  .label {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 700;
+  }
+  .handle {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--primary);
+  }
+  .desc {
+    margin-top: var(--space-2);
+    color: var(--text-muted);
+    font-size: var(--step--1);
+  }
+  .arrow {
+    position: absolute;
+    top: var(--space-5);
+    right: var(--space-5);
+    color: var(--text-subtle);
+  }
+  a:hover .arrow {
+    color: var(--primary);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    a:hover {
+      transform: none;
+    }
+  }
+</style>

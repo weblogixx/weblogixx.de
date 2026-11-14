@@ -1,0 +1,24 @@
+---
+import { getCollection } from 'astro:content';
+import BlogPostView from '../../../views/BlogPostView.astro';
+import { getPosts, postSlug, postLang, type Post } from '../../../i18n/blog';
+
+export async function getStaticPaths() {
+  const posts = await getPosts('en');
+  const other = new Set(
+    (await getCollection('blog')).filter((p) => postLang(p) !== 'en').map(postSlug),
+  );
+  return posts.map((post) => ({
+    params: { slug: postSlug(post) },
+    props: { post, hasTranslation: other.has(postSlug(post)) },
+  }));
+}
+
+interface Props {
+  post: Post;
+  hasTranslation: boolean;
+}
+const { post, hasTranslation } = Astro.props;
+---
+
+<BlogPostView lang="en" post={post} hasTranslation={hasTranslation} />

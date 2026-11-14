@@ -1,0 +1,66 @@
+---
+import { href } from '../i18n/routes';
+
+interface Props {
+  name: string;
+  logo?: string;
+  /** Raw brand color for the lettermark fallback. */
+  color?: string;
+  size?: 'm' | 'l';
+}
+const { name, logo, color, size = 'm' } = Astro.props;
+const letters = name
+  .replace(/\(.*?\)/g, '')
+  .split(/\s+/)
+  .filter(Boolean)
+  .slice(0, 2)
+  .map((w) => w[0]?.toUpperCase())
+  .join('');
+---
+
+{
+  logo ? (
+    <span class:list={['logo', size]}>
+      <img src={href(logo)} alt={name} loading="lazy" decoding="async" />
+    </span>
+  ) : (
+    <span class:list={['logo', 'lettermark', size]} style={color ? `--brand:${color}` : undefined} aria-hidden="true">
+      {letters}
+    </span>
+  )
+}
+
+<style>
+  .logo {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: var(--radius-m);
+    background: oklch(0.97 0 0);
+    box-shadow: inset 0 0 0 1px var(--border);
+    padding: 0.5rem;
+    overflow: hidden;
+  }
+  .logo.l {
+    width: 5rem;
+    height: 5rem;
+  }
+  .logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .lettermark {
+    background: var(--brand, var(--primary-fill));
+    color: oklch(from var(--brand, var(--primary-fill)) clamp(0, (0.62 - l) * 999, 1) 0 0);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+  }
+  .l.lettermark {
+    font-size: 1.6rem;
+  }
+</style>

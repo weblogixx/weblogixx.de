@@ -1,0 +1,37 @@
+---
+/**
+ * The Competition stripe: one wide accent band flanked by two thin ones,
+ * like the Mustang body. Bands run at 45° (top-left → bottom-right) across the
+ * top-right corner of the box. Follows the theme.
+ *
+ * Geometry (viewBox 0 0 100 100): a band covers the strip between the
+ * diagonals at distance `from` and `to` from the top-right corner, measured
+ * along the edges. Keep `to` ≤ 100 so no band wraps around a corner and gets
+ * clipped into a triangle.
+ */
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+
+const bands = [
+  { from: 58, to: 65 }, // thin
+  { from: 69, to: 87 }, // wide
+  { from: 91, to: 98 }, // thin
+];
+const points = ({ from, to }: { from: number; to: number }) =>
+  `${100 - from},0 ${100 - to},0 100,${to} 100,${from}`;
+---
+
+<svg class:list={['stripes', className]} viewBox="0 0 100 100" aria-hidden="true">
+  {bands.map((b) => <polygon points={points(b)} />)}
+</svg>
+
+<style>
+  .stripes {
+    pointer-events: none;
+  }
+  polygon {
+    fill: var(--accent);
+  }
+</style>

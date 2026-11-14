@@ -1,0 +1,63 @@
+---
+import Base from '../layouts/Base.astro';
+import { profile, type Locale } from '../data';
+import { useT } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const swatches = [100, 200, 300, 400, 500, 600, 700, 800, 900];
+---
+
+<Base lang={lang} page="about" title={t('about.title')}>
+  <div class="container">
+    <header class="page-head">
+      <p class="eyebrow">{profile.handle}</p>
+      <h1>{t('about.title')}</h1>
+    </header>
+
+    <div class="prose about">
+      {profile.about[lang].map((p) => <p>{p}</p>)}
+    </div>
+
+    <figure class="palette" aria-label="Vintera palette">
+      <div class="swatches">
+        {swatches.map((s) => <span style={`background: var(--primary-${s})`} title={`primary-${s}`} />)}
+      </div>
+      <div class="swatches accent">
+        {[300, 500, 700].map((s) => <span style={`background: var(--accent-${s})`} title={`accent-${s}`} />)}
+      </div>
+      <figcaption>Vintera · oklch</figcaption>
+    </figure>
+  </div>
+</Base>
+
+<style>
+  .about {
+    font-size: var(--step-1);
+  }
+  .palette {
+    margin: var(--space-8) 0;
+    display: grid;
+    gap: var(--space-2);
+    max-width: 42rem;
+  }
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    height: 3rem;
+    border-radius: var(--radius-m);
+    overflow: hidden;
+  }
+  .swatches.accent {
+    grid-template-columns: repeat(3, 1fr);
+    height: 1.25rem;
+  }
+  figcaption {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--text-subtle);
+  }
+</style>

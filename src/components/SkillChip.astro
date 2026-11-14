@@ -1,0 +1,59 @@
+---
+interface Props {
+  name: string;
+  /** Anchor id, so other pages can deep-link to this chip. */
+  id?: string;
+  /** Turns the chip into a link. */
+  href?: string;
+  since?: number;
+  sinceLabel?: string;
+  title?: string;
+}
+const { name, id, href, since, sinceLabel, title } = Astro.props;
+const Tag = href ? 'a' : 'span';
+---
+
+<li class="chip" id={id}>
+  <Tag class="inner" href={href} title={title}>
+    <span class="name">{name}</span>
+    {since && <span class="since">{sinceLabel} {since}</span>}
+  </Tag>
+</li>
+
+<style>
+  .chip {
+    display: inline-flex;
+    scroll-margin-top: 8rem;
+  }
+  .inner {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    padding: 0.3em 0.7em;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--bg-raised);
+    font-size: var(--step--1);
+    color: var(--text);
+    line-height: 1.4;
+    text-decoration: none;
+    transition:
+      border-color 200ms,
+      background 200ms,
+      box-shadow 400ms;
+  }
+  a.inner:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+  .chip:target .inner {
+    border-color: var(--primary);
+    background: var(--primary-soft);
+    box-shadow: 0 0 0 4px var(--primary-soft);
+  }
+  .since {
+    font-family: var(--font-mono);
+    font-size: 0.8em;
+    color: var(--text-subtle);
+  }
+</style>

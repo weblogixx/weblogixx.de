@@ -1,0 +1,336 @@
+---
+import Base from '../layouts/Base.astro';
+import Stripes from '../components/Stripes.astro';
+import SkillChip from '../components/SkillChip.astro';
+import CompanyLogo from '../components/CompanyLogo.astro';
+import { profile, career, skillsByCategory, skillUsage, formatPeriod, type Locale } from '../data';
+import { route, href, routes } from '../i18n/routes';
+import { useT } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const years = new Date().getFullYear() - profile.since;
+const current = career.find((e) => e.current);
+const stats = [
+  { value: `${years}+`, label: t('home.yearsLabel') },
+  { value: String(career.length), label: t('home.companiesLabel') },
+  { value: String(skillUsage.length), label: t('home.skillsLabel') },
+];
+---
+
+<Base lang={lang} page="home">
+  <section class="hero">
+    <Stripes class="hero-stripes" />
+    <div class="container hero-inner">
+      <p class="eyebrow">{profile.title[lang]}</p>
+      <h1>{profile.name}</h1>
+      <p class="lede">{profile.intro[lang]}</p>
+      {
+        current && (
+          <p class="now">
+            <span class="dot" aria-hidden="true" />
+            {current.role[lang]} @{' '}
+            <a href={`${route('career', lang)}#${current.id}`}>{current.name}</a>
+          </p>
+        )
+      }
+      <dl class="stats">
+        {
+          stats.map((s) => (
+            <div>
+              <dt>{s.label}</dt>
+              <dd>{s.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <section class="section container" aria-labelledby="focus-title">
+    <h2 id="focus-title" class="section-title">{t('home.focus')}</h2>
+    <ul class="focus">
+      {
+        profile.focus.map((f, i) => (
+          <li>
+            <span class="num">0{i + 1}</span>
+            <h3>{f.title[lang]}</h3>
+            <p>{f.text[lang]}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="section container" aria-labelledby="stack-title">
+    <h2 id="stack-title" class="section-title">{t('home.stack')}</h2>
+    <p class="lede stack-lede">{t('home.stackLede')}</p>
+    <div class="stack">
+      {
+        skillsByCategory
+          .filter((c) => c.skills.length)
+          .map((cat) => (
+            <div class="stack-group">
+              <h3>{cat.label[lang]}</h3>
+              <ul class="chips">
+                {cat.skills.map((s) => (
+                  <SkillChip
+                    id={`skill-${s.id}`}
+                    name={s.name}
+                    since={s.since}
+                    sinceLabel={t('skill.since')}
+                    title={s.usedAt.length ? s.usedAt.join(', ') : undefined}
+                  />
+                ))}
+              </ul>
+            </div>
+          ))
+      }
+    </div>
+  </section>
+
+  <section class="section container" aria-labelledby="career-title">
+    <h2 id="career-title" class="section-title">{t('home.career')}</h2>
+    <ol class="timeline">
+      {
+        career.map((e) => (
+          <li>
+            <a href={`${route('career', lang)}#${e.id}`} style={`--p-h:${e.theme.primary.h};--p-c:${e.theme.primary.c};--p-l:${e.theme.primary.l}`}>
+              <CompanyLogo name={e.name} logo={e.logo} color={e.colors?.primary} />
+              <span class="tl-main">
+                <span class="tl-name">{e.name}</span>
+                <span class="tl-role">{e.role[lang]}</span>
+              </span>
+              <span class="tl-period">{formatPeriod(e, lang)}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+    <div class="ctas">
+      <a class="btn primary" href={route('career', lang)}>{t('home.careerCta')} →</a>
+      <a class="btn" href={href(routes.links[lang])}>{t('home.contactCta')}</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding-block: var(--space-9) var(--space-8);
+    border-bottom: 1px solid var(--border);
+    background:
+      radial-gradient(60rem 30rem at 85% -10%, var(--primary-soft), transparent 70%),
+      var(--bg);
+  }
+  .hero :global(.hero-stripes) {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    /* Square, as tall as the hero: on narrow/tall layouts it spans the whole
+       section top to bottom and is clipped on the left. */
+    height: 100%;
+    width: auto;
+    aspect-ratio: 1;
+    max-width: none;
+    opacity: 0.9;
+  }
+  @media (max-width: 1100px) {
+    .hero :global(.hero-stripes) {
+      opacity: 0.25;
+    }
+  }
+  .hero-inner {
+    position: relative;
+    display: grid;
+    gap: var(--space-5);
+  }
+  h1 {
+    font-size: var(--step-5);
+    font-weight: 700;
+    color: var(--primary);
+    max-width: 10ch;
+    letter-spacing: -0.035em;
+  }
+  .now {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--text-muted);
+  }
+  .dot {
+    display: inline-block;
+    vertical-align: 0.05em;
+    margin-right: var(--space-2);
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: var(--primary-fill);
+    box-shadow: 0 0 0 4px var(--primary-soft);
+  }
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-6);
+    margin: var(--space-4) 0 0;
+  }
+  .stats div {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  .stats dd {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--text);
+  }
+  .stats dt {
+    font-size: var(--step--1);
+    color: var(--text-subtle);
+  }
+
+  .focus {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: var(--space-4);
+  }
+  .focus li {
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+    padding: var(--space-5);
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-l);
+  }
+  .num {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--accent);
+  }
+  .focus h3 {
+    font-size: var(--step-1);
+  }
+  .focus p {
+    color: var(--text-muted);
+  }
+
+  .stack-lede {
+    margin-bottom: var(--space-6);
+    font-size: var(--step-0);
+  }
+  .stack {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: var(--space-6) var(--space-5);
+  }
+  .stack-group h3 {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    font-weight: 500;
+    color: var(--text-subtle);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: var(--space-3);
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2);
+  }
+  .timeline a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-m);
+    background: var(--bg-raised);
+    color: var(--text);
+    text-decoration: none;
+    transition: border-color 200ms, background 200ms;
+  }
+  .timeline a:hover {
+    /* local preview of the company's tint */
+    border-color: oklch(var(--p-l) var(--p-c) var(--p-h));
+    background: oklch(var(--p-l) var(--p-c) var(--p-h) / 0.08);
+  }
+  .tl-main {
+    display: grid;
+    flex: 1;
+    min-width: 0;
+  }
+  .tl-name {
+    font-weight: 600;
+  }
+  .tl-role {
+    color: var(--text-muted);
+    font-size: var(--step--1);
+  }
+  .tl-period {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--text-subtle);
+    white-space: nowrap;
+  }
+  @media (max-width: 560px) {
+    .timeline a {
+      flex-wrap: wrap;
+    }
+    .tl-period {
+      width: 100%;
+      padding-left: calc(3.5rem + var(--space-4));
+      margin-top: calc(var(--space-2) * -1);
+    }
+  }
+
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.7em 1.2em;
+    border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: var(--step--1);
+  }
+  .btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+  .btn.primary {
+    background: var(--primary-fill);
+    border-color: var(--primary-fill);
+    color: var(--primary-contrast);
+  }
+  .btn.primary:hover {
+    background: var(--primary-fill-strong);
+    color: var(--primary-contrast);
+  }
+</style>

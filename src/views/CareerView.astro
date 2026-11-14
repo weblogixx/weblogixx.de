@@ -1,0 +1,313 @@
+---
+import Base from '../layouts/Base.astro';
+import CompanyLogo from '../components/CompanyLogo.astro';
+import SkillChip from '../components/SkillChip.astro';
+import { career, skills, formatPeriod, yearOf, type Locale } from '../data';
+import { themeDataAttrs, vintera } from '../theme/color';
+import { useT } from '../i18n/ui';
+import { route } from '../i18n/routes';
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
+---
+
+<Base lang={lang} page="career" title={t('career.title')}>
+  <div class="container">
+    <header class="page-head" data-tint {...themeDataAttrs('Vintera', vintera)}>
+      <p class="eyebrow">
+        {firstYear} – {lang === 'de' ? 'heute' : 'today'}
+      </p>
+      <h1>{t('career.title')}</h1>
+      <p class="lede">{t('career.lede')}</p>
+    </header>
+
+    <ol class="career">
+      {
+        career.map((e) => (
+          <li class="job" id={e.id} data-tint {...themeDataAttrs(e.colors ? e.name : 'Vintera', e.theme)}>
+            <aside class="meta">
+              <div class="meta-sticky">
+                <CompanyLogo name={e.name} logo={e.logo} color={e.colors?.primary} size="l" />
+                <p class="period">{formatPeriod(e, lang)}</p>
+                {e.current && <p class="badge">{t('career.current')}</p>}
+                {e.location && <p class="location">{e.location}</p>}
+              </div>
+            </aside>
+
+            <article class="body">
+              <header>
+                <h2>{e.name}</h2>
+                <p class="role">{e.role[lang]}</p>
+              </header>
+
+              {e.positions.length > 1 && (
+                <section>
+                  <h3>{t('career.positions')}</h3>
+                  <ol class="positions">
+                    {e.positions.map((p, i) => (
+                      <li class:list={{ latest: i === 0 }}>
+                        <span class="pos-period">{formatPeriod(p, lang)}</span>
+                        <span class="pos-role">{p.role[lang]}</span>
+                        {p.summary && <span class="pos-summary">{p.summary[lang]}</span>}
+                      </li>
+                    ))}
+                  </ol>
+                </section>
+              )}
+
+              <div class="prose">
+                {e.about[lang].map((p) => <p>{p}</p>)}
+              </div>
+
+              {e.contributions[lang].length > 0 && (
+                <section>
+                  <h3>{t('career.contributions')}</h3>
+                  <ul class="contrib">
+                    {e.contributions[lang].map((c) => <li>{c}</li>)}
+                  </ul>
+                </section>
+              )}
+
+              {e.facts && e.facts.length > 0 && (
+                <dl class="facts">
+                  {e.facts.map((f) => (
+                    <div>
+                      <dt>{f.label[lang]}</dt>
+                      <dd>{typeof f.value === 'string' ? f.value : f.value[lang]}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
+
+              <section>
+                <h3>{t('career.stack')}</h3>
+                <ul class="chips">
+                  {e.stack.map((id) => (
+                    <SkillChip name={skills[id].name} href={`${route('home', lang)}#skill-${id}`} />
+                  ))}
+                </ul>
+              </section>
+
+              {e.url && (
+                <a class="site" href={e.url} rel="noopener" target="_blank">
+                  {t('career.website')}: {new URL(e.url).host} ↗
+                </a>
+              )}
+            </article>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</Base>
+
+<script>
+  import { initTint } from '../theme/tint';
+  initTint();
+</script>
+
+<style>
+  .career {
+    list-style: none;
+    margin: 0 0 var(--space-9);
+    padding: 0;
+  }
+  .job {
+    display: grid;
+    grid-template-columns: 13rem 1fr;
+    gap: var(--space-7);
+    padding-block: var(--space-8);
+    border-top: 1px solid var(--border);
+    position: relative;
+    scroll-margin-top: 4rem;
+  }
+  .job::before {
+    /* racing stripe on the section edge */
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 0;
+    width: 7rem;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-fill) 0 60%, transparent 60% 70%, var(--accent) 70%);
+  }
+  .meta-sticky {
+    position: sticky;
+    top: 6rem;
+    display: grid;
+    gap: var(--space-2);
+    justify-items: start;
+  }
+  .period {
+    margin-top: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--text);
+  }
+  .location {
+    font-size: var(--step--1);
+    color: var(--text-subtle);
+  }
+  .badge {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.2em 0.6em;
+    border-radius: 999px;
+    background: var(--primary-fill);
+    color: var(--primary-contrast);
+  }
+
+  .body {
+    display: grid;
+    gap: var(--space-6);
+    min-width: 0;
+  }
+  h2 {
+    font-size: var(--step-4);
+    color: var(--primary);
+  }
+  .role {
+    margin-top: var(--space-2);
+    font-size: var(--step-1);
+    color: var(--text);
+  }
+  h3 {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    font-weight: 500;
+    color: var(--text-subtle);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: var(--space-3);
+  }
+  .positions {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    border-left: 2px solid var(--border);
+  }
+  .positions li {
+    position: relative;
+    display: grid;
+    gap: 0.1rem;
+    padding: 0 0 var(--space-4) var(--space-5);
+  }
+  .positions li:last-child {
+    padding-bottom: 0;
+  }
+  .positions li::before {
+    content: '';
+    position: absolute;
+    left: calc(-0.35rem - 1px);
+    top: 0.45em;
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--border-strong);
+  }
+  .positions li.latest::before {
+    background: var(--primary-fill);
+    border-color: var(--primary);
+  }
+  .pos-period {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--text-subtle);
+  }
+  .pos-role {
+    font-weight: 600;
+  }
+  .latest .pos-role {
+    color: var(--primary);
+  }
+  .pos-summary {
+    color: var(--text-muted);
+    font-size: var(--step--1);
+  }
+  .contrib {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: var(--space-3);
+    max-width: 42em;
+  }
+  .contrib li {
+    position: relative;
+    padding-left: var(--space-5);
+  }
+  .contrib li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.7em;
+    width: 0.8rem;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--accent);
+  }
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin: 0;
+  }
+  .facts div {
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-m);
+    background: var(--bg-raised);
+    min-width: 8rem;
+  }
+  .facts dt {
+    font-size: var(--step--1);
+    color: var(--text-subtle);
+  }
+  .facts dd {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 700;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .site {
+    justify-self: start;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+
+  @media (max-width: 760px) {
+    .job {
+      grid-template-columns: 1fr;
+      gap: var(--space-5);
+      padding-block: var(--space-7);
+    }
+    .meta-sticky {
+      position: static;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      column-gap: var(--space-4);
+    }
+    .meta-sticky > :global(.logo) {
+      grid-row: span 3;
+    }
+    .period {
+      margin-top: 0;
+    }
+  }
+</style>

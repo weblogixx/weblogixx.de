@@ -1,0 +1,178 @@
+/*
+ * Vintera — dark theme driven by six animatable numbers.
+ *
+ *   --p-l / --p-c / --p-h   primary  (OKLCH lightness, chroma, hue)
+ *   --a-l / --a-c / --a-h   accent
+ *
+ * Everything else (backgrounds, text, borders, swatches) is derived from these,
+ * so re-tinting the whole page = changing six numbers on :root.
+ * They're registered with @property so the browser can interpolate them.
+ * Defaults = Vintera (see src/theme/color.ts).
+ */
+
+@property --p-l {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0.8197;
+}
+@property --p-c {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0.167;
+}
+@property --p-h {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 79.11;
+}
+@property --a-l {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0.6515;
+}
+@property --a-c {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0.1996;
+}
+@property --a-h {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 34.62;
+}
+
+:root {
+  color-scheme: dark;
+
+  --tint-duration: 900ms;
+  --tint-easing: cubic-bezier(0.65, 0, 0.35, 1);
+  transition:
+    --p-l var(--tint-duration) var(--tint-easing),
+    --p-c var(--tint-duration) var(--tint-easing),
+    --p-h var(--tint-duration) var(--tint-easing),
+    --a-l var(--tint-duration) var(--tint-easing),
+    --a-c var(--tint-duration) var(--tint-easing),
+    --a-h var(--tint-duration) var(--tint-easing);
+
+  /*
+   * Every mode-dependent token is light-dark(<light>, <dark>), resolved by
+   * `color-scheme`: dark by default, light when <html data-mode="light">.
+   */
+
+  /* ---- Neutrals: fixed lightness, faintly tinted toward the primary hue ---- */
+  --bg: light-dark(
+    oklch(0.975 calc(var(--p-c) * 0.1) var(--p-h)),
+    oklch(0.155 calc(var(--p-c) * 0.1) var(--p-h))
+  );
+  --bg-raised: light-dark(
+    oklch(0.995 calc(var(--p-c) * 0.04) var(--p-h)),
+    oklch(0.195 calc(var(--p-c) * 0.14) var(--p-h))
+  );
+  --surface: light-dark(
+    oklch(0.945 calc(var(--p-c) * 0.16) var(--p-h)),
+    oklch(0.225 calc(var(--p-c) * 0.16) var(--p-h))
+  );
+  --surface-2: light-dark(
+    oklch(0.915 calc(var(--p-c) * 0.18) var(--p-h)),
+    oklch(0.27 calc(var(--p-c) * 0.18) var(--p-h))
+  );
+  --border: light-dark(
+    oklch(0.885 calc(var(--p-c) * 0.16) var(--p-h)),
+    oklch(0.32 calc(var(--p-c) * 0.2) var(--p-h))
+  );
+  --border-strong: light-dark(
+    oklch(0.78 calc(var(--p-c) * 0.2) var(--p-h)),
+    oklch(0.42 calc(var(--p-c) * 0.24) var(--p-h))
+  );
+  --text: light-dark(
+    oklch(0.2 calc(var(--p-c) * 0.12) var(--p-h)),
+    oklch(0.95 calc(var(--p-c) * 0.06) var(--p-h))
+  );
+  --text-muted: light-dark(
+    oklch(0.4 calc(var(--p-c) * 0.14) var(--p-h)),
+    oklch(0.76 calc(var(--p-c) * 0.1) var(--p-h))
+  );
+  --text-subtle: light-dark(
+    oklch(0.5 calc(var(--p-c) * 0.14) var(--p-h)),
+    oklch(0.6 calc(var(--p-c) * 0.12) var(--p-h))
+  );
+  --shadow: light-dark(oklch(0.3 0.03 var(--p-h) / 0.14), oklch(0 0 0 / 0.45));
+
+  /* ---- Brand ----
+   * --primary       text, links, borders, outlines (contrast-safe on --bg)
+   * --primary-fill  the brand color itself, for filled areas; text on it uses --primary-contrast
+   * In dark mode they're the same; in light mode --primary is darkened for legibility.
+   */
+  --primary-fill: oklch(var(--p-l) var(--p-c) var(--p-h));
+  --primary-fill-strong: oklch(calc(var(--p-l) + 0.05) var(--p-c) var(--p-h));
+  --primary: light-dark(oklch(0.48 calc(var(--p-c) * 0.75) var(--p-h)), var(--primary-fill));
+  --primary-strong: light-dark(
+    oklch(0.4 calc(var(--p-c) * 0.7) var(--p-h)),
+    oklch(calc(var(--p-l) + 0.06) var(--p-c) var(--p-h))
+  );
+  --primary-contrast: oklch(0.17 calc(var(--p-c) * 0.25) var(--p-h)); /* text on --primary-fill */
+  --primary-soft: light-dark(
+    oklch(var(--p-l) var(--p-c) var(--p-h) / 0.24),
+    oklch(var(--p-l) var(--p-c) var(--p-h) / 0.14)
+  );
+  --primary-line: oklch(var(--p-l) var(--p-c) var(--p-h) / 0.35);
+
+  --accent: oklch(var(--a-l) var(--a-c) var(--a-h));
+  --accent-soft: oklch(var(--a-l) var(--a-c) var(--a-h) / 0.16);
+
+  /* ---- Swatch scales (fixed lightness steps, theme hue/chroma) ---- */
+  --primary-100: oklch(0.95 calc(var(--p-c) * 0.25) var(--p-h));
+  --primary-200: oklch(0.9 calc(var(--p-c) * 0.5) var(--p-h));
+  --primary-300: oklch(0.84 calc(var(--p-c) * 0.85) var(--p-h));
+  --primary-400: oklch(0.76 var(--p-c) var(--p-h));
+  --primary-500: oklch(0.66 var(--p-c) var(--p-h));
+  --primary-600: oklch(0.55 calc(var(--p-c) * 0.9) var(--p-h));
+  --primary-700: oklch(0.44 calc(var(--p-c) * 0.75) var(--p-h));
+  --primary-800: oklch(0.33 calc(var(--p-c) * 0.55) var(--p-h));
+  --primary-900: oklch(0.24 calc(var(--p-c) * 0.35) var(--p-h));
+
+  --accent-300: oklch(0.82 calc(var(--a-c) * 0.7) var(--a-h));
+  --accent-500: oklch(0.66 var(--a-c) var(--a-h));
+  --accent-700: oklch(0.46 calc(var(--a-c) * 0.8) var(--a-h));
+
+  /* ---- Type ---- */
+  --font-display: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --step--1: clamp(0.83rem, 0.8rem + 0.15vw, 0.9rem);
+  --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
+  --step-1: clamp(1.2rem, 1.12rem + 0.4vw, 1.35rem);
+  --step-2: clamp(1.45rem, 1.3rem + 0.75vw, 1.8rem);
+  --step-3: clamp(1.8rem, 1.5rem + 1.5vw, 2.6rem);
+  --step-4: clamp(2.4rem, 1.8rem + 3vw, 4.25rem);
+  --step-5: clamp(3rem, 2rem + 5vw, 6rem);
+
+  /* ---- Space & shape ---- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+  --space-9: 7rem;
+
+  --radius-s: 6px;
+  --radius-m: 12px;
+  --radius-l: 20px;
+
+  --content-width: 72rem;
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+}
+
+:root[data-mode='light'] {
+  color-scheme: light;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --tint-duration: 0ms;
+  }
+}

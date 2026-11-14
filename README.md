@@ -1,43 +1,36 @@
-# Astro Starter Kit: Minimal
+# weblogixx.de
 
-```sh
-npm create astro@latest -- --template minimal
-```
+Personal resume site — Astro, static, German first (`/`) with English under `/en/`.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Editing content
 
-## 🚀 Project Structure
+All content is typed TS in `src/data/`:
 
-Inside of your Astro project, you'll see the following folders and files:
+| File           | What                                                                      |
+| -------------- | ------------------------------------------------------------------------- |
+| `employers.ts` | Career entries incl. brand colors (hex). Sorted by `start` automatically. |
+| `skills.ts`    | Skill ids → name/category. `employers[].stack` references these ids.      |
+| `profile.ts`   | Name, intro, focus areas, about text.                                     |
+| `links.ts`     | Links page.                                                               |
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+Logos go into `public/logos/` (SVG or PNG) and are referenced as `logo: '/logos/acme.svg'`.
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+Blog posts: `src/content/blog/<de|en>/<slug>.md`. Same slug = translation. `draft: true` hides a post in builds.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Vintera theme
 
-Any static assets, like images, can be placed in the `public/` directory.
+`src/styles/vintera.css` derives every color from six registered custom properties
+(`--p-l/c/h`, `--a-l/c/h`, OKLCH). On the career page, `src/theme/tint.ts` writes an
+employer's (contrast-normalized, see `src/theme/color.ts`) values to `:root` when its
+section crosses the viewport middle; CSS transitions animate the change.
 
-## 🧞 Commands
+## Commands
 
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+| Command          | Action                                                                 |
+| ---------------- | ---------------------------------------------------------------------- |
+| `npm run dev`    | Dev server (`astro dev --background` for background mode)              |
+| `npm run build`  | Build to `dist/`                                                       |
+| `npm run check`  | `astro check` + oxlint + oxfmt check                                   |
+| `npm run lint`   | oxlint (also lints `.astro` frontmatter and scripts)                   |
+| `npm run format` | oxfmt (does not support `.astro` files yet)                            |
+| `npm run deploy` | Build and push `dist/` to `weblogixx/weblogixx.github.io` @ `gh-pages` |

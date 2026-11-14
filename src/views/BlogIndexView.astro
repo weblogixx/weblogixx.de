@@ -1,0 +1,85 @@
+---
+import Base from '../layouts/Base.astro';
+import type { Locale } from '../data';
+import { getPosts, postSlug } from '../i18n/blog';
+import { blogPostPath } from '../i18n/routes';
+import { useT } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+const posts = await getPosts(lang);
+const dateFmt = new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { dateStyle: 'long' });
+---
+
+<Base lang={lang} page="blog" title={t('blog.title')}>
+  <div class="container">
+    <header class="page-head">
+      <h1>{t('blog.title')}</h1>
+      <p class="lede">{t('blog.lede')}</p>
+    </header>
+
+    {
+      posts.length === 0 ? (
+        <p class="empty">{t('blog.empty')}</p>
+      ) : (
+        <ul class="posts">
+          {posts.map((p) => (
+            <li>
+              <a href={blogPostPath(postSlug(p), lang)}>
+                <time datetime={p.data.date.toISOString()}>{dateFmt.format(p.data.date)}</time>
+                <span class="title">
+                  {p.data.title}
+                  {p.data.draft && <em> (draft)</em>}
+                </span>
+                <span class="desc">{p.data.description}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</Base>
+
+<style>
+  .empty {
+    padding: var(--space-6);
+    margin-bottom: var(--space-9);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-l);
+    color: var(--text-muted);
+  }
+  .posts {
+    list-style: none;
+    margin: 0 0 var(--space-9);
+    padding: 0;
+    display: grid;
+  }
+  .posts a {
+    display: grid;
+    gap: var(--space-1);
+    padding-block: var(--space-5);
+    border-top: 1px solid var(--border);
+    color: var(--text);
+    text-decoration: none;
+  }
+  time {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--text-subtle);
+  }
+  .title {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 700;
+  }
+  .posts a:hover .title {
+    color: var(--primary);
+  }
+  .desc {
+    color: var(--text-muted);
+  }
+</style>

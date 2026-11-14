@@ -1,0 +1,80 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import type { Locale } from '../data/types';
+import { profile } from '../data';
+import { routes, href, type RouteKey } from '../i18n/routes';
+import { useT } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+  page: RouteKey;
+  title?: string;
+  description?: string;
+  /** Alternate-language URL when it isn't the plain route (blog posts). */
+  altPath?: string;
+}
+
+const { lang, page, title, description, altPath } = Astro.props;
+const t = useT(lang);
+const fullTitle = title ? `${title} · ${profile.name}` : `${profile.name} · ${profile.title[lang]}`;
+const desc = description ?? profile.intro[lang];
+const other: Locale = lang === 'de' ? 'en' : 'de';
+const altHref = altPath ?? href(routes[page][other]);
+const site = Astro.site ?? new URL('https://weblogixx.github.io');
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={desc} />
+    <meta name="theme-color" content="#1c1813" />
+    <script is:inline>
+      // Apply the saved light/dark choice before first paint (no flash). Default: dark.
+      (() => {
+        try {
+          const mode = localStorage.getItem('vintera-mode');
+          if (mode === 'light') {
+            document.documentElement.dataset.mode = 'light';
+            document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#faf6ee');
+          }
+        } catch {}
+      })();
+    </script>
+    <link rel="icon" type="image/svg+xml" href={href('/favicon.svg')} />
+    <link rel="canonical" href={new URL(Astro.url.pathname, site)} />
+    <link rel="alternate" hreflang={other} href={new URL(altHref, site)} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:locale" content={lang === 'de' ? 'de_DE' : 'en_US'} />
+    <meta name="generator" content={Astro.generator} />
+  </head>
+  <body>
+    <a class="skip visually-hidden" href="#main">{t('nav.skip')}</a>
+    <Header lang={lang} page={page} altPath={altPath} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer lang={lang} />
+  </body>
+</html>
+
+<style>
+  .skip:focus {
+    position: fixed !important;
+    top: var(--space-3);
+    left: var(--space-3);
+    z-index: 100;
+    width: auto;
+    height: auto;
+    clip: auto;
+    padding: var(--space-2) var(--space-4);
+    background: var(--primary-fill);
+    color: var(--primary-contrast);
+    border-radius: var(--radius-s);
+  }
+</style>
