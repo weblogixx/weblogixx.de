@@ -74,7 +74,7 @@ const site = Astro.site ?? new URL('https://weblogixx.github.io');
   <body>
     <a class="skip visually-hidden" href="#main">{t('nav.skip')}</a>
     <Header lang={lang} page={page} altPath={altPath} />
-    <main id="main">
+    <main id="main" data-page={page}>
       <slot />
     </main>
     <Footer lang={lang} />

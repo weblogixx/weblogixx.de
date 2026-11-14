@@ -27,14 +27,17 @@ export const profile = {
       },
     },
     {
-      title: { de: "Design Systems", en: "Design systems" },
+      title: { de: "Design Systeme", en: "Design systems" },
       text: {
         de: "Tokens, Komponenten, Dokumentation und die Prozesse dazwischen - von Figma bis zur Produktivumgebung.",
         en: "Tokens, components, docs and the processes in between - from Figma to production.",
       },
     },
     {
-      title: { de: "Agentic Engineering", en: "Agentic engineering" },
+      title: {
+        de: "Agentische Frontends",
+        en: "Agentic frontends",
+      },
       text: {
         de: "KI-Agenten sinnvoll in Entwicklungs- und Design-Workflows integrieren.",
         en: "Putting AI agents to good use in development and design workflows.",

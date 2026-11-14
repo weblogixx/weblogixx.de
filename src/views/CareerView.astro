@@ -141,6 +141,32 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
 </script>
 
 <style>
+  /*
+   * A soft glow under the header, only on this page. Fixed (stays put while scrolling) and
+   * behind the content, so nothing is covered – unlike a box-shadow on the header.
+   * --border is tinted towards the active company's hue, so the glow follows the tinting.
+   * isolation: the body has its own background, which would cover a z-index:-1 layer;
+   * this keeps the glow above it but below main's content.
+   */
+  :global(main[data-page='career']) {
+    isolation: isolate;
+  }
+  :global(main[data-page='career'])::before {
+    content: '';
+    position: fixed;
+    inset: 0 0 auto;
+    height: 14rem;
+    /* Dark: lighter than the background (--border) reads as a glow. Light: anything darker
+       reads as a shadow, so use a faint brand tint instead, like the home page hero. */
+    background: radial-gradient(
+      ellipse 70% 100% at 50% 0,
+      light-dark(var(--primary-soft), var(--border)),
+      transparent 70%
+    );
+    pointer-events: none;
+    z-index: -1;
+  }
+
   .career {
     list-style: none;
     margin: 0 0 var(--space-9);
