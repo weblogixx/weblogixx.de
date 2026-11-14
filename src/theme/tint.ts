@@ -38,7 +38,7 @@ export function initTint() {
 
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const computed = getComputedStyle(root);
-  // Start from whatever :root currently has (the @property initial values = Vintera).
+  // Start from whatever :root currently has (the @property initial values = Sunny).
   const current = PROPS.map((p) => Number.parseFloat(computed.getPropertyValue(p)) || 0) as Values;
 
   const write = (v: Values) => {
@@ -92,7 +92,7 @@ export function initTint() {
   );
   for (const el of targets) observer.observe(el);
 
-  // At the very top, always show the first target (the page head → Vintera),
+  // At the very top, always show the first target (the page head → Sunny),
   // however short it is.
   const [first] = targets;
   const atTop = () => {

@@ -22,14 +22,14 @@ const swatches = [100, 200, 300, 400, 500, 600, 700, 800, 900];
       {profile.about[lang].map((p) => <p>{p}</p>)}
     </div>
 
-    <figure class="palette" aria-label="Vintera palette">
+    <figure class="palette" aria-label="Sunny palette">
       <div class="swatches">
         {swatches.map((s) => <span style={`background: var(--primary-${s})`} title={`primary-${s}`} />)}
       </div>
       <div class="swatches accent">
         {[300, 500, 700].map((s) => <span style={`background: var(--accent-${s})`} title={`accent-${s}`} />)}
       </div>
-      <figcaption>Vintera · oklch</figcaption>
+      <figcaption>Sunny · oklch</figcaption>
     </figure>
   </div>
 </Base>

@@ -44,7 +44,7 @@ export interface Employer<SkillId extends string = string> {
   /**
    * Brand colors as hex. They re-tint the page while this section is in view.
    * Primary gets normalized for contrast; accent is derived when omitted.
-   * Omit entirely to keep Vintera.
+   * Omit entirely to keep Sunny.
    */
   colors?: { primary: string; accent?: string };
   /** Short one-liner shown in compact timelines. */

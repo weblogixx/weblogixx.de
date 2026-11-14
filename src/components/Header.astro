@@ -27,15 +27,13 @@ const switchHref = altPath ?? href(routes[page][other]);
 
     <nav id="site-nav" aria-label={t('nav.menu')}>
       <ul>
-        {
-          items.map((key) => (
-            <li>
-              <a href={route(key, lang)} aria-current={key === page ? 'page' : undefined}>
-                {t(`nav.${key}`)}
-              </a>
-            </li>
-          ))
-        }
+        {items.map((key) => (
+          <li>
+            <a href={route(key, lang)} aria-current={key === page ? 'page' : undefined}>
+              {t(`nav.${key}`)}
+            </a>
+          </li>
+        ))}
       </ul>
     </nav>
 

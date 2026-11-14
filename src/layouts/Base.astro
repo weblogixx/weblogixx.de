@@ -46,7 +46,7 @@ const site = Astro.site ?? new URL('https://weblogixx.github.io');
       document.documentElement.dataset.js = '';
       (() => {
         try {
-          const mode = localStorage.getItem('vintera-mode');
+          const mode = localStorage.getItem('sunny-mode');
           if (mode === 'light' || mode === 'dark') {
             document.documentElement.dataset.mode = mode;
             const color = mode === 'light' ? '#faf6ee' : '#1c1813';

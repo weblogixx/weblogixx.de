@@ -17,9 +17,9 @@ Logos go into `public/logos/` (SVG or PNG) and are referenced as `logo: '/logos/
 
 Blog posts: `src/content/blog/<de|en>/<slug>.md`. Same slug = translation. `draft: true` hides a post in builds.
 
-## Vintera theme
+## Sunny theme
 
-`src/styles/vintera.css` derives every color from six registered custom properties
+`src/styles/sunny.css` derives every color from six registered custom properties
 (`--p-l/c/h`, `--a-l/c/h`, OKLCH). On the career page, `src/theme/tint.ts` writes an
 employer's (contrast-normalized, see `src/theme/color.ts`) values to `:root` when its
 section crosses the viewport middle; CSS transitions animate the change.

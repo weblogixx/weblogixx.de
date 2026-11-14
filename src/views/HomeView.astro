@@ -27,7 +27,7 @@ const stats = [
     <Stripes class="hero-stripes" />
     <div class="container hero-inner">
       <p class="eyebrow">{profile.title[lang]}</p>
-      <h1>{profile.name}</h1>
+      <h1>{profile.greeting[lang]} {profile.name}</h1>
       <p class="lede">{profile.intro[lang]}</p>
       {current && (
         <p class="now">

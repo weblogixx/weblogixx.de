@@ -1,6 +1,6 @@
 /**
  * Tiny color helpers: hex → OKLCH, plus normalization so any brand color
- * can drive the dark Vintera theme without breaking contrast.
+ * can drive the dark Sunny theme without breaking contrast.
  * Runs at build time only.
  */
 
@@ -64,7 +64,7 @@ export function normalizeAccent(c: Oklch): Oklch {
 
 /**
  * Build a theme from brand hex colors. Without an explicit accent we rotate
- * the hue a bit and push chroma, like Vintera's yellow body / red stripe.
+ * the hue a bit and push chroma, like Sunny's yellow body / red stripe.
  */
 export function themeFromBrand(primaryHex: string, accentHex?: string): ThemeColors {
   const p = hexToOklch(primaryHex);
@@ -74,7 +74,7 @@ export function themeFromBrand(primaryHex: string, accentHex?: string): ThemeCol
 
 /**
  * Inline style + attribute that give an element its own brand tokens
- * (see `[data-brand]` in vintera.css). Spread onto the element.
+ * (see `[data-brand]` in sunny.css). Spread onto the element.
  */
 export function brandScope(t: ThemeColors) {
   const { primary: p, accent: a } = t;
@@ -96,9 +96,8 @@ export function themeDataAttrs(name: string, t: ThemeColors) {
 }
 
 /**
- * Vintera — sampled from a Fender Vintera II '70s Competition Mustang:
- * Competition Orange body + red racing stripe.
+ * Sunny — sampled from my yellow '70s-style guitar: warm yellow body + red racing stripe.
  */
-export const VINTERA_PRIMARY_HEX = '#FDB515';
-export const VINTERA_ACCENT_HEX = '#F0532D';
-export const vintera = themeFromBrand(VINTERA_PRIMARY_HEX, VINTERA_ACCENT_HEX);
+export const SUNNY_PRIMARY_HEX = '#FDB515';
+export const SUNNY_ACCENT_HEX = '#F0532D';
+export const sunny = themeFromBrand(SUNNY_PRIMARY_HEX, SUNNY_ACCENT_HEX);

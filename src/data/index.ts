@@ -1,7 +1,7 @@
 import { employers } from './employers';
 import { skills, skillCategories, type SkillId, type SkillCategory } from './skills';
 import type { Employer, Locale, Position, YearMonth } from './types';
-import { themeFromBrand, vintera, type ThemeColors } from '../theme/color';
+import { themeFromBrand, sunny, type ThemeColors } from '../theme/color';
 
 export { profile } from './profile';
 export { links } from './links';
@@ -36,7 +36,7 @@ function resolve(e: Employer<SkillId>): ResolvedEmployer {
     end,
     role: latest.role,
     current: !end && !e.selfEmployed,
-    theme: e.colors ? themeFromBrand(e.colors.primary, e.colors.accent) : vintera,
+    theme: e.colors ? themeFromBrand(e.colors.primary, e.colors.accent) : sunny,
   });
 }
 

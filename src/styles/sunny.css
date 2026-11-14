@@ -1,15 +1,15 @@
 /*
- * Vintera — dark theme driven by six animatable numbers.
+ * Sunny — dark theme driven by six animatable numbers.
  *
  *   --p-l / --p-c / --p-h   primary  (OKLCH lightness, chroma, hue)
  *   --a-l / --a-c / --a-h   accent
  *
  * Everything else (backgrounds, text, borders, swatches) is derived from these,
  * so re-tinting the whole page = changing six numbers on :root.
- * They're registered with @property (typed numbers + Vintera defaults). The
+ * They're registered with @property (typed numbers + Sunny defaults). The
  * animation between themes is a JS tween in src/theme/tint.ts, not a CSS
  * transition — see the note there about :visited links in Chrome.
- * Defaults = Vintera (see src/theme/color.ts).
+ * Defaults = Sunny (see src/theme/color.ts).
  */
 
 @property --p-l {
@@ -89,7 +89,7 @@
     oklch(0.5 calc(var(--p-c) * 0.14) var(--p-h)),
     oklch(0.6 calc(var(--p-c) * 0.12) var(--p-h))
   );
-  /* Scrollbar: muted Vintera thumb on the page background; follows the career tint. */
+  /* Scrollbar: muted Sunny thumb on the page background; follows the career tint. */
   --scrollbar-thumb: light-dark(
     oklch(0.78 calc(var(--p-c) * 0.55) var(--p-h)),
     oklch(0.42 calc(var(--p-c) * 0.6) var(--p-h))

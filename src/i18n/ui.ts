@@ -39,7 +39,7 @@ export const ui = {
     'blog.back': 'Alle Beiträge',
     'links.title': 'Links',
     'links.lede': 'Wo du mich im Netz findest.',
-    'footer.built': 'Gebaut mit Astro. Theme: Vintera.',
+    'footer.built': 'Gebaut mit Astro. Theme: Sunny.',
   },
   en: {
     'nav.home': 'Home',
@@ -79,7 +79,7 @@ export const ui = {
     'blog.back': 'All posts',
     'links.title': 'Links',
     'links.lede': 'Where to find me on the web.',
-    'footer.built': 'Built with Astro. Theme: Vintera.',
+    'footer.built': 'Built with Astro. Theme: Sunny.',
   },
 } as const satisfies Record<Locale, Record<string, string>>;
 

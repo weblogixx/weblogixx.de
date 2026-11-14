@@ -6,7 +6,7 @@ import type { SkillId } from './skills';
  * start date (newest first) automatically.
  *
  * Promoted? Add another entry to `positions` (see SICK / Hella Gutmann).
- * No brand colors? Leave out `colors` and the section stays Vintera.
+ * No brand colors? Leave out `colors` and the section stays Sunny.
  * Logos live in /public/logos/. `logo` is the full (wide) logo for the career
  * page, `logoMark` a square-ish crop for small tiles.
  *
@@ -320,7 +320,7 @@ export const employers: Employer<SkillId>[] = [
     logoMark: '/logos/weblogixx.svg',
     logoBleed: true,
     location: 'Coburg',
-    // That's me → Vintera.
+    // That's me → Sunny.
     positions: [
       {
         role: {
