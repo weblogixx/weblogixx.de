@@ -22,7 +22,7 @@ const switchHref = altPath ?? href(routes[page][other]);
   <div class="container bar">
     <a class="brand" href={route('home', lang)} aria-label={profile.name}>
       <span class="mark" aria-hidden="true"></span>
-      <span class="name">{profile.handle}</span>
+      <span class="name">{profile.handle}<span class="at" data-header-at></span></span>
     </a>
 
     <nav id="site-nav" aria-label={t('nav.menu')}>
@@ -76,7 +76,7 @@ const switchHref = altPath ?? href(routes[page][other]);
     document.addEventListener('click', (e) => {
       if (!header.contains(e.target as Node)) setOpen(false);
     });
-    matchMedia('(min-width: 721px)').addEventListener('change', (e) => {
+    matchMedia('(min-width: 861px)').addEventListener('change', (e) => {
       if (e.matches) setOpen(false);
     });
   }
@@ -111,7 +111,26 @@ const switchHref = altPath ?? href(routes[page][other]);
     font-size: var(--step--1);
     flex-shrink: 0;
   }
+  .name {
+    display: flex;
+    min-width: 0;
+  }
+  /* Career page prompt suffix: "@sick". Filled by src/theme/tint.ts. */
+  .at {
+    color: var(--primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .at:empty {
+    display: none;
+  }
+  .at::before {
+    content: '@';
+    color: var(--accent);
+  }
   .mark {
+    flex-shrink: 0;
     width: 1.75rem;
     height: 1.75rem;
     border-radius: 7px;
@@ -154,6 +173,10 @@ const switchHref = altPath ?? href(routes[page][other]);
     color: var(--text);
     background: var(--surface);
   }
+  nav a:active {
+    color: var(--text);
+    background: var(--primary-soft);
+  }
   nav a[aria-current='page'] {
     color: var(--primary);
     background: var(--primary-soft);
@@ -173,6 +196,21 @@ const switchHref = altPath ?? href(routes[page][other]);
   }
   .lang:hover {
     border-color: var(--primary);
+    color: var(--primary);
+  }
+  .lang:active {
+    translate: 0 1px;
+    border-color: var(--primary);
+    background: var(--primary-soft);
+    color: var(--primary);
+  }
+  .menu-toggle:hover {
+    border-color: var(--primary);
+  }
+  .menu-toggle:active {
+    translate: 0 1px;
+    border-color: var(--primary);
+    background: var(--primary-soft);
     color: var(--primary);
   }
 
@@ -226,12 +264,17 @@ const switchHref = altPath ?? href(routes[page][other]);
   }
 
   /* ---- Small screens ---- */
-  @media (max-width: 720px) {
+  @media (max-width: 860px) {
     .bar {
       gap: var(--space-3);
     }
     .brand {
       margin-inline-end: auto;
+      flex-shrink: 1;
+      min-width: 0;
+    }
+    .at {
+      max-width: 10ch;
     }
 
     /* Without JS: nav wraps into a scrollable second row. */
@@ -284,6 +327,13 @@ const switchHref = altPath ?? href(routes[page][other]);
       font-size: var(--step-1);
       font-family: var(--font-display);
       font-weight: 600;
+    }
+  }
+
+  /* Very narrow: the name no longer fits next to the buttons, the mark alone carries the brand. */
+  @media (max-width: 380px) {
+    .name {
+      display: none;
     }
   }
 

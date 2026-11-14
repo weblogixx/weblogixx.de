@@ -1,0 +1,247 @@
+---
+/**
+ * One shared tooltip for elements with `data-tip` (JSON: { label, items: [{ name, color? }] }),
+ * e.g. skill chips → "Used when working for" + companies in their brand colors.
+ *
+ * Lightweight: Popover API (top layer, no z-index fights) + CSS anchor positioning
+ * (the hovered element gets `anchor-name: --tip`, the popover sits above it and flips
+ * below when there's no room). JS only fills the content and points the arrow.
+ *
+ * Progressive enhancement: without popover + anchor support, nothing is touched and
+ * the element's plain `title` (rendered by SkillChip as fallback) keeps working.
+ */
+---
+
+<div class="tooltip" id="tooltip" popover="manual" role="tooltip" data-tooltip>
+  <p class="tip-label"></p>
+  <ul class="tip-list"></ul>
+  <p class="tip-note" hidden></p>
+</div>
+
+<script>
+  const fromEvent = (e: Event) => (e.target as Element | null)?.closest?.<HTMLElement>('[data-tip]');
+
+  interface TipData {
+    label: string;
+    items: { name: string; color?: string }[];
+    note?: string;
+  }
+
+  const tip = document.querySelector<HTMLElement>('[data-tooltip]');
+  const supported = tip && 'showPopover' in tip && CSS.supports('anchor-name: --tip');
+
+  if (tip && supported) {
+    const label = tip.querySelector<HTMLElement>('.tip-label')!;
+    const list = tip.querySelector<HTMLElement>('.tip-list')!;
+    const note = tip.querySelector<HTMLElement>('.tip-note')!;
+
+    // Our tooltip replaces the native one.
+    for (const el of document.querySelectorAll<HTMLElement>('[data-tip][title]')) el.removeAttribute('title');
+
+    /** Element the tooltip is shown for (undefined while hidden). */
+    let current: HTMLElement | undefined;
+    /**
+     * Element carrying `anchor-name`. Kept after hiding: the popover still renders
+     * during its fade-out, and without an anchor it would jump to the top-left corner.
+     * It only moves when the next element takes over.
+     */
+    let anchor: HTMLElement | undefined;
+
+    const render = (el: HTMLElement) => {
+      let data: TipData;
+      try {
+        data = JSON.parse(el.dataset.tip ?? '');
+      } catch {
+        data = { label: '', items: [{ name: el.dataset.tip ?? '' }] };
+      }
+      label.textContent = data.label;
+      label.hidden = !data.label;
+      note.textContent = data.note ?? '';
+      note.hidden = !data.note;
+      list.replaceChildren(
+        ...data.items.map((item) => {
+          const li = document.createElement('li');
+          li.textContent = item.name;
+          if (item.color) li.style.setProperty('--dot', item.color);
+          return li;
+        }),
+      );
+    };
+
+    /** Which side the browser placed us on (flip-block) and where the anchor's center is. */
+    const pointArrow = () => {
+      if (!anchor) return;
+      const a = anchor.getBoundingClientRect();
+      const r = tip.getBoundingClientRect();
+      tip.dataset.side = r.top + r.height / 2 > a.top + a.height / 2 ? 'bottom' : 'top';
+      const x = Math.min(Math.max(a.left + a.width / 2 - r.left, 14), r.width - 14);
+      tip.style.setProperty('--arrow-x', `${Math.round(x)}px`);
+    };
+
+    const hide = () => {
+      if (!current) return;
+      current.removeAttribute('aria-describedby');
+      current = undefined;
+      if (tip.matches(':popover-open')) tip.hidePopover();
+    };
+
+    const show = (el: HTMLElement) => {
+      if (el === current) return;
+      current?.removeAttribute('aria-describedby');
+      current = el;
+      if (anchor !== el) {
+        anchor?.style.removeProperty('anchor-name');
+        el.style.setProperty('anchor-name', '--tip');
+        anchor = el;
+      }
+      el.setAttribute('aria-describedby', tip.id);
+      render(el);
+      // Moving between chips: already open, the anchor change just repositions it.
+      if (!tip.matches(':popover-open')) tip.showPopover();
+      pointArrow();
+    };
+
+    document.addEventListener('pointerover', (e) => {
+      const el = fromEvent(e);
+      if (el) show(el);
+      else hide();
+    });
+    document.addEventListener('focusin', (e) => {
+      const el = fromEvent(e);
+      if (el) show(el);
+    });
+    document.addEventListener('focusout', hide);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') hide();
+    });
+    // Scrolling can flip it above/below; keep the arrow honest.
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (current) pointArrow();
+      },
+      { passive: true },
+    );
+  }
+</script>
+
+<style>
+  .tooltip {
+    /* Popover UA styles center it in the viewport and clip overflow; reset both so anchor
+       positioning takes over and the arrow can stick out. */
+    inset: auto;
+    overflow: visible;
+    position-anchor: --tip;
+    position-area: top;
+    justify-self: anchor-center;
+    position-try-fallbacks: flip-block;
+    margin: 0 0 0.75rem;
+
+    --shift: 4px;
+    min-width: 11rem;
+    max-width: min(20rem, calc(100vw - 2rem));
+    padding: 0.65rem 0.85rem 0.7rem;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-m);
+    background: var(--bg-raised);
+    box-shadow:
+      0 1px 0 oklch(from var(--text) l c h / 0.04) inset,
+      0 0.75rem 2rem var(--shadow);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: var(--step--1);
+    line-height: 1.4;
+    text-align: start;
+    pointer-events: none;
+
+    opacity: 0;
+    translate: 0 var(--shift);
+    transition:
+      opacity 150ms ease-out,
+      translate 150ms ease-out,
+      display 150ms allow-discrete,
+      overlay 150ms allow-discrete;
+  }
+  .tooltip[data-side='bottom'] {
+    --shift: -4px;
+  }
+  .tooltip:popover-open {
+    opacity: 1;
+    translate: 0;
+  }
+  @starting-style {
+    .tooltip:popover-open {
+      opacity: 0;
+      translate: 0 var(--shift);
+    }
+  }
+
+  /* Arrow: a rotated square with the same surface, pointing at the anchor's center. */
+  .tooltip::after {
+    content: '';
+    position: absolute;
+    left: var(--arrow-x, 50%);
+    bottom: -6px;
+    width: 10px;
+    height: 10px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-strong);
+    border-top-color: transparent;
+    border-left-color: transparent;
+    border-bottom-right-radius: 2px;
+    transform: translateX(-50%) rotate(45deg);
+  }
+  .tooltip[data-side='bottom']::after {
+    bottom: auto;
+    top: -6px;
+    transform: translateX(-50%) rotate(-135deg);
+  }
+
+  .tip-label {
+    margin: 0 0 0.45rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--primary);
+  }
+
+  .tip-note {
+    margin: 0.55rem 0 0;
+    padding-top: 0.5rem;
+    border-top: 1px dashed var(--border-strong);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+  .tip-list {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  /* Created by the script, so outside Astro's scoping. */
+  .tip-list :global(li) {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-weight: 500;
+  }
+  /* Company brand color (normalized for the dark theme, darkened for light). */
+  .tip-list :global(li)::before {
+    content: '';
+    flex-shrink: 0;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 2px;
+    --c: var(--dot, var(--text-subtle));
+    background: light-dark(oklch(from var(--c) 0.55 c h), var(--c));
+    box-shadow: 0 0 0 3px oklch(from var(--c) l c h / 0.18);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tooltip {
+      transition: none;
+    }
+  }
+</style>

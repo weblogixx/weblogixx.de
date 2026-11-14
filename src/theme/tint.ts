@@ -30,10 +30,48 @@ function nearestHue(from: number, to: number) {
 /** Same feel as cubic-bezier(0.65, 0, 0.35, 1). */
 const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2);
 
+/**
+ * Header prompt (weblogixx@handle): quick fade/slide out, swap the text, fade back in.
+ * Rapid scrolling cancels the pending swap, so only the latest handle lands.
+ */
+let swapToken = 0;
+async function swapText(el: HTMLElement, text: string, instant: boolean) {
+  const token = ++swapToken;
+  if (el.textContent === text) {
+    // Scrolled back before a fade-out finished: undo it.
+    el.getAnimations().forEach((a) => a.cancel());
+    return;
+  }
+  if (instant || !el.animate) {
+    el.textContent = text;
+    return;
+  }
+  const timing = { duration: 140, easing: 'ease-in', fill: 'forwards' } as const;
+  if (el.textContent) {
+    await el.animate([{ opacity: 1 }, { opacity: 0, transform: 'translateY(-0.35em)' }], timing).finished;
+    if (token !== swapToken) return;
+  }
+  el.textContent = text;
+  if (!text) return;
+  el.getAnimations().forEach((a) => a.cancel());
+  el.animate(
+    [
+      { opacity: 0, transform: 'translateY(0.35em)' },
+      { opacity: 1, transform: 'none' },
+    ],
+    {
+      ...timing,
+      duration: 220,
+      easing: 'ease-out',
+    },
+  );
+}
+
 export function initTint() {
   const root = document.documentElement;
   const targets = [...document.querySelectorAll<HTMLElement>('[data-tint]')];
   const label = document.querySelector<HTMLElement>('[data-theme-label]');
+  const prompt = document.querySelector<HTMLElement>('[data-header-at]');
   if (!targets.length) return;
 
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -79,6 +117,7 @@ export function initTint() {
     const [al, ac, ah] = theme.a;
     tweenTo([pl, pc, nearestHue(current[2], ph), al, ac, nearestHue(current[5], ah)]);
     if (label) label.textContent = el.dataset.themeName ?? '';
+    if (prompt) swapText(prompt, el.dataset.handle ?? '', reduceMotion.matches);
   };
 
   const observer = new IntersectionObserver(

@@ -6,6 +6,7 @@ import monoFont from '@fontsource-variable/jetbrains-mono/files/jetbrains-mono-l
 import displayFont from '@fontsource-variable/fraunces/files/fraunces-latin-full-normal.woff2?url';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import Tooltip from '../components/Tooltip.astro';
 import type { Locale } from '../data/types';
 import { profile } from '../data';
 import { routes, href, type RouteKey } from '../i18n/routes';
@@ -54,6 +55,8 @@ const site = Astro.site ?? new URL('https://weblogixx.github.io');
           }
         } catch {}
       })();
+      // iOS Safari only applies :active (pressed states) when the page listens for touches.
+      document.addEventListener('touchstart', () => {}, { passive: true });
     </script>
     {
       [interFont, monoFont, displayFont].map((font) => (
@@ -75,6 +78,7 @@ const site = Astro.site ?? new URL('https://weblogixx.github.io');
       <slot />
     </main>
     <Footer lang={lang} />
+    <Tooltip />
   </body>
 </html>
 

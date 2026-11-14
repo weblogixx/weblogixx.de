@@ -13,6 +13,8 @@ interface Props {
 }
 const { lang } = Astro.props;
 const t = useT(lang);
+const legacyNote = (successor?: string) =>
+  successor ? t('skill.legacySuccessor').replace('{0}', successor) : t('skill.legacy');
 const years = new Date().getFullYear() - profile.since;
 const current = career.find((e) => e.current);
 const stats = [
@@ -27,12 +29,13 @@ const stats = [
     <Stripes class="hero-stripes" />
     <div class="container hero-inner">
       <p class="eyebrow">{profile.title[lang]}</p>
-      <h1>{profile.greeting[lang]} {profile.name}</h1>
+      <h1>&lt;{profile.greeting[lang]} {profile.shortName} /&gt;</h1>
       <p class="lede">{profile.intro[lang]}</p>
       {current && (
         <p class="now">
           <span class="dot" aria-hidden="true" />
-          {current.role[lang]} @{' '}
+          {current.role[lang]}
+          <span class="at">@</span>
           <a href={`${route('career', lang)}#${current.id}`}>{current.name}</a>
         </p>
       )}
@@ -62,30 +65,50 @@ const stats = [
     </ul>
   </section>
 
-  <section class="section container" aria-labelledby="stack-title">
+  <section class="section container stack-section" aria-labelledby="stack-title">
     <h2 id="stack-title" class="section-title">{t('home.stack')}</h2>
-    <p class="lede stack-lede">{t('home.stackLede')}</p>
+    <div class="stack-head">
+      <p class="lede stack-lede">{t('home.stackLede')}</p>
+      <label class="switch">
+        <input type="checkbox" role="switch" class="stack-toggle" data-stack-toggle />
+        <span class="track" aria-hidden="true"><span class="thumb"></span></span>
+        {t('home.stackAll')}
+      </label>
+      {/* Restore the saved choice before the chips render, so nothing jumps on load. */}
+      <script is:inline>
+        try {
+          if (localStorage.getItem('stack-all') === '1') {
+            document.querySelector('[data-stack-toggle]').checked = true;
+          }
+        } catch {}
+      </script>
+    </div>
     <div class="stack">
-      {
-        skillsByCategory
-          .filter((c) => c.skills.length)
-          .map((cat) => (
-            <div class="stack-group">
-              <h3>{cat.label[lang]}</h3>
-              <ul class="chips">
-                {cat.skills.map((s) => (
-                  <SkillChip
-                    id={`skill-${s.id}`}
-                    name={s.name}
-                    since={s.since}
-                    sinceLabel={t('skill.since')}
-                    title={s.usedAt.length ? s.usedAt.join(', ') : undefined}
-                  />
-                ))}
-              </ul>
-            </div>
-          ))
-      }
+      {skillsByCategory
+        .filter(c => c.skills.length)
+        .map(cat => (
+          <div class="stack-group">
+            <h3>{cat.label[lang]}</h3>
+            <ul class="chips">
+              {cat.skills.map(s => (
+                <SkillChip
+                  id={`skill-${s.id}`}
+                  name={s.name}
+                  since={s.since}
+                  sinceLabel={t('skill.since')}
+                  until={s.until}
+                  tip={
+                    s.usedAt.length
+                      ? { label: t('skill.usedAt'), items: s.usedAt, note: s.legacy ? legacyNote(s.successor) : undefined }
+                      : undefined
+                  }
+                  featured={s.featured}
+                  legacy={s.legacy}
+                />
+              ))}
+            </ul>
+          </div>
+        ))}
     </div>
   </section>
 
@@ -119,6 +142,41 @@ const stats = [
     </div>
   </section>
 </Base>
+
+<script>
+  // Deep links from the career page (#skill-…) may point at a hidden chip: show all first
+  // (just for this visit, not saved).
+  const toggle = document.querySelector<HTMLInputElement>('[data-stack-toggle]');
+  const reveal = () => {
+    const target = location.hash ? document.getElementById(location.hash.slice(1)) : null;
+    if (toggle && !toggle.checked && target?.matches('.chip')) {
+      toggle.checked = true;
+      target.scrollIntoView();
+    }
+  };
+  reveal();
+  window.addEventListener('hashchange', reveal);
+
+  // Knob animation (see .switch[data-animate] in the styles). A pointer press has already
+  // stretched the knob, so its animation skips the stretch; a keyboard toggle plays it.
+  const sw = toggle?.closest<HTMLElement>('.switch');
+  let pressed = false;
+  sw?.addEventListener('pointerdown', () => (pressed = true));
+
+  // Default is highlights only; remember "show all" per visitor.
+  toggle?.addEventListener('change', () => {
+    if (sw) {
+      sw.dataset.animate = pressed ? 'pressed' : '';
+      pressed = false;
+    }
+    try {
+      if (toggle.checked) localStorage.setItem('stack-all', '1');
+      else localStorage.removeItem('stack-all');
+    } catch {
+      // Storage blocked (private mode etc.): the toggle still works for this visit.
+    }
+  });
+</script>
 
 <style>
   .hero {
@@ -165,6 +223,9 @@ const stats = [
     font-size: var(--step--1);
     color: var(--text-muted);
   }
+  .at {
+    color: var(--accent);
+  }
   .dot {
     display: inline-block;
     vertical-align: 0.05em;
@@ -203,7 +264,7 @@ const stats = [
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
     gap: var(--space-4);
   }
   .focus li {
@@ -227,13 +288,162 @@ const stats = [
     color: var(--text-muted);
   }
 
-  .stack-lede {
+  .stack-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-5);
     margin-bottom: var(--space-6);
+  }
+  .stack-lede {
     font-size: var(--step-0);
+  }
+
+  /* Toggle switch: a real checkbox (keyboard, forms, no-JS) drawn as a pill. */
+  .switch {
+    --w: 2.6rem;
+    --h: 1.5rem;
+    --pad: 3px;
+    /* Knob diameter: track height minus padding and the 1px border on each side. */
+    --knob: calc(var(--h) - 2 * var(--pad) - 2px);
+    /* How far it stretches while pressed / before it moves: about half its size. */
+    --stretch: calc(var(--knob) * 0.5);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--text-muted);
+    cursor: pointer;
+    user-select: none;
+  }
+  .switch input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+  .track {
+    position: relative;
+    flex-shrink: 0;
+    width: var(--w);
+    height: var(--h);
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    background: var(--bg-raised);
+    transition:
+      background 200ms,
+      border-color 200ms;
+  }
+  .thumb {
+    position: absolute;
+    top: var(--pad);
+    left: var(--pad);
+    width: var(--knob);
+    height: var(--knob);
+    border-radius: 999px;
+    background: var(--text-subtle);
+    transition:
+      translate 220ms cubic-bezier(0.3, 1.4, 0.5, 1),
+      width 150ms,
+      background 200ms;
+  }
+  .switch:hover .track {
+    border-color: var(--primary);
+  }
+  /* Pressed: the thumb stretches towards the side it will move to. */
+  /* Pressed: only the width grows (height stays), towards the side it will move to. */
+  .switch:active .thumb {
+    width: calc(var(--knob) + var(--stretch));
+  }
+  .switch:active input:checked + .track .thumb {
+    translate: calc(var(--w) - var(--h) - var(--stretch)) 0;
+  }
+  .switch input:checked + .track {
+    background: var(--primary-fill);
+    border-color: var(--primary-fill);
+  }
+  .switch input:checked + .track .thumb {
+    translate: calc(var(--w) - var(--h)) 0;
+    background: var(--primary-contrast);
+  }
+  .switch input:checked ~ * {
+    color: var(--text);
+  }
+  /* After a toggle (data-animate is set by the script, so nothing plays on page load):
+     stretch towards the target, then spring over and round off again. Different names
+     for on/off, so the animation restarts on every toggle. */
+  .switch[data-animate] .thumb {
+    /* No fill-mode: once done, the regular (and :active) styles take over again. */
+    animation: knob-off 400ms;
+  }
+  /* Pointer press: the knob is already stretched, so skip the stretch phase (first 25%)
+     and move right away. */
+  .switch[data-animate='pressed'] .thumb {
+    animation-delay: -100ms;
+  }
+  .switch[data-animate] input:checked + .track .thumb {
+    animation-name: knob-on;
+  }
+  @keyframes knob-on {
+    0% {
+      translate: 0 0;
+      width: var(--knob);
+      animation-timing-function: ease-out;
+    }
+    25% {
+      translate: 0 0;
+      width: calc(var(--knob) + var(--stretch));
+      animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    100% {
+      translate: calc(var(--w) - var(--h)) 0;
+      width: var(--knob);
+    }
+  }
+  @keyframes knob-off {
+    0% {
+      translate: calc(var(--w) - var(--h)) 0;
+      width: var(--knob);
+      animation-timing-function: ease-out;
+    }
+    25% {
+      translate: calc(var(--w) - var(--h) - var(--stretch)) 0;
+      width: calc(var(--knob) + var(--stretch));
+      animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    100% {
+      translate: 0 0;
+      width: var(--knob);
+    }
+  }
+  .switch input:focus-visible + .track {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  /* Off: only featured skills; categories without any disappear. */
+  .stack-section:has(.stack-toggle:not(:checked)) {
+    & :global(.chip:not(.featured)),
+    & .stack-group:not(:has(:global(.featured))) {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .track,
+    .thumb {
+      transition: none;
+    }
+    .switch[data-animate] .thumb {
+      animation: none;
+    }
   }
   .stack {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
     gap: var(--space-6) var(--space-5);
   }
   .stack-group h3 {
@@ -259,6 +469,7 @@ const stats = [
     margin: 0;
     padding: 0;
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-2);
   }
   .timeline a {
@@ -277,6 +488,10 @@ const stats = [
     /* local preview of the company's brand (data-brand scope) */
     border-color: var(--primary);
     background: var(--primary-soft);
+  }
+  .timeline a:active {
+    translate: 0 1px;
+    background: var(--primary-line);
   }
   .tl-main {
     display: grid;
@@ -306,6 +521,11 @@ const stats = [
       margin-top: calc(var(--space-2) * -1);
     }
   }
+  @media (max-width: 400px) {
+    .tl-period {
+      white-space: normal;
+    }
+  }
 
   .ctas {
     display: flex;
@@ -323,6 +543,11 @@ const stats = [
     text-decoration: none;
     font-weight: 600;
     font-size: var(--step--1);
+    transition:
+      background 120ms,
+      border-color 120ms,
+      color 120ms,
+      translate 80ms;
   }
   .btn:hover {
     border-color: var(--primary);
@@ -336,5 +561,14 @@ const stats = [
   .btn.primary:hover {
     background: var(--primary-fill-strong);
     color: var(--primary-contrast);
+  }
+  /* Pressed: sinks a pixel and darkens. */
+  .btn:active {
+    translate: 0 1px;
+    background: var(--primary-soft);
+  }
+  .btn.primary:active {
+    background: var(--primary-fill-pressed);
+    border-color: var(--primary-fill-pressed);
   }
 </style>

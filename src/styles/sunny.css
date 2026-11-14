@@ -161,6 +161,7 @@
    */
   --primary-fill: oklch(var(--p-l) var(--p-c) var(--p-h));
   --primary-fill-strong: oklch(calc(var(--p-l) + 0.05) var(--p-c) var(--p-h));
+  --primary-fill-pressed: oklch(calc(var(--p-l) - 0.06) var(--p-c) var(--p-h));
   /* Written out instead of light-dark(…, var(--primary-fill)): Chrome resolves a token that
      references another derived token as invalid while --p-* are mid-transition, so --primary
      fell back to the inherited text color (white flash on hover/active states). */

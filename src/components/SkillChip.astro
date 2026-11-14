@@ -7,16 +7,32 @@ interface Props {
   href?: string;
   since?: number;
   sinceLabel?: string;
-  title?: string;
+  /** Last year used. Turns "since 2004" into a span "2004–2012". */
+  until?: number;
+  /**
+   * Tooltip: a label plus a list (e.g. "Used when working for" + companies with brand colors),
+   * and an optional note below it.
+   */
+  tip?: { label: string; items: { name: string; color?: string }[]; note?: string };
+  /** Highlight: primary border and tint (no extra element, so the chip keeps its size). */
+  featured?: boolean;
+  /** Discontinued tool: muted look. */
+  legacy?: boolean;
 }
-const { name, id, href, since, sinceLabel, title } = Astro.props;
+const { name, id, href, since, sinceLabel, until, tip, featured, legacy } = Astro.props;
 const Tag = href ? 'a' : 'span';
+// Plain `title` is the no-JS / old-browser fallback; Tooltip.astro swaps it for the rich version.
+const title = tip
+  ? [`${tip.label}: ${tip.items.map((i) => i.name).join(', ')}`, tip.note].filter(Boolean).join('\n')
+  : undefined;
+const tipData = tip ? JSON.stringify(tip) : undefined;
+const period = since && (until ? (until === since ? `${since}` : `${since}–${until}`) : `${sinceLabel} ${since}`);
 ---
 
-<li class="chip" id={id}>
-  <Tag class="inner" href={href} title={title}>
+<li class:list={['chip', { featured, legacy }]} id={id}>
+  <Tag class="inner" href={href} title={title} data-tip={tipData}>
     <span class="name">{name}</span>
-    {since && <span class="since">{sinceLabel} {since}</span>}
+    {period && <span class="since">{period}</span>}
   </Tag>
 </li>
 
@@ -42,9 +58,23 @@ const Tag = href ? 'a' : 'span';
       background 200ms,
       box-shadow 400ms;
   }
+  .featured .inner {
+    border-color: var(--primary-line);
+    background: var(--primary-soft);
+  }
+  .legacy .inner {
+    border-style: dashed;
+    border-color: var(--border-strong);
+    background: transparent;
+    color: var(--text-muted);
+  }
   a.inner:hover {
     border-color: var(--primary);
     color: var(--primary);
+  }
+  a.inner:active {
+    translate: 0 1px;
+    background: var(--primary-soft);
   }
   .chip:target .inner {
     border-color: var(--primary);

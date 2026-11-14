@@ -29,6 +29,8 @@ export interface Employer<SkillId extends string = string> {
   /** Stable id, used for anchors (#id). */
   id: string;
   name: string;
+  /** Short name for the header prompt on the career page (weblogixx@handle). Default: id. */
+  handle?: string;
   url?: string;
   /** Full logo in /public, e.g. '/logos/acme.svg' (SVG/PNG/JPG). Shown on the career page. */
   logo?: string;

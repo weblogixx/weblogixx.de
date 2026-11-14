@@ -81,6 +81,12 @@ const t = useT(lang);
     right: var(--space-5);
     color: var(--text-subtle);
   }
+  /* Pressed: drops back from the hover lift. */
+  a:active {
+    transform: translateY(0);
+    background: var(--primary-soft);
+    transition-duration: 80ms;
+  }
   a:hover .arrow {
     color: var(--primary);
   }

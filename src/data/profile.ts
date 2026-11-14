@@ -1,17 +1,18 @@
 import type { L10n } from "./types";
 
 export const profile = {
-  name: "Chris",
+  name: "Christian Schilling",
+  shortName: "Chris",
   handle: "weblogixx",
   /** Year I started building for the web. */
   since: 2000,
   title: {
-    de: "Frontend und Design System Architektur",
-    en: "Frontend and Design System Architecture",
+    de: "Frontend und Design-System Architektur",
+    en: "Frontend and Design-System Architecture",
   } satisfies L10n,
   greeting: {
     de: "Hallo, ich bin",
-    en: "Hi, I’m",
+    en: "Hello, I’m",
   } satisfies L10n,
   intro: {
     de: "Ich baue seit über zwei Jahrzehnten Oberflächen für das Web. Mein Schwerpunkt sind Design Systeme, die Teams schneller und Produkte konsistenter machen.",
