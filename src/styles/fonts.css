@@ -1,0 +1,40 @@
+/*
+ * Self-hosted fonts (files from Fontsource), declared here instead of importing
+ * Fontsource's CSS so we control `font-display`.
+ *
+ * `optional`: the browser waits up to ~100 ms for the font and never swaps later.
+ * Cached fonts always make it → no fallback-then-redraw flicker when switching
+ * pages. The files are also preloaded in Base.astro, so first visits usually make
+ * it too; on a very slow first visit the fallback is kept for that page only.
+ *
+ * Latin subset only (covers German incl. ä ö ü ß). Paths are relative so Vite
+ * fingerprints them; Base.astro imports the same files for <link rel="preload">.
+ */
+
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: optional;
+  src: url('../../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2')
+    format('woff2-variations');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono Variable';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: optional;
+  src: url('../../node_modules/@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2')
+    format('woff2-variations');
+}
+
+/* All axes: wght, opsz, SOFT, WONK. */
+@font-face {
+  font-family: 'Fraunces Variable';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: optional;
+  src: url('../../node_modules/@fontsource-variable/fraunces/files/fraunces-latin-full-normal.woff2')
+    format('woff2-variations');
+}

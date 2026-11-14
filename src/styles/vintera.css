@@ -89,6 +89,12 @@
     oklch(0.5 calc(var(--p-c) * 0.14) var(--p-h)),
     oklch(0.6 calc(var(--p-c) * 0.12) var(--p-h))
   );
+  /* Scrollbar: muted Vintera thumb on the page background; follows the career tint. */
+  --scrollbar-thumb: light-dark(
+    oklch(0.78 calc(var(--p-c) * 0.55) var(--p-h)),
+    oklch(0.42 calc(var(--p-c) * 0.6) var(--p-h))
+  );
+  --scrollbar-track: var(--bg);
   --shadow: light-dark(oklch(0.3 0.03 var(--p-h) / 0.14), oklch(0 0 0 / 0.45));
 
   /* ---- Swatch scales (fixed lightness steps, theme hue/chroma) ---- */
@@ -107,7 +113,9 @@
   --accent-700: oklch(0.46 calc(var(--a-c) * 0.8) var(--a-h));
 
   /* ---- Type ---- */
-  --font-display: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
+  /* Fraunces with its SOFT/WONK axes: the Cooper-ish 70s soft serif. */
+  --font-display: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+  --font-display-axes: 'SOFT' 100, 'WONK' 1;
   --font-body: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
 

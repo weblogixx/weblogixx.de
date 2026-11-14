@@ -45,7 +45,7 @@ const switchHref = altPath ?? href(routes[page][other]);
       {other.toUpperCase()}
     </a>
 
-    <button class="menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" hidden>
+    <button class="menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false">
       <span class="visually-hidden">{t('nav.toggle')}</span>
       <span class="burger" aria-hidden="true"></span>
     </button>
@@ -58,9 +58,7 @@ const switchHref = altPath ?? href(routes[page][other]);
   const nav = header?.querySelector<HTMLElement>('nav');
 
   if (header && toggle && nav) {
-    // JS available → collapsible menu on small screens (CSS keys off this attribute).
-    header.dataset.menu = '';
-    toggle.hidden = false;
+    // The collapsed layout is CSS (:root[data-js], set before first paint) — no layout jump here.
 
     const setOpen = (open: boolean) => {
       toggle.setAttribute('aria-expanded', String(open));
@@ -237,21 +235,21 @@ const switchHref = altPath ?? href(routes[page][other]);
     }
 
     /* Without JS: nav wraps into a scrollable second row. */
-    .header:not([data-menu]) .bar {
+    :global(:root:not([data-js])) .header .bar {
       flex-wrap: wrap;
       padding-block: var(--space-2);
     }
-    .header:not([data-menu]) nav {
+    :global(:root:not([data-js])) .header nav {
       order: 3;
       width: 100%;
       overflow-x: auto;
     }
 
     /* With JS: collapsible panel. */
-    [data-menu] .menu-toggle {
+    :global(:root[data-js]) .header .menu-toggle {
       display: grid;
     }
-    [data-menu] nav {
+    :global(:root[data-js]) .header nav {
       position: absolute;
       top: 100%;
       left: 0;
@@ -269,7 +267,7 @@ const switchHref = altPath ?? href(routes[page][other]);
         transform 200ms,
         visibility 0s 200ms;
     }
-    [data-menu][data-open] nav {
+    :global(:root[data-js]) [data-open] nav {
       visibility: visible;
       opacity: 1;
       transform: none;
@@ -277,11 +275,11 @@ const switchHref = altPath ?? href(routes[page][other]);
         opacity 200ms,
         transform 200ms;
     }
-    [data-menu] ul {
+    :global(:root[data-js]) .header ul {
       flex-direction: column;
       gap: var(--space-1);
     }
-    [data-menu] nav a {
+    :global(:root[data-js]) .header nav a {
       padding: var(--space-3) var(--space-4);
       font-size: var(--step-1);
       font-family: var(--font-display);
@@ -290,7 +288,7 @@ const switchHref = altPath ?? href(routes[page][other]);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    [data-menu] nav,
+    :global(:root[data-js]) .header nav,
     .burger,
     .burger::before,
     .burger::after {

@@ -26,11 +26,15 @@ section crosses the viewport middle; CSS transitions animate the change.
 
 ## Commands
 
-| Command          | Action                                                                 |
-| ---------------- | ---------------------------------------------------------------------- |
-| `npm run dev`    | Dev server (`astro dev --background` for background mode)              |
-| `npm run build`  | Build to `dist/`                                                       |
-| `npm run check`  | `astro check` + oxlint + oxfmt check                                   |
-| `npm run lint`   | oxlint (also lints `.astro` frontmatter and scripts)                   |
-| `npm run format` | oxfmt (does not support `.astro` files yet)                            |
-| `npm run deploy` | Build and push `dist/` to `weblogixx/weblogixx.github.io` @ `gh-pages` |
+| Command          | Action                                                    |
+| ---------------- | --------------------------------------------------------- |
+| `npm run dev`    | Dev server (`astro dev --background` for background mode) |
+| `npm run build`  | Build to `dist/`                                          |
+| `npm run check`  | `astro check` + oxlint + oxfmt check                      |
+| `npm run lint`   | oxlint (also lints `.astro` frontmatter and scripts)      |
+| `npm run format` | oxfmt (does not support `.astro` files yet)               |
+
+## Deployment
+
+Every push to `main` builds, checks and deploys the site to GitHub Pages via
+`.github/workflows/deploy.yml` (repo `weblogixx/weblogixx.github.io`, Pages source: GitHub Actions).

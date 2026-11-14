@@ -8,7 +8,7 @@ interface Props {
 const t = useT(Astro.props.lang);
 ---
 
-<button class="mode-toggle" type="button" aria-pressed="false" data-mode-toggle hidden>
+<button class="mode-toggle" type="button" aria-pressed="false" data-mode-toggle>
   <span class="visually-hidden">{t('mode.light')}</span>
   <!-- sun: shown in dark mode (→ switch to light) -->
   <svg class="icon sun" viewBox="0 0 24 24" aria-hidden="true">
@@ -67,7 +67,6 @@ const t = useT(Astro.props.lang);
   let target: boolean | undefined;
 
   for (const button of document.querySelectorAll<HTMLButtonElement>('[data-mode-toggle]')) {
-    button.hidden = false;
     button.addEventListener('click', () => {
       const next = !(target ?? isLight());
       target = next;
@@ -100,7 +99,8 @@ const t = useT(Astro.props.lang);
     border-color: var(--primary);
     color: var(--primary);
   }
-  .mode-toggle[hidden] {
+  /* JS-only control: out of the layout without JS (data-js is set before first paint). */
+  :global(:root:not([data-js])) .mode-toggle {
     display: none;
   }
   .icon {

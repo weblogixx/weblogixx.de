@@ -1,0 +1,20 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "font-lab",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-I",
+        "-m",
+        "http.server",
+        "4399",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "/private/tmp/claude-501/-Users-chris-Documents-src-weblogixx-de/1b44fafb-4193-4837-9c35-e992a45127a0/scratchpad"
+      ],
+      "port": 4399
+    }
+  ]
+}

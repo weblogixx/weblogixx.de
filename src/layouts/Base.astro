@@ -1,5 +1,9 @@
 ---
 import '../styles/global.css';
+// Same files as src/styles/fonts.css → preloaded so they're ready for the first frame.
+import interFont from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
+import monoFont from '@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2?url';
+import displayFont from '@fontsource-variable/fraunces/files/fraunces-latin-full-normal.woff2?url';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import type { Locale } from '../data/types';
@@ -35,8 +39,11 @@ const site = Astro.site ?? new URL('https://weblogixx.github.io');
     <meta name="theme-color" content="#faf6ee" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#1c1813" media="(prefers-color-scheme: dark)" />
     <script is:inline>
-      // Apply a saved light/dark choice before first paint (no flash).
-      // Without one, CSS follows the OS setting.
+      // Runs before first paint:
+      // - data-js lets CSS lay out JS-only controls (mode toggle, mobile menu) from the first frame,
+      //   so the header doesn't jump when their scripts load.
+      // - Apply a saved light/dark choice (no flash). Without one, CSS follows the OS setting.
+      document.documentElement.dataset.js = '';
       (() => {
         try {
           const mode = localStorage.getItem('vintera-mode');
@@ -48,6 +55,11 @@ const site = Astro.site ?? new URL('https://weblogixx.github.io');
         } catch {}
       })();
     </script>
+    {
+      [interFont, monoFont, displayFont].map((font) => (
+        <link rel="preload" href={font} as="font" type="font/woff2" crossorigin />
+      ))
+    }
     <link rel="icon" type="image/svg+xml" href={href('/favicon.svg')} />
     <link rel="canonical" href={new URL(Astro.url.pathname, site)} />
     <link rel="alternate" hreflang={other} href={new URL(altHref, site)} />
