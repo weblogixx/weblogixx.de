@@ -190,3 +190,23 @@
 :root[data-mode='dark'] {
   color-scheme: dark;
 }
+
+/*
+ * Force a mode on any element and everything inside it, whatever the page is in:
+ *   <section class="sunny-dark">…</section>   <aside class="sunny-light">…</aside>
+ * The tokens are light-dark() and resolve against the color-scheme of the element using
+ * them, so switching color-scheme flips them all. `color` is inherited as an already
+ * resolved color, so it (and the background) has to be set again here.
+ * For the whole page use <html data-mode> instead (that's what the mode toggle drives).
+ */
+.sunny-light,
+.sunny-dark {
+  background: var(--bg);
+  color: var(--text);
+}
+.sunny-light {
+  color-scheme: light;
+}
+.sunny-dark {
+  color-scheme: dark;
+}

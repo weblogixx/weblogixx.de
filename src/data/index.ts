@@ -2,6 +2,7 @@ import { employers } from "./employers";
 import {
   skills,
   skillCategories,
+  type Skill,
   type SkillId,
   type SkillCategory,
 } from "./skills";
@@ -110,6 +111,23 @@ export const skillUsage: SkillUsage[] = (Object.keys(skills) as SkillId[]).map(
     };
   },
 );
+
+/** Sort order group: featured first, then everything else, legacy last. */
+function skillRank(id: SkillId) {
+  const s: Skill = skills[id];
+  if (s.legacy) return 2;
+  if (s.featured) return 0;
+  return 1;
+}
+
+/** Skill ids sorted featured → normal → legacy, alphabetically within each group. */
+export function sortSkillIds(ids: readonly SkillId[], lang: Locale) {
+  return ids.toSorted(
+    (a, b) =>
+      skillRank(a) - skillRank(b) ||
+      skills[a].name.localeCompare(skills[b].name, lang),
+  );
+}
 
 export const skillsByCategory = (
   Object.keys(skillCategories) as SkillCategory[]

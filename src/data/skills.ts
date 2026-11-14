@@ -51,6 +51,7 @@ export const skills = {
   jquery: { name: "jQuery", category: "frameworks" },
 
   rest: { name: "REST", category: "architecture" },
+  websockets: { name: "WebSockets", category: "architecture" },
 
   npm: { name: "npm", category: "frameworks" },
   pnpm: { name: "pnpm", category: "frameworks" },
@@ -90,6 +91,7 @@ export const skills = {
     successor: "figma",
   },
   figma: { name: "Figma", category: "design" },
+  figmaMCP: { name: "Figma MCP", category: "ai", featured: true },
 
   frontendarch: {
     name: "Frontend Architecture",
@@ -125,6 +127,13 @@ export const skills = {
   claude: { name: "Claude", category: "ai", featured: true },
   cursor: { name: "Cursor", category: "ai" },
   githubCopilot: { name: "GitHub Copilot", category: "ai", featured: true },
+
+  legacyBrowsers: {
+    name: "Legacy Browsers",
+    category: "infrastructure",
+    legacy: true,
+    successor: "responsiveDesign",
+  },
 } as const satisfies Record<string, Skill>;
 
 export type SkillId = keyof typeof skills;

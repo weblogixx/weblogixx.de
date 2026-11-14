@@ -29,7 +29,7 @@ const stats = [
     <Stripes class="hero-stripes" />
     <div class="container hero-inner">
       <p class="eyebrow">{profile.title[lang]}</p>
-      <h1>&lt;{profile.greeting[lang]} {profile.shortName} /&gt;</h1>
+      <h1>{profile.greeting[lang]} &lt;{profile.shortName} /&gt;</h1>
       <p class="lede">{profile.intro[lang]}</p>
       {current && (
         <p class="now">
@@ -53,15 +53,13 @@ const stats = [
   <section class="section container" aria-labelledby="focus-title">
     <h2 id="focus-title" class="section-title">{t('home.focus')}</h2>
     <ul class="focus">
-      {
-        profile.focus.map((f, i) => (
-          <li>
-            <span class="num">0{i + 1}</span>
-            <h3>{f.title[lang]}</h3>
-            <p>{f.text[lang]}</p>
-          </li>
-        ))
-      }
+      {profile.focus.map((f, i) => (
+        <li>
+          <span class="num">0{i + 1}</span>
+          <h3>{f.title[lang]}</h3>
+          <p>{f.text[lang]}</p>
+        </li>
+      ))}
     </ul>
   </section>
 
@@ -159,15 +157,22 @@ const stats = [
 
   // Knob animation (see .switch[data-animate] in the styles). A pointer press has already
   // stretched the knob, so its animation skips the stretch; a keyboard toggle plays it.
+  // The pressed look is held via data-pressed instead of relying on :active alone: Safari
+  // drops :active a moment before the click, so the knob started shrinking back (wobble)
+  // before the animation took over. Now both switch in the same step.
   const sw = toggle?.closest<HTMLElement>('.switch');
-  let pressed = false;
-  sw?.addEventListener('pointerdown', () => (pressed = true));
+  sw?.addEventListener('pointerdown', () => (sw.dataset.pressed = ''));
+  // Released without toggling (dragged off, cancelled): let go. A real click toggles in
+  // the same task as pointerup, so by then the change handler has already run.
+  const release = () => setTimeout(() => delete sw?.dataset.pressed);
+  window.addEventListener('pointerup', release);
+  window.addEventListener('pointercancel', release);
 
   // Default is highlights only; remember "show all" per visitor.
   toggle?.addEventListener('change', () => {
     if (sw) {
-      sw.dataset.animate = pressed ? 'pressed' : '';
-      pressed = false;
+      sw.dataset.animate = 'pressed' in sw.dataset ? 'pressed' : '';
+      delete sw.dataset.pressed;
     }
     try {
       if (toggle.checked) localStorage.setItem('stack-all', '1');
@@ -338,37 +343,53 @@ const stats = [
       background 200ms,
       border-color 200ms;
   }
+  /*
+   * Knob: always knob + stretch wide, moved only with translate. A rounded clip-path shows
+   * a round knob out of it: the left part when off, the right part when on. Pressing just
+   * opens the clip to the full pill, so the position never changes during a press. (The
+   * earlier width + translate version drifted left before growing in Safari: two
+   * properties that have to stay in step. Here every state change touches one property,
+   * and the toggle animation drives both from the same keyframes.)
+   */
   .thumb {
+    --on-x: calc(var(--w) - var(--h) - var(--stretch));
     position: absolute;
     top: var(--pad);
     left: var(--pad);
-    width: var(--knob);
+    width: calc(var(--knob) + var(--stretch));
     height: var(--knob);
     border-radius: 999px;
     background: var(--text-subtle);
+    clip-path: inset(0 var(--stretch) 0 0 round 999px);
     transition:
       translate 220ms cubic-bezier(0.3, 1.4, 0.5, 1),
-      width 150ms,
+      clip-path 220ms cubic-bezier(0.3, 1.4, 0.5, 1),
       background 200ms;
   }
   .switch:hover .track {
     border-color: var(--primary);
   }
-  /* Pressed: the thumb stretches towards the side it will move to. */
-  /* Pressed: only the width grows (height stays), towards the side it will move to. */
-  .switch:active .thumb {
-    width: calc(var(--knob) + var(--stretch));
-  }
-  .switch:active input:checked + .track .thumb {
-    translate: calc(var(--w) - var(--h) - var(--stretch)) 0;
+  /* Pressed: the knob stretches towards the side it will move to.
+     [data-pressed] is the script's version of :active (Safari drops :active early). */
+  .switch:active .thumb,
+  .switch[data-pressed] .thumb {
+    clip-path: inset(0 0 0 0 round 999px);
+    transition:
+      clip-path 150ms ease-out,
+      background 200ms;
   }
   .switch input:checked + .track {
     background: var(--primary-fill);
     border-color: var(--primary-fill);
   }
   .switch input:checked + .track .thumb {
-    translate: calc(var(--w) - var(--h)) 0;
+    translate: var(--on-x) 0;
+    clip-path: inset(0 0 0 var(--stretch) round 999px);
     background: var(--primary-contrast);
+  }
+  .switch:active input:checked + .track .thumb,
+  .switch[data-pressed] input:checked + .track .thumb {
+    clip-path: inset(0 0 0 0 round 999px);
   }
   .switch input:checked ~ * {
     color: var(--text);
@@ -391,33 +412,33 @@ const stats = [
   @keyframes knob-on {
     0% {
       translate: 0 0;
-      width: var(--knob);
+      clip-path: inset(0 var(--stretch) 0 0 round 999px);
       animation-timing-function: ease-out;
     }
     25% {
       translate: 0 0;
-      width: calc(var(--knob) + var(--stretch));
+      clip-path: inset(0 0 0 0 round 999px);
       animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     100% {
-      translate: calc(var(--w) - var(--h)) 0;
-      width: var(--knob);
+      translate: var(--on-x) 0;
+      clip-path: inset(0 0 0 var(--stretch) round 999px);
     }
   }
   @keyframes knob-off {
     0% {
-      translate: calc(var(--w) - var(--h)) 0;
-      width: var(--knob);
+      translate: var(--on-x) 0;
+      clip-path: inset(0 0 0 var(--stretch) round 999px);
       animation-timing-function: ease-out;
     }
     25% {
-      translate: calc(var(--w) - var(--h) - var(--stretch)) 0;
-      width: calc(var(--knob) + var(--stretch));
+      translate: var(--on-x) 0;
+      clip-path: inset(0 0 0 0 round 999px);
       animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     100% {
       translate: 0 0;
-      width: var(--knob);
+      clip-path: inset(0 var(--stretch) 0 0 round 999px);
     }
   }
   .switch input:focus-visible + .track {

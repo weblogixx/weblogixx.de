@@ -198,19 +198,21 @@ const switchHref = altPath ?? href(routes[page][other]);
     border-color: var(--primary);
     color: var(--primary);
   }
-  .lang:active {
-    translate: 0 1px;
+  /* Keyboard focus: the border takes the primary color instead of the global outline
+     (whose offset and smaller radius looked like a second, inset border). */
+  .lang:focus-visible {
+    outline: none;
     border-color: var(--primary);
-    background: var(--primary-soft);
     color: var(--primary);
   }
   .menu-toggle:hover {
     border-color: var(--primary);
   }
-  .menu-toggle:active {
-    translate: 0 1px;
+  /* Keyboard focus: the border takes the primary color instead of the global outline
+     (whose offset and smaller radius looked like a second, inset border). */
+  .menu-toggle:focus-visible {
+    outline: none;
     border-color: var(--primary);
-    background: var(--primary-soft);
     color: var(--primary);
   }
 

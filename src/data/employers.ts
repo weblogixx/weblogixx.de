@@ -19,6 +19,7 @@ export const employers: Employer<SkillId>[] = [
     handle: "weblogixx",
     logoMark: "/logos/weblogixx.svg",
     logoBleed: true,
+    url: "https://www.weblogixx.de",
     location: "Ihringen",
     positions: [
       {
@@ -150,6 +151,7 @@ export const employers: Employer<SkillId>[] = [
       "a11y",
       "storybook",
       "figma",
+      "figmaMCP",
       "mcp",
       "agents",
       "astro",
@@ -164,6 +166,7 @@ export const employers: Employer<SkillId>[] = [
       "vue",
       "microfrontends",
       "embeddedui",
+      "websockets",
       "node",
       "webdesign",
       "shell",
@@ -256,6 +259,7 @@ export const employers: Employer<SkillId>[] = [
       "webdesign",
       "jquery",
       "rest",
+      "websockets",
       "sql",
       "mysql",
       "linux",
@@ -349,6 +353,7 @@ export const employers: Employer<SkillId>[] = [
       "macos",
       "webserver",
       "responsiveDesign",
+      "legacyBrowsers",
     ],
   },
   {
@@ -357,6 +362,7 @@ export const employers: Employer<SkillId>[] = [
     logoMark: "/logos/weblogixx.svg",
     logoBleed: true,
     location: "Coburg",
+    url: "https://www.weblogixx.de",
     // That's me → Sunny.
     positions: [
       {
@@ -411,6 +417,7 @@ export const employers: Employer<SkillId>[] = [
       "fireworks",
       "macos",
       "performance",
+      "legacyBrowsers",
     ],
   },
   {
@@ -464,16 +471,19 @@ export const employers: Employer<SkillId>[] = [
       "networking",
       "photoshop",
       "performance",
+      "legacyBrowsers",
     ],
   },
   {
-    id: "csr",
+    id: "css",
     name: "Computersysteme R. Schläger",
     location: "Coburg",
     // Typographic logo after the old employee badge; colors reconstructed from a photo of it
     // (sampled hues kept, saturation restored for the faded print).
     logo: "/logos/schlaeger.svg",
-    colors: { primary: "#233C8C", accent: "#C0302A" },
+    // Red as primary, navy as accent (swapped vs. the logo's emphasis): the navy would be
+    // lightened to the same light blue as H.A.PO right before it on the career page.
+    colors: { primary: "#C0302A", accent: "#233C8C" },
     positions: [
       {
         role: {
@@ -508,6 +518,14 @@ export const employers: Employer<SkillId>[] = [
         "Shell scripting.",
       ],
     },
-    stack: ["html", "javascript", "networking", "linux", "webserver", "shell"],
+    stack: [
+      "html",
+      "javascript",
+      "networking",
+      "linux",
+      "webserver",
+      "shell",
+      "legacyBrowsers",
+    ],
   },
 ];

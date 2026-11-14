@@ -21,11 +21,32 @@ interface TintTheme {
   a: [number, number, number];
 }
 
-/** Move hue the short way round (e.g. 350 → 10 via 360, not via 180). */
-function nearestHue(from: number, to: number) {
-  const delta = ((((to - from) % 360) + 540) % 360) - 180;
-  return from + delta;
-}
+/*
+ * Colors are blended in OKLab, not by turning the hue. Brand hues can sit almost opposite
+ * each other (Sunny yellow ≈ 79°, SICK blue ≈ 263°): rotating the hue then runs through
+ * every color in between (yellow → orange → red → magenta → blue). A straight line in
+ * OKLab passes through a calmer, less saturated middle instead – like CSS color-mix().
+ */
+type Lch = [number, number, number];
+type Lab = [number, number, number];
+
+const toLab = ([l, c, h]: Lch): Lab => {
+  const rad = (h * Math.PI) / 180;
+  return [l, c * Math.cos(rad), c * Math.sin(rad)];
+};
+
+/** Back to LCh. Near zero chroma the hue is meaningless; keep the previous one then. */
+const toLch = ([l, a, b]: Lab, prevHue: number): Lch => {
+  const c = Math.hypot(a, b);
+  if (c < 1e-4) return [l, 0, prevHue];
+  return [l, c, ((((Math.atan2(b, a) * 180) / Math.PI) % 360) + 360) % 360];
+};
+
+const lerp = (from: Lab, to: Lab, k: number): Lab => [
+  from[0] + (to[0] - from[0]) * k,
+  from[1] + (to[1] - from[1]) * k,
+  from[2] + (to[2] - from[2]) * k,
+];
 
 /** Same feel as cubic-bezier(0.65, 0, 0.35, 1). */
 const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2);
@@ -91,12 +112,18 @@ export function initTint() {
       write(current);
       return;
     }
-    const from = [...current] as Values;
+    // Primary and accent each travel in a straight line through OKLab.
+    const fromP = toLab([current[0], current[1], current[2]]);
+    const fromA = toLab([current[3], current[4], current[5]]);
+    const toP = toLab([to[0], to[1], to[2]]);
+    const toA = toLab([to[3], to[4], to[5]]);
     const start = performance.now();
     const step = (now: number) => {
       const t = Math.min(1, (now - start) / DURATION);
       const k = easeInOutCubic(t);
-      for (let i = 0; i < 6; i++) current[i] = from[i]! + (to[i]! - from[i]!) * k;
+      const p = t < 1 ? toLch(lerp(fromP, toP, k), current[2]) : ([to[0], to[1], to[2]] as Lch);
+      const a = t < 1 ? toLch(lerp(fromA, toA, k), current[5]) : ([to[3], to[4], to[5]] as Lch);
+      current.splice(0, 6, ...p, ...a);
       write(current);
       if (t < 1) frame = requestAnimationFrame(step);
     };
@@ -113,9 +140,7 @@ export function initTint() {
     } catch {
       return;
     }
-    const [pl, pc, ph] = theme.p;
-    const [al, ac, ah] = theme.a;
-    tweenTo([pl, pc, nearestHue(current[2], ph), al, ac, nearestHue(current[5], ah)]);
+    tweenTo([...theme.p, ...theme.a]);
     if (label) label.textContent = el.dataset.themeName ?? '';
     if (prompt) swapText(prompt, el.dataset.handle ?? '', reduceMotion.matches);
   };

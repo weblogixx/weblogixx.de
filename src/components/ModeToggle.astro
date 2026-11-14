@@ -99,10 +99,11 @@ const t = useT(Astro.props.lang);
     border-color: var(--primary);
     color: var(--primary);
   }
-  .mode-toggle:active {
-    translate: 0 1px;
+  /* Keyboard focus: the border takes the primary color instead of the global outline
+     (whose offset and smaller radius looked like a second, inset border). */
+  .mode-toggle:focus-visible {
+    outline: none;
     border-color: var(--primary);
-    background: var(--primary-soft);
     color: var(--primary);
   }
   /* JS-only control: out of the layout without JS (data-js is set before first paint). */

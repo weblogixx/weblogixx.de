@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import CompanyLogo from '../components/CompanyLogo.astro';
 import SkillChip from '../components/SkillChip.astro';
-import { career, skills, formatPeriod, yearOf, type Locale } from '../data';
+import { career, skills, formatPeriod, sortSkillIds, yearOf, type Locale } from '../data';
 import { brandScope, themeDataAttrs, sunny } from '../theme/color';
 import { useT } from '../i18n/ui';
 import { route } from '../i18n/routes';
@@ -26,111 +26,111 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
     </header>
 
     <ol class="career">
-      {
-        career.map((e) => (
-          <li
-            class="job"
-            id={e.id}
-            data-tint
-            data-handle={e.handle ?? e.id}
-            {...themeDataAttrs(e.colors ? e.name : 'Sunny', e.theme)}
-            {...brandScope(e.theme)}
-          >
-            <aside class="meta">
-              <div class="meta-sticky">
-                <CompanyLogo
-                  name={e.name}
-                  logo={e.logo}
-                  mark={e.logoMark}
-                  background={e.logoBackground}
-                  bleed={e.logoBleed}
-                  color={e.colors?.primary}
-                  variant="full"
-                />
-                <div class="meta-text">
-                  <p class="period">{formatPeriod(e, lang)}</p>
-                  {e.current && <p class="badge">{t('career.current')}</p>}
-                  {e.selfEmployed && <p class="badge">{t('career.selfEmployed')}</p>}
-                  {e.location && <p class="location">{e.location}</p>}
-                </div>
+      {career.map((e) => (
+        <li
+          class="job"
+          id={e.id}
+          data-tint
+          data-handle={e.handle ?? e.id}
+          {...themeDataAttrs(e.colors ? e.name : 'Sunny', e.theme)}
+          {...brandScope(e.theme)}
+        >
+          <aside class="meta">
+            <div class="meta-sticky">
+              <span class="marker" aria-hidden="true" />
+              <CompanyLogo
+                name={e.name}
+                logo={e.logo}
+                mark={e.logoMark}
+                background={e.logoBackground}
+                bleed={e.logoBleed}
+                color={e.colors?.primary}
+                variant="full"
+              />
+              <div class="meta-text">
+                <p class="period">{formatPeriod(e, lang)}</p>
+                {e.current && <p class="badge">{t('career.current')}</p>}
+                {e.selfEmployed && <p class="badge">{t('career.selfEmployed')}</p>}
+                {e.location && <p class="location">{e.location}</p>}
               </div>
-            </aside>
+            </div>
+          </aside>
 
-            <article class="body">
-              <header>
-                <h2>{e.name}</h2>
-                <p class="role">{e.role[lang]}</p>
-              </header>
+          <article class="body">
+            <header>
+              <h2>{e.name}</h2>
+              <p class="role">{e.role[lang]}</p>
+            </header>
 
-              {e.positions.length > 1 && (
-                <section>
-                  <h3>{t('career.positions')}</h3>
-                  <ol class="positions">
-                    {e.positions.map((p, i) => (
-                      <li class:list={{ latest: i === 0 }}>
-                        <span class="pos-period">{formatPeriod(p, lang)}</span>
-                        <span class="pos-role">{p.role[lang]}</span>
-                        {p.summary && <span class="pos-summary">{p.summary[lang]}</span>}
-                      </li>
-                    ))}
-                  </ol>
-                </section>
-              )}
-
-              <div class="prose">
-                {e.about[lang].map((p) => <p>{p}</p>)}
-              </div>
-
-              {e.contributions[lang].length > 0 && (
-                <section>
-                  <h3>{t('career.contributions')}</h3>
-                  <ul class="contrib">
-                    {e.contributions[lang].map((c) => <li>{c}</li>)}
-                  </ul>
-                </section>
-              )}
-
-              {e.facts && e.facts.length > 0 && (
-                <dl class="facts">
-                  {e.facts.map((f) => (
-                    <div>
-                      <dt>{f.label[lang]}</dt>
-                      <dd>{typeof f.value === 'string' ? f.value : f.value[lang]}</dd>
-                    </div>
-                  ))}
-                </dl>
-              )}
-
+            {e.positions.length > 1 && (
               <section>
-                <h3>{t('career.stack')}</h3>
-                <ul class="chips">
-                  {e.stack.map((id) => (
-                    <SkillChip name={skills[id].name} href={`${route('home', lang)}#skill-${id}`} />
-                  ))}
-                </ul>
-              </section>
-
-              {e.links && e.links.length > 0 && (
-                <ul class="extra-links">
-                  {e.links.map((l) => (
-                    <li>
-                      <a href={l.url} rel="noopener" target="_blank">
-                        {l.label} ↗
-                      </a>
+                <h3>{t('career.positions')}</h3>
+                <ol class="positions">
+                  {e.positions.map((p, i) => (
+                    <li class:list={{ latest: i === 0 }}>
+                      <span class="pos-period">{formatPeriod(p, lang)}</span>
+                      <span class="pos-role">{p.role[lang]}</span>
+                      {p.summary && <span class="pos-summary">{p.summary[lang]}</span>}
                     </li>
                   ))}
-                </ul>
-              )}
+                </ol>
+              </section>
+            )}
 
-              {e.url && (
-                <a class="site" href={e.url} rel="noopener" target="_blank">
-                  {t('career.website')}: {new URL(e.url).host} ↗
-                </a>
-              )}
-            </article>
-          </li>
-        ))
-      }
+            <div class="prose">
+              {e.about[lang].map((p) => <p>{p}</p>)}
+            </div>
+
+            {e.contributions[lang].length > 0 && (
+              <section>
+                <h3>{t('career.contributions')}</h3>
+                <ul class="contrib">
+                  {e.contributions[lang].map((c) => <li>{c}</li>)}
+                </ul>
+              </section>
+            )}
+
+            {e.facts && e.facts.length > 0 && (
+              <dl class="facts">
+                {e.facts.map((f) => (
+                  <div>
+                    <dt>{f.label[lang]}</dt>
+                    <dd>{typeof f.value === 'string' ? f.value : f.value[lang]}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+
+            <section>
+              <h3>{t('career.stack')}</h3>
+              <ul class="chips">
+                {/* Featured → normal → legacy, alphabetical within each group. */}
+                {sortSkillIds(e.stack, lang).map((id) => (
+                  <SkillChip name={skills[id].name} href={`${route('home', lang)}#skill-${id}`} />
+                ))}
+              </ul>
+            </section>
+
+            {e.links && e.links.length > 0 && (
+              <ul class="extra-links">
+                {e.links.map((l) => (
+                  <li>
+                    <a href={l.url} rel="noopener" target="_blank">
+                      {l.label} ↗
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {e.url && (
+              <a class="site" href={e.url} rel="noopener" target="_blank">
+                {t('career.website')}: {new URL(e.url).host} ↗
+              </a>
+            )}
+          </article>
+        </li>
+      ))}
     </ol>
   </div>
 </Base>
@@ -150,36 +150,52 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
     display: grid;
     grid-template-columns: 13rem 1fr;
     gap: var(--space-7);
-    padding-block: var(--space-8);
-    border-top: 1px solid var(--border);
+    --job-pad: var(--space-8);
+    padding-block: var(--job-pad);
+    /* The divider line starts after the marker (with the stripes' 4px gap), so it doesn't
+       show through between the stripes. Transparent border keeps the 1px of spacing. */
+    border-top: 1px solid transparent;
+    background: linear-gradient(var(--border), var(--border)) no-repeat 106px 0 / 100% 1px;
+    background-origin: border-box;
     position: relative;
     scroll-margin-top: 4rem;
   }
   /*
-   * Section marker = a miniature of the logo: a brand-colored block with a 45° cut,
+   * Section marker = a miniature of the logo: a brand-colored block with 45° cuts on both ends,
    * then thin–wide–thin accent stripes slanted the same way (top-left → bottom-right).
    * Fixed px geometry (110 × 8), drawn with two clip-paths so each part keeps its color.
+   *
+   * It's the first item of .meta-sticky, so marker and logo stick (and leave) as one unit
+   * instead of the logo sliding through a separately stuck marker.
    */
-  .job::before,
-  .job::after {
-    content: '';
-    position: absolute;
-    top: -1px;
-    left: 0;
+  .marker {
+    position: relative;
+    display: block;
     width: 110px;
     height: 8px;
+    /* Keeps the logo where it was: marker + this + the grid gap = job padding + 1px border. */
+    margin-bottom: calc(var(--job-pad) + 1px - 8px - var(--space-2));
   }
-  .job::before {
+  .marker::before,
+  .marker::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .marker::before {
     background: var(--primary-fill);
-    clip-path: polygon(0 0, 64px 0, 72px 100%, 0 100%);
+    clip-path: polygon(0 0, 64px 0, 72px 100%, 8px 100%);
   }
-  .job::after {
+  .marker::after {
     background: var(--accent);
     clip-path: path('M68 0H73L81 8H76Z M77 0H93L101 8H85Z M97 0H102L110 8H105Z');
   }
   .meta-sticky {
     position: sticky;
-    top: 6rem;
+    /* Right below the header (4rem + its 1px border). */
+    top: calc(4rem + 1px);
+    /* Pulled up through the job's top padding, so the marker sits on the job's top edge. */
+    margin-top: calc(-1 * var(--job-pad) - 1px);
     display: grid;
     gap: var(--space-2);
     justify-items: start;
@@ -354,9 +370,17 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
       /* minmax(0, …): a long word (CLICKSPORTS) must not widen the column past the screen. */
       grid-template-columns: minmax(0, 1fr);
       gap: var(--space-5);
-      padding-block: var(--space-7);
+      --job-pad: var(--space-7);
+    }
+    /* No sticking on phones: the marker goes back to the job's top edge, out of the row. */
+    .marker {
+      position: absolute;
+      top: -1px;
+      left: 0;
+      margin: 0;
     }
     .meta-sticky {
+      margin-top: 0;
       position: static;
       display: flex;
       flex-wrap: wrap;

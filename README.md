@@ -22,7 +22,26 @@ Blog posts: `src/content/blog/<de|en>/<slug>.md`. Same slug = translation. `draf
 `src/styles/sunny.css` derives every color from six registered custom properties
 (`--p-l/c/h`, `--a-l/c/h`, OKLCH). On the career page, `src/theme/tint.ts` writes an
 employer's (contrast-normalized, see `src/theme/color.ts`) values to `:root` when its
-section crosses the viewport middle; CSS transitions animate the change.
+section crosses the viewport middle; a JS tween in `tint.ts` animates the change.
+
+### Light / dark mode
+
+Every mode-dependent token is `light-dark(<light>, <dark>)`, resolved by `color-scheme`.
+The page follows the OS setting; the mode toggle pins it via `<html data-mode="light|dark">`.
+
+To force a mode on one element and everything inside it, regardless of the page's mode,
+add a class:
+
+```html
+<section class="sunny-dark">…</section>
+<aside class="sunny-light">…</aside>
+```
+
+`light-dark()` resolves against the `color-scheme` of the element using the token, so the
+class only has to switch that; it also sets `background` and `color` again, because the
+inherited text color is already resolved. For the whole page, use `data-mode` on `<html>`
+instead (a class there would override the toggle). Elements with color transitions
+(e.g. skill chips) fade over when the class is changed at runtime.
 
 ## Commands
 
