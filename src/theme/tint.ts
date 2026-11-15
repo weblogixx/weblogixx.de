@@ -14,6 +14,17 @@
  */
 
 const DURATION = 750;
+
+/*
+ * Safari rebuilds the scrollbar whenever scrollbar-color changes; changing it every frame of
+ * the tween makes it stutter and disappear. There, the scrollbar keeps its color while the
+ * tween runs (pinned inline to its resolved value) and switches once at the end. Chrome and
+ * Firefox repaint it smoothly, so they keep the animated color.
+ * No feature test can tell this apart, hence the engine check (Safari and all iOS browsers).
+ */
+const PIN_SCROLLBAR =
+  /AppleWebKit/.test(navigator.userAgent) &&
+  !/Chrome|Chromium|Edg|Firefox|FxiOS|CriOS/.test(navigator.userAgent);
 /** Color groups, in the order themeDataAttrs() writes them (see src/theme/color.ts). */
 const GROUPS = ['p', 'a', 'mt', 'mw', 'mn'] as const;
 const PROPS = GROUPS.flatMap((g) => [`--${g}-l`, `--${g}-c`, `--${g}-h`]);
@@ -107,13 +118,25 @@ export function initTint() {
   };
 
   let frame = 0;
+  let pinned = false;
+  const pinScrollbar = (pin: boolean) => {
+    if (!PIN_SCROLLBAR || pin === pinned) return;
+    pinned = pin;
+    if (pin)
+      root.style.setProperty('scrollbar-color', getComputedStyle(root).getPropertyValue('scrollbar-color'));
+    else root.style.removeProperty('scrollbar-color');
+  };
+
   const tweenTo = (to: number[]) => {
     cancelAnimationFrame(frame);
     if (reduceMotion.matches) {
       current.splice(0, to.length, ...to);
       write(current);
+      pinScrollbar(false);
       return;
     }
+    // Before the first frame changes anything (a tween interrupted mid-way stays pinned).
+    pinScrollbar(true);
     // Each color travels in a straight line through OKLab.
     const from = GROUPS.map((_, i) => toLab(triple(current, i)));
     const target = GROUPS.map((_, i) => toLab(triple(to, i)));
@@ -127,6 +150,7 @@ export function initTint() {
       current.splice(0, next.length, ...next);
       write(current);
       if (t < 1) frame = requestAnimationFrame(step);
+      else pinScrollbar(false);
     };
     frame = requestAnimationFrame(step);
   };
