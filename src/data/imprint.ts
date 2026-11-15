@@ -19,6 +19,8 @@ export interface Imprint {
   vatId?: string;
 }
 
+import { profile } from './profile';
+
 // TODO(chris): fill in the bracketed values.
 export const imprint: Imprint = {
   name: 'Christian Schilling',
@@ -26,7 +28,8 @@ export const imprint: Imprint = {
   street: 'Im Stegen 5',
   postalCode: '79241',
   city: 'Ihringen',
-  email: 'cs@weblogixx.de',
+  // Same address as everywhere else on the site.
+  email: profile.email,
   phone: '0171 / 830 47 62',
   vatId: undefined,
 };

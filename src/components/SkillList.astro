@@ -1,0 +1,44 @@
+---
+/**
+ * A list of skill chips: sorted featured → normal → legacy (alphabetical within each group),
+ * with the same tooltip, highlight and legacy look everywhere. Used on the Experience page
+ * (a job's stack) and in the blog (a post's skills).
+ */
+import SkillChip from './SkillChip.astro';
+import { skills, skillUsageById, sortSkillIds, type Locale, type SkillId } from '../data';
+import { skillTip } from '../i18n/skillTip';
+import { route } from '../i18n/routes';
+
+interface Props {
+  ids: readonly SkillId[];
+  lang: Locale;
+  /** Chips link to the skill on the home page. Turn off inside another link (blog index). */
+  linked?: boolean;
+}
+const { ids, lang, linked = true } = Astro.props;
+---
+
+<ul class="chips">
+  {
+    sortSkillIds(ids, lang).map((id) => (
+      <SkillChip
+        name={skills[id].name}
+        href={linked ? `${route('home', lang)}#skill-${id}` : undefined}
+        tip={skillTip(skillUsageById[id], lang)}
+        featured={skillUsageById[id].featured}
+        legacy={skillUsageById[id].legacy}
+      />
+    ))
+  }
+</ul>
+
+<style>
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+</style>

@@ -1,12 +1,11 @@
 ---
 import Base from '../layouts/Base.astro';
 import CompanyLogo from '../components/CompanyLogo.astro';
-import SkillChip from '../components/SkillChip.astro';
-import { career, skills, skillUsageById, formatPeriod, sortSkillIds, yearOf, type Locale } from '../data';
+import SkillList from '../components/SkillList.astro';
+import HelloCta from '../components/HelloCta.astro';
+import { career, formatPeriod, yearOf, type Locale } from '../data';
 import { brandScope, themeDataAttrs, sunny } from '../theme/color';
 import { useT } from '../i18n/ui';
-import { skillTip } from '../i18n/skillTip';
-import { route } from '../i18n/routes';
 
 interface Props {
   lang: Locale;
@@ -38,7 +37,7 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
         >
           <aside class="meta">
             <div class="meta-sticky">
-              <span class="marker" aria-hidden="true" />
+              <span class="marker stripe-marker" aria-hidden="true" />
               <CompanyLogo
                 name={e.name}
                 logo={e.logo}
@@ -109,18 +108,7 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
 
             <section>
               <h3>{t('career.stack')}</h3>
-              <ul class="chips">
-                {/* Featured → normal → legacy, alphabetical within each group. */}
-                {sortSkillIds(e.stack, lang).map((id) => (
-                  <SkillChip
-                    name={skills[id].name}
-                    href={`${route('home', lang)}#skill-${id}`}
-                    tip={skillTip(skillUsageById[id], lang)}
-                    featured={skillUsageById[id].featured}
-                    legacy={skillUsageById[id].legacy}
-                  />
-                ))}
-              </ul>
+              <SkillList ids={e.stack} lang={lang} />
             </section>
 
             {e.links && e.links.length > 0 && (
@@ -145,6 +133,7 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
       ))}
     </ol>
   </div>
+  <HelloCta lang={lang} variant="block" />
 </Base>
 
 <script>
@@ -162,21 +151,22 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
    */
   :global(main[data-page='career']) {
     isolation: isolate;
-  }
-  :global(main[data-page='career'])::before {
-    content: '';
-    position: fixed;
-    inset: 0 0 auto;
-    height: 14rem;
-    /* Dark: lighter than the background (--border) reads as a glow. Light: anything darker
-       reads as a shadow, so use a faint brand tint instead, like the home page hero. */
-    background: radial-gradient(
-      ellipse 70% 100% at 50% 0,
-      light-dark(var(--primary-soft), var(--border)),
-      transparent 70%
-    );
-    pointer-events: none;
-    z-index: -1;
+
+    &::before {
+      content: '';
+      position: fixed;
+      inset: 0 0 auto;
+      height: 14rem;
+      /* Dark: lighter than the background (--border) reads as a glow. Light: anything darker
+         reads as a shadow, so use a faint brand tint instead, like the home page hero. */
+      background: radial-gradient(
+        ellipse 70% 100% at 50% 0,
+        light-dark(var(--primary-soft), var(--border)),
+        transparent 70%
+      );
+      pointer-events: none;
+      z-index: -1;
+    }
   }
 
   .career {
@@ -197,36 +187,30 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
     background-origin: border-box;
     position: relative;
     scroll-margin-top: 4rem;
+
+    @media (max-width: 760px) {
+      /* minmax(0, …): a long word (CLICKSPORTS) must not widen the column past the screen. */
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-5);
+      --job-pad: var(--space-7);
+    }
   }
   /*
-   * Section marker = a miniature of the logo: a brand-colored block with 45° cuts on both ends,
-   * then thin–wide–thin accent stripes slanted the same way (top-left → bottom-right).
-   * Fixed px geometry (110 × 8), drawn with two clip-paths so each part keeps its color.
-   *
-   * It's the first item of .meta-sticky, so marker and logo stick (and leave) as one unit
-   * instead of the logo sliding through a separately stuck marker.
+   * Section marker (drawn by .stripe-marker in global.css). It's the first item of
+   * .meta-sticky, so marker and logo stick (and leave) as one unit instead of the logo
+   * sliding through a separately stuck marker.
    */
   .marker {
-    position: relative;
-    display: block;
-    width: 110px;
-    height: 8px;
     /* Keeps the logo where it was: marker + this + the grid gap = job padding + 1px border. */
     margin-bottom: calc(var(--job-pad) + 1px - 8px - var(--space-2));
-  }
-  .marker::before,
-  .marker::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-  }
-  .marker::before {
-    background: var(--primary-fill);
-    clip-path: polygon(0 0, 64px 0, 72px 100%, 8px 100%);
-  }
-  .marker::after {
-    background: var(--accent);
-    clip-path: path('M68 0H73L81 8H76Z M77 0H93L101 8H85Z M97 0H102L110 8H105Z');
+
+    /* No sticking on phones: the marker goes back to the job's top edge, out of the row. */
+    @media (max-width: 760px) {
+      position: absolute;
+      top: -1px;
+      left: 0;
+      margin: 0;
+    }
   }
   .meta-sticky {
     position: sticky;
@@ -237,6 +221,15 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
     display: grid;
     gap: var(--space-2);
     justify-items: start;
+
+    @media (max-width: 760px) {
+      margin-top: 0;
+      position: static;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-3) var(--space-4);
+    }
   }
   .meta-text {
     display: grid;
@@ -248,6 +241,10 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
     font-family: var(--font-mono);
     font-size: var(--step--1);
     color: var(--text);
+
+    @media (max-width: 760px) {
+      margin-top: 0;
+    }
   }
   .location {
     font-size: var(--step--1);
@@ -257,6 +254,7 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
     font-size: var(--step--1);
     color: var(--text-muted);
   }
+  /* Descendants stay flat: Astro doesn't scope nested ones (see README → Styles). */
   .client-projects strong {
     font-family: var(--font-mono);
     font-weight: 600;
@@ -309,24 +307,26 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
     display: grid;
     gap: 0.1rem;
     padding: 0 0 var(--space-4) var(--space-5);
-  }
-  .positions li:last-child {
-    padding-bottom: 0;
-  }
-  .positions li::before {
-    content: '';
-    position: absolute;
-    left: calc(-0.35rem - 1px);
-    top: 0.45em;
-    width: 0.7rem;
-    height: 0.7rem;
-    border-radius: 50%;
-    background: var(--bg);
-    border: 2px solid var(--border-strong);
-  }
-  .positions li.latest::before {
-    background: var(--primary-fill);
-    border-color: var(--primary);
+
+    &:last-child {
+      padding-bottom: 0;
+    }
+    /* Timeline dot on the left line; filled for the latest position. */
+    &::before {
+      content: '';
+      position: absolute;
+      left: calc(-0.35rem - 1px);
+      top: 0.45em;
+      width: 0.7rem;
+      height: 0.7rem;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 2px solid var(--border-strong);
+    }
+    &.latest::before {
+      background: var(--primary-fill);
+      border-color: var(--primary);
+    }
   }
   .pos-period {
     font-family: var(--font-mono);
@@ -335,9 +335,10 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
   }
   .pos-role {
     font-weight: 600;
-  }
-  .latest .pos-role {
-    color: var(--primary);
+
+    .latest & {
+      color: var(--primary);
+    }
   }
   .pos-summary {
     color: var(--text-muted);
@@ -354,16 +355,18 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
   .contrib li {
     position: relative;
     padding-left: var(--space-5);
-  }
-  .contrib li::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0.7em;
-    width: 0.8rem;
-    height: 3px;
-    border-radius: 2px;
-    background: var(--accent);
+
+    /* Short accent dash as the bullet. */
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.7em;
+      width: 0.8rem;
+      height: 3px;
+      border-radius: 2px;
+      background: var(--accent);
+    }
   }
   .facts {
     display: flex;
@@ -388,14 +391,6 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
     font-size: var(--step-2);
     font-weight: 700;
   }
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
   .extra-links {
     list-style: none;
     margin: 0;
@@ -410,32 +405,5 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
     justify-self: start;
     font-family: var(--font-mono);
     font-size: var(--step--1);
-  }
-
-  @media (max-width: 760px) {
-    .job {
-      /* minmax(0, …): a long word (CLICKSPORTS) must not widen the column past the screen. */
-      grid-template-columns: minmax(0, 1fr);
-      gap: var(--space-5);
-      --job-pad: var(--space-7);
-    }
-    /* No sticking on phones: the marker goes back to the job's top edge, out of the row. */
-    .marker {
-      position: absolute;
-      top: -1px;
-      left: 0;
-      margin: 0;
-    }
-    .meta-sticky {
-      margin-top: 0;
-      position: static;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: var(--space-3) var(--space-4);
-    }
-    .period {
-      margin-top: 0;
-    }
   }
 </style>

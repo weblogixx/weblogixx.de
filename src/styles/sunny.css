@@ -184,11 +184,13 @@
   --accent-soft: oklch(var(--a-l) var(--a-c) var(--a-h) / 0.16);
 }
 
-:root[data-mode='light'] {
-  color-scheme: light;
-}
-:root[data-mode='dark'] {
-  color-scheme: dark;
+:root {
+  &[data-mode='light'] {
+    color-scheme: light;
+  }
+  &[data-mode='dark'] {
+    color-scheme: dark;
+  }
 }
 
 /*

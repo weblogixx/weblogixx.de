@@ -100,6 +100,10 @@ const switchHref = altPath ?? href(routes[page][other]);
     align-items: center;
     gap: var(--space-5);
     min-height: 4rem;
+
+    @media (max-width: 860px) {
+      gap: var(--space-3);
+    }
   }
   .brand {
     display: flex;
@@ -111,10 +115,21 @@ const switchHref = altPath ?? href(routes[page][other]);
     font-weight: 600;
     font-size: var(--step--1);
     flex-shrink: 0;
+
+    @media (max-width: 860px) {
+      margin-inline-end: auto;
+      flex-shrink: 1;
+      min-width: 0;
+    }
   }
   .name {
     display: flex;
     min-width: 0;
+
+    /* Very narrow: the name no longer fits next to the buttons, the mark alone carries the brand. */
+    @media (max-width: 380px) {
+      display: none;
+    }
   }
   /* Career page prompt suffix: "@sick". Filled by src/theme/tint.ts. */
   .at {
@@ -122,13 +137,17 @@ const switchHref = altPath ?? href(routes[page][other]);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-  .at:empty {
-    display: none;
-  }
-  .at::before {
-    content: '@';
-    color: var(--accent);
+
+    &:empty {
+      display: none;
+    }
+    &::before {
+      content: '@';
+      color: var(--accent);
+    }
+    @media (max-width: 860px) {
+      max-width: 10ch;
+    }
   }
   .mark {
     flex-shrink: 0;
@@ -150,6 +169,7 @@ const switchHref = altPath ?? href(routes[page][other]);
       ),
       var(--primary-fill);
   }
+  /* Descendants stay flat: Astro doesn't scope nested ones (see README → Styles). */
   nav {
     margin-inline-start: auto;
   }
@@ -169,18 +189,19 @@ const switchHref = altPath ?? href(routes[page][other]);
     font-size: var(--step--1);
     font-weight: 500;
     white-space: nowrap;
-  }
-  nav a:hover {
-    color: var(--text);
-    background: var(--surface);
-  }
-  nav a:active {
-    color: var(--text);
-    background: var(--primary-soft);
-  }
-  nav a[aria-current='page'] {
-    color: var(--primary);
-    background: var(--primary-soft);
+
+    &:hover {
+      color: var(--text);
+      background: var(--surface);
+    }
+    &:active {
+      color: var(--text);
+      background: var(--primary-soft);
+    }
+    &[aria-current='page'] {
+      color: var(--primary);
+      background: var(--primary-soft);
+    }
   }
   .lang {
     display: grid;
@@ -194,27 +215,18 @@ const switchHref = altPath ?? href(routes[page][other]);
     border: 1px solid var(--border);
     border-radius: var(--radius-s);
     flex-shrink: 0;
-  }
-  .lang:hover {
-    border-color: var(--primary);
-    color: var(--primary);
-  }
-  /* Keyboard focus: the border takes the primary color instead of the global outline
-     (whose offset and smaller radius looked like a second, inset border). */
-  .lang:focus-visible {
-    outline: none;
-    border-color: var(--primary);
-    color: var(--primary);
-  }
-  .menu-toggle:hover {
-    border-color: var(--primary);
-  }
-  /* Keyboard focus: the border takes the primary color instead of the global outline
-     (whose offset and smaller radius looked like a second, inset border). */
-  .menu-toggle:focus-visible {
-    outline: none;
-    border-color: var(--primary);
-    color: var(--primary);
+
+    &:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    /* Keyboard focus: the border takes the primary color instead of the global outline
+       (whose offset and smaller radius looked like a second, inset border). */
+    &:focus-visible {
+      outline: none;
+      border-color: var(--primary);
+      color: var(--primary);
+    }
   }
 
   .menu-toggle {
@@ -228,58 +240,63 @@ const switchHref = altPath ?? href(routes[page][other]);
     background: transparent;
     color: var(--text);
     cursor: pointer;
-  }
-  .burger,
-  .burger::before,
-  .burger::after {
-    display: block;
-    width: 1.1rem;
-    height: 2px;
-    border-radius: 1px;
-    background: currentColor;
-    transition:
-      transform 200ms,
-      background 200ms;
+
+    &:hover {
+      border-color: var(--primary);
+    }
+    /* Keyboard focus: same as .lang. */
+    &:focus-visible {
+      outline: none;
+      border-color: var(--primary);
+      color: var(--primary);
+    }
   }
   .burger {
+    &,
+    &::before,
+    &::after {
+      display: block;
+      width: 1.1rem;
+      height: 2px;
+      border-radius: 1px;
+      background: currentColor;
+      transition:
+        transform 200ms,
+        background 200ms;
+
+      @media (prefers-reduced-motion: reduce) {
+        transition: none !important;
+      }
+    }
+
     position: relative;
-  }
-  .burger::before,
-  .burger::after {
-    content: '';
-    position: absolute;
-    left: 0;
-  }
-  .burger::before {
-    transform: translateY(-6px);
-  }
-  .burger::after {
-    transform: translateY(6px);
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+    }
+    &::before {
+      transform: translateY(-6px);
+    }
+    &::after {
+      transform: translateY(6px);
+    }
   }
   [data-open] .burger {
     background: transparent;
-  }
-  [data-open] .burger::before {
-    transform: rotate(45deg);
-  }
-  [data-open] .burger::after {
-    transform: rotate(-45deg);
+
+    &::before {
+      transform: rotate(45deg);
+    }
+    &::after {
+      transform: rotate(-45deg);
+    }
   }
 
-  /* ---- Small screens ---- */
+  /* ---- Small screens: the nav becomes a menu ---- */
   @media (max-width: 860px) {
-    .bar {
-      gap: var(--space-3);
-    }
-    .brand {
-      margin-inline-end: auto;
-      flex-shrink: 1;
-      min-width: 0;
-    }
-    .at {
-      max-width: 10ch;
-    }
-
     /* Without JS: nav wraps into a scrollable second row. */
     :global(:root:not([data-js])) .header .bar {
       flex-wrap: wrap;
@@ -333,18 +350,8 @@ const switchHref = altPath ?? href(routes[page][other]);
     }
   }
 
-  /* Very narrow: the name no longer fits next to the buttons, the mark alone carries the brand. */
-  @media (max-width: 380px) {
-    .name {
-      display: none;
-    }
-  }
-
   @media (prefers-reduced-motion: reduce) {
-    :global(:root[data-js]) .header nav,
-    .burger,
-    .burger::before,
-    .burger::after {
+    :global(:root[data-js]) .header nav {
       transition: none !important;
     }
   }

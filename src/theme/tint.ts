@@ -145,23 +145,34 @@ export function initTint() {
     if (prompt) swapText(prompt, el.dataset.handle ?? '', reduceMotion.matches);
   };
 
+  /*
+   * Which target is active:
+   *  - at the very top: the first one (the page head → Sunny), however short it is;
+   *  - at the very bottom: the last one (the contact block → Sunny). It sits right above the
+   *    footer and often can't scroll up to the line, so it would never take over otherwise;
+   *  - anywhere else: the section at a 1px line 30% down the viewport, i.e. once it fills
+   *    most of the screen.
+   */
+  const first = targets[0];
+  const last = targets.at(-1);
+  let atLine: HTMLElement | undefined;
+  const update = () => {
+    const atBottom = window.scrollY + window.innerHeight >= root.scrollHeight - 16;
+    const target = window.scrollY < 16 ? first : atBottom ? last : atLine;
+    if (target) apply(target);
+  };
+
   const observer = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
-        if (entry.isIntersecting) apply(entry.target as HTMLElement);
+        if (entry.isIntersecting) atLine = entry.target as HTMLElement;
       }
+      update();
     },
-    // A 1px line 30% down the viewport: a section takes over once it fills most of the screen.
     { rootMargin: '-30% 0px -70% 0px', threshold: 0 },
   );
   for (const el of targets) observer.observe(el);
 
-  // At the very top, always show the first target (the page head → Sunny),
-  // however short it is.
-  const [first] = targets;
-  const atTop = () => {
-    if (first && window.scrollY < 16) apply(first);
-  };
-  window.addEventListener('scroll', atTop, { passive: true });
-  atTop();
+  window.addEventListener('scroll', update, { passive: true });
+  update();
 }

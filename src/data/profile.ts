@@ -1,9 +1,13 @@
-import type { L10n } from './types';
+import type { L10n, YearMonth } from './types';
 
 export const profile = {
   name: 'Christian Schilling',
   shortName: 'Chris',
   handle: 'weblogixx',
+  /** The one contact address: "Hallo sagen" buttons, Links page, imprint, privacy policy. */
+  email: 'hello@weblogixx.de',
+  /** Free for new projects from this month on. Shown next to the buttons; remove when booked out. */
+  availableFrom: '2027-01' as YearMonth | undefined,
   /** Year I started building for the web. */
   since: 2000,
   title: {
@@ -48,11 +52,11 @@ export const profile = {
   about: {
     de: [
       'Platzhalter: Wer ich bin, wo ich lebe und was mich antreibt.',
-      'Platzhalter: Was ich abseits des Bildschirms mache — zum Beispiel Gitarre spielen. Das Farbschema dieser Seite heißt „Sunny“ und ist von meiner Fender Vintera II Mustang namens „Sunny“ mit rotem Rennstreifen abgeleitet.',
+      'Platzhalter: Was ich abseits des Bildschirms mache — zum Beispiel Gitarre spielen.',
     ],
     en: [
       'Placeholder: who I am, where I live and what drives me.',
-      'Placeholder: what I do away from the screen — playing guitar, for example. This site’s color theme is called “Sunny” and is sampled from my Fender Vintera II Competition Mustang „Sunny“ with its red racing stripe.',
+      'Placeholder: what I do away from the screen — playing guitar, for example.',
     ],
   } satisfies L10n<string[]>,
 };

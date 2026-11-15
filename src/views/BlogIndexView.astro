@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import SkillList from '../components/SkillList.astro';
 import type { Locale } from '../data';
 import { getPosts, postSlug } from '../i18n/blog';
 import { blogPostPath } from '../i18n/routes';
@@ -35,6 +36,12 @@ const dateFmt = new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { dat
                   {p.data.draft && <em> (draft)</em>}
                 </span>
                 <span class="desc">{p.data.description}</span>
+                {/* Not linked: the whole entry is already a link. */}
+                {p.data.skills.length > 0 && (
+                  <span class="skills">
+                    <SkillList ids={p.data.skills} lang={lang} linked={false} />
+                  </span>
+                )}
               </a>
             </li>
           ))}
@@ -58,6 +65,7 @@ const dateFmt = new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { dat
     padding: 0;
     display: grid;
   }
+  /* Descendants stay flat: Astro doesn't scope nested ones (see README → Styles). */
   .posts a {
     display: grid;
     gap: var(--space-1);
@@ -81,5 +89,8 @@ const dateFmt = new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { dat
   }
   .desc {
     color: var(--text-muted);
+  }
+  .skills {
+    margin-top: var(--space-2);
   }
 </style>

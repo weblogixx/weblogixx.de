@@ -1,0 +1,233 @@
+---
+/**
+ * "Hallo sagen": the contact call to action.
+ *   variant="hero"  → just the button, for the home hero (availability sits in the hero's
+ *                     status line next to the current position, see HomeView).
+ *   variant="block" → closing box with heading, text, button, the visible address (with a copy
+ *                     button) and availability, plus the hero's stripes; ends the home and
+ *                     Experience pages.
+ * Email only (mailto with a prefilled subject): no form, no third party, nothing to add to
+ * the privacy policy. Address and availability come from src/data/profile.ts.
+ */
+import { profile, availability, type Locale } from '../data';
+import { useT } from '../i18n/ui';
+import Stripes from './Stripes.astro';
+import { sunny, themeDataAttrs } from '../theme/color';
+
+interface Props {
+  lang: Locale;
+  variant: 'hero' | 'block';
+}
+const { lang, variant } = Astro.props;
+const t = useT(lang);
+const mailto = `mailto:${profile.email}?subject=${encodeURIComponent(t('hello.subject'))}`;
+const available = availability(lang);
+---
+
+{
+  variant === 'hero' ? (
+    <div class="hello hero-cta">
+      <a class="btn primary" href={mailto}>
+        {t('hello.button')}
+      </a>
+    </div>
+  ) : (
+    <section
+      class="hello-section container"
+      aria-labelledby="hello-title"
+      data-tint
+      {...themeDataAttrs('Sunny', sunny)}
+    >
+      {/* data-tint: on the Experience page the colors return to Sunny here (see src/theme/tint.ts);
+          elsewhere the attributes do nothing. The box sits inside the container, so its edges
+          line up with the cards above. */}
+      <div class="hello block">
+        <Stripes class="block-stripes" />
+        <h2 id="hello-title">{t('hello.title')}</h2>
+        <p class="text">{t('hello.text')}</p>
+        <div class="actions">
+          <a class="btn primary" href={mailto}>
+            {t('hello.button')}
+          </a>
+          <span class="address">
+            <a href={mailto}>{profile.email}</a>
+            <button
+              class="copy"
+              type="button"
+              data-copy={profile.email}
+              data-copied={t('hello.copied')}
+              aria-label={t('hello.copy')}
+              title={t('hello.copy')}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="9" y="9" width="11" height="11" rx="2" />
+                <path d="M5 15V6a2 2 0 0 1 2-2h9" />
+              </svg>
+              <span class="copied" aria-live="polite" />
+            </button>
+          </span>
+        </div>
+        {available && (
+          <p class="available">
+            <span class="dot" aria-hidden="true" />
+            {available}
+          </p>
+        )}
+      </div>
+    </section>
+  )
+}
+
+<script>
+  // Copy the address (for visitors without a mail app). Brief "Kopiert" confirmation.
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-copy]')) {
+    const label = button.querySelector<HTMLElement>('.copied');
+    let timer = 0;
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(button.dataset.copy ?? '');
+      } catch {
+        // Clipboard blocked (permissions, embedded browser): select the address instead,
+        // so ⌘C / Ctrl+C does the rest.
+        const address = button.previousElementSibling;
+        if (address) getSelection()?.selectAllChildren(address);
+        return;
+      }
+      if (!label) return;
+      label.textContent = button.dataset.copied ?? '';
+      clearTimeout(timer);
+      timer = window.setTimeout(() => (label.textContent = ''), 2000);
+    });
+  }
+</script>
+
+<style>
+  .hello-section {
+    margin-block: var(--space-4) var(--space-8);
+  }
+  .hello {
+    &.block {
+      /* Stacking context: the stripes sit behind the text but above the box background. */
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      background: var(--bg-raised);
+      border-radius: var(--radius-m);
+      border: 2px solid var(--border);
+    }
+  }
+  /* Descendants stay flat: Astro doesn't scope nested ones (see README → Styles). */
+  .hello .available {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--text-muted);
+  }
+  /* Same "live" dot as the current position in the hero. */
+  .dot {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: var(--primary-fill);
+    box-shadow: 0 0 0 4px var(--primary-soft);
+  }
+
+  .hero-cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-5);
+  }
+
+  .block {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-4);
+    padding: var(--space-8) var(--space-6);
+
+    /* The hero's stripes, in the box's top-right corner (a child component, hence :global). */
+    & :global(.block-stripes) {
+      position: absolute;
+      top: 0;
+      right: 0;
+      z-index: -1;
+      height: 100%;
+      width: auto;
+      aspect-ratio: 1;
+      max-width: none;
+      opacity: 0.9;
+
+      /* Narrower: the text runs underneath, so just a hint (like the hero). */
+      @media (max-width: 1100px) {
+        opacity: 0.25;
+      }
+    }
+  }
+  .block h2 {
+    font-size: var(--step-3);
+  }
+  .text {
+    max-width: 38rem;
+    color: var(--text-muted);
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-5);
+  }
+  .address {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+  .copy {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-s);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--primary);
+      color: var(--primary);
+      outline: none;
+    }
+    /* Copying needs JS (data-js is set before first paint); without it, just the link. */
+    :global(:root:not([data-js])) & {
+      display: none;
+    }
+  }
+  .copy svg {
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  /* "Kopiert" appears to the right of the button for two seconds. */
+  .copied {
+    position: absolute;
+    left: calc(100% + var(--space-2));
+    white-space: nowrap;
+    font-family: var(--font-mono);
+    color: var(--primary);
+
+    &:empty {
+      display: none;
+    }
+  }
+</style>

@@ -72,6 +72,7 @@ const { name, business, street, postalCode, city, email, phone, vatId } = imprin
     max-width: 42rem;
     margin-bottom: var(--space-9);
   }
+  /* Descendants stay flat: Astro doesn't scope nested ones (see README → Styles). */
   .imprint h2 {
     margin-bottom: var(--space-2);
     font-family: var(--font-mono);

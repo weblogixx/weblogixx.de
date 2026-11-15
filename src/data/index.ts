@@ -3,7 +3,9 @@ import { skills, skillCategories, type Skill, type SkillId, type SkillCategory }
 import type { Employer, L10n, Locale, Position, YearMonth } from './types';
 import { themeFromBrand, sunny, type ThemeColors } from '../theme/color';
 
-export { profile } from './profile';
+import { profile } from './profile';
+
+export { profile };
 export { links } from './links';
 export { skills, skillCategories };
 export type { SkillId, SkillCategory, Employer, Locale, Position };
@@ -46,6 +48,23 @@ export const career: ResolvedEmployer[] = employers
   .toSorted((a, b) => b.start.localeCompare(a.start));
 
 export const yearOf = (ym: YearMonth) => Number(ym.slice(0, 4));
+
+/**
+ * "Verfügbar ab Januar 2027" / "Available from January 2027", or "Jetzt verfügbar" once that
+ * month has come (evaluated at build time). Undefined when profile.availableFrom isn't set.
+ */
+export function availability(lang: Locale) {
+  const from = profile.availableFrom;
+  if (!from) return undefined;
+  const now = new Date().toISOString().slice(0, 7);
+  if (from <= now) return lang === 'de' ? 'Jetzt verfügbar' : 'Available now';
+  const month = new Date(`${from}-01T00:00:00Z`).toLocaleDateString(lang === 'de' ? 'de-DE' : 'en-GB', {
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+  return lang === 'de' ? `Verfügbar ab ${month}` : `Available from ${month}`;
+}
 
 export function formatPeriod(e: Period, lang: Locale) {
   const fmt = (ym: YearMonth) =>

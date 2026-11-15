@@ -166,14 +166,19 @@
       translate 150ms ease-out,
       display 150ms allow-discrete,
       overlay 150ms allow-discrete;
+
+    &[data-side='bottom'] {
+      --shift: -4px;
+    }
+    &:popover-open {
+      opacity: 1;
+      translate: 0;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
   }
-  .tooltip[data-side='bottom'] {
-    --shift: -4px;
-  }
-  .tooltip:popover-open {
-    opacity: 1;
-    translate: 0;
-  }
+  /* Fade/slide in from the side it's on (kept flat: @starting-style + nesting is new territory). */
   @starting-style {
     .tooltip:popover-open {
       opacity: 0;
@@ -182,24 +187,26 @@
   }
 
   /* Arrow: a rotated square with the same surface, pointing at the anchor's center. */
-  .tooltip::after {
-    content: '';
-    position: absolute;
-    left: var(--arrow-x, 50%);
-    bottom: -6px;
-    width: 10px;
-    height: 10px;
-    background: var(--bg-raised);
-    border: 1px solid var(--border-strong);
-    border-top-color: transparent;
-    border-left-color: transparent;
-    border-bottom-right-radius: 2px;
-    transform: translateX(-50%) rotate(45deg);
-  }
-  .tooltip[data-side='bottom']::after {
-    bottom: auto;
-    top: -6px;
-    transform: translateX(-50%) rotate(-135deg);
+  .tooltip {
+    &::after {
+      content: '';
+      position: absolute;
+      left: var(--arrow-x, 50%);
+      bottom: -6px;
+      width: 10px;
+      height: 10px;
+      background: var(--bg-raised);
+      border: 1px solid var(--border-strong);
+      border-top-color: transparent;
+      border-left-color: transparent;
+      border-bottom-right-radius: 2px;
+      transform: translateX(-50%) rotate(45deg);
+    }
+    &[data-side='bottom']::after {
+      bottom: auto;
+      top: -6px;
+      transform: translateX(-50%) rotate(-135deg);
+    }
   }
 
   .tip-label {
@@ -216,12 +223,13 @@
     font-size: 0.85rem;
     line-height: 1.45;
     color: var(--text);
-  }
-  /* Description followed by the company list: a little air and a divider between them. */
-  .tip-text:not([hidden]) + .tip-label:not([hidden]) {
-    margin-top: 0.55rem;
-    padding-top: 0.5rem;
-    border-top: 1px dashed var(--border-strong);
+
+    /* Description followed by the company list: a little air and a divider between them. */
+    &:not([hidden]) + .tip-label:not([hidden]) {
+      margin-top: 0.55rem;
+      padding-top: 0.5rem;
+      border-top: 1px dashed var(--border-strong);
+    }
   }
   .tip-note {
     margin: 0.55rem 0 0;
@@ -236,29 +244,25 @@
     margin: 0;
     padding: 0;
     list-style: none;
-  }
-  /* Created by the script, so outside Astro's scoping. */
-  .tip-list :global(li) {
-    display: flex;
-    align-items: center;
-    gap: 0.55rem;
-    font-weight: 500;
-  }
-  /* Company brand color (normalized for the dark theme, darkened for light). */
-  .tip-list :global(li)::before {
-    content: '';
-    flex-shrink: 0;
-    width: 0.5rem;
-    height: 0.5rem;
-    border-radius: 2px;
-    --c: var(--dot, var(--text-subtle));
-    background: light-dark(oklch(from var(--c) 0.55 c h), var(--c));
-    box-shadow: 0 0 0 3px oklch(from var(--c) l c h / 0.18);
-  }
 
-  @media (prefers-reduced-motion: reduce) {
-    .tooltip {
-      transition: none;
+    /* Created by the script, so outside Astro's scoping. */
+    & :global(li) {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-weight: 500;
+
+      /* Company brand color (normalized for the dark theme, darkened for light). */
+      &::before {
+        content: '';
+        flex-shrink: 0;
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 2px;
+        --c: var(--dot, var(--text-subtle));
+        background: light-dark(oklch(from var(--c) 0.55 c h), var(--c));
+        box-shadow: 0 0 0 3px oklch(from var(--c) l c h / 0.18);
+      }
     }
   }
 </style>

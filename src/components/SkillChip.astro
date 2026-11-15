@@ -58,25 +58,30 @@ const period = since && (until ? (until === since ? `${since}` : `${since}–${u
       border-color 200ms,
       background 200ms,
       box-shadow 400ms;
+
+    .featured & {
+      border-color: var(--primary-line);
+      background: var(--primary-soft);
+    }
+    .legacy & {
+      border-style: dashed;
+      border-color: var(--border-strong);
+      background: transparent;
+      color: var(--text-muted);
+    }
   }
-  .featured .inner {
-    border-color: var(--primary-line);
-    background: var(--primary-soft);
+  /* Chips that are links (career page). */
+  a.inner {
+    &:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    &:active {
+      translate: 0 1px;
+      background: var(--primary-soft);
+    }
   }
-  .legacy .inner {
-    border-style: dashed;
-    border-color: var(--border-strong);
-    background: transparent;
-    color: var(--text-muted);
-  }
-  a.inner:hover {
-    border-color: var(--primary);
-    color: var(--primary);
-  }
-  a.inner:active {
-    translate: 0 1px;
-    background: var(--primary-soft);
-  }
+  /* Deep-linked from the career page (#skill-…). */
   .chip:target .inner {
     border-color: var(--primary);
     background: var(--primary-soft);

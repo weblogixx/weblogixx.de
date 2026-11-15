@@ -20,12 +20,17 @@ const t = useT(lang);
     <ul class="links">
       {links.map((l) => (
         <li>
-          <a href={l.url} rel="me noopener" target="_blank">
+          {/* External profiles open in a new tab; mailto: opens the mail app instead. */}
+          <a
+            href={l.url}
+            rel={l.url.startsWith('mailto:') ? undefined : 'me noopener'}
+            target={l.url.startsWith('mailto:') ? undefined : '_blank'}
+          >
             <span class="label">{l.label}</span>
             <span class="handle">{l.handle}</span>
             {l.description && <span class="desc">{l.description[lang]}</span>}
             <span class="arrow" aria-hidden="true">
-              ↗
+              {l.url.startsWith('mailto:') ? '→' : '↗'}
             </span>
           </a>
         </li>
@@ -55,10 +60,11 @@ const t = useT(lang);
     color: var(--text);
     text-decoration: none;
     transition: border-color 200ms, transform 200ms;
-  }
-  a:hover {
-    border-color: var(--primary);
-    transform: translateY(-2px);
+
+    &:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
   }
   .label {
     font-family: var(--font-display);
@@ -81,18 +87,21 @@ const t = useT(lang);
     right: var(--space-5);
     color: var(--text-subtle);
   }
-  /* Pressed: drops back from the hover lift. */
-  a:active {
-    transform: translateY(0);
-    background: var(--primary-soft);
-    transition-duration: 80ms;
+  a {
+    /* Pressed: drops back from the hover lift. */
+    &:active {
+      transform: translateY(0);
+      background: var(--primary-soft);
+      transition-duration: 80ms;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      &:hover {
+        transform: none;
+      }
+    }
   }
+  /* Descendants stay flat: Astro doesn't scope nested ones (see README → Styles). */
   a:hover .arrow {
     color: var(--primary);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    a:hover {
-      transform: none;
-    }
   }
 </style>

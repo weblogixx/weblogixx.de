@@ -2,7 +2,7 @@
 import type { Locale } from '../data/types';
 import { profile } from '../data';
 import { useT } from '../i18n/ui';
-import { route } from '../i18n/routes';
+import { route, blogPostPath } from '../i18n/routes';
 
 interface Props {
   lang: Locale;
@@ -23,7 +23,7 @@ const year = new Date().getFullYear();
     </p>
     <p class="theme" aria-live="polite">
       <span class="swatch" aria-hidden="true"></span>
-      {t('theme.label')}: <a href={route('about', lang, 'about-the-sunny-theme')} data-theme-label>Sunny</a>
+      {t('theme.label')}: <a href={blogPostPath('sunny-theme', lang)} data-theme-label>Sunny</a>
     </p>
   </div>
 </footer>
@@ -41,6 +41,12 @@ const year = new Date().getFullYear();
     justify-content: space-between;
     gap: var(--space-3);
     padding-block: var(--space-5);
+
+    /* Small phones: everything stacked. */
+    @media (max-width: 480px) {
+      flex-direction: column;
+      gap: var(--space-2);
+    }
   }
   /* Copyright · Impressum · Datenschutz: even spacing around the dots, and on narrow
      screens it wraps between the items instead of inside them. */
@@ -49,28 +55,27 @@ const year = new Date().getFullYear();
     flex-wrap: wrap;
     align-items: baseline;
     gap: var(--space-1) var(--space-3);
-  }
-  /* Small phones: one item per line; the dots only make sense side by side. */
-  @media (max-width: 480px) {
-    .row {
-      flex-direction: column;
-      gap: var(--space-2);
-    }
-    .meta {
+
+    /* Small phones: one item per line. */
+    @media (max-width: 480px) {
       flex-direction: column;
       align-items: flex-start;
       gap: var(--space-2);
     }
-    .sep {
+  }
+  /* The dots only make sense side by side. */
+  .sep {
+    @media (max-width: 480px) {
       display: none;
     }
   }
   /* Quiet like the copyright next to it; primary on hover. */
   .legal {
     color: inherit;
-  }
-  .legal:hover {
-    color: var(--primary);
+
+    &:hover {
+      color: var(--primary);
+    }
   }
   .theme {
     display: flex;

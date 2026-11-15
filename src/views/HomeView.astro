@@ -2,9 +2,10 @@
 import Base from '../layouts/Base.astro';
 import Stripes from '../components/Stripes.astro';
 import SkillChip from '../components/SkillChip.astro';
+import HelloCta from '../components/HelloCta.astro';
 import CompanyLogo from '../components/CompanyLogo.astro';
-import { profile, career, skillsByCategory, skillUsage, formatPeriod, type Locale } from '../data';
-import { route, href, routes } from '../i18n/routes';
+import { profile, career, skillsByCategory, skillUsage, availability, formatPeriod, type Locale } from '../data';
+import { route } from '../i18n/routes';
 import { brandScope } from '../theme/color';
 import { useT } from '../i18n/ui';
 import { skillTip } from '../i18n/skillTip';
@@ -21,6 +22,7 @@ const stackTip = {
 const stackTipText = stackTip.items.map((i) => i.name).join(' · ');
 const years = new Date().getFullYear() - profile.since;
 const current = career.find((e) => e.current);
+const available = availability(lang);
 const stats = [
   { value: `${years}+`, label: t('home.yearsLabel') },
   // Unique names: a company with a gap (Weblogixx) has two entries but counts once.
@@ -32,18 +34,34 @@ const stats = [
 <Base lang={lang} page="home">
   <section class="hero">
     <Stripes class="hero-stripes" />
+    {/* Section marker on the hero's bottom edge, like the jobs on the Experience page. */}
+    <div class="container hero-marker" aria-hidden="true">
+      <span class="stripe-marker" />
+    </div>
     <div class="container hero-inner">
       <p class="eyebrow">{profile.title[lang]}</p>
       <h1>{profile.greeting[lang]} &lt;{profile.shortName} /&gt;</h1>
       <p class="lede">{profile.intro[lang]}</p>
-      {current && (
+      {/* Status line: current position and availability, side by side (wraps on phones). */}
+      {(current || available) && (
         <p class="now">
-          <span class="dot" aria-hidden="true" />
-          {current.role[lang]}
-          <span class="at">@</span>
-          <a href={`${route('career', lang)}#${current.id}`}>{current.name}</a>
+          {current && (
+            <span class="status">
+              <span class="dot" aria-hidden="true" />
+              {current.role[lang]}
+              <span class="at">@</span>
+              <a href={`${route('career', lang)}#${current.id}`}>{current.name}</a>
+            </span>
+          )}
+          {available && (
+            <span class="status">
+              <span class="dot" aria-hidden="true" />
+              {available}
+            </span>
+          )}
         </p>
       )}
+      <HelloCta lang={lang} variant="hero" />
       <dl class="stats">
         {stats.map((s) => (
           <div>
@@ -147,9 +165,9 @@ const stats = [
     </ol>
     <div class="ctas">
       <a class="btn primary" href={route('career', lang)}>{t('home.careerCta')} →</a>
-      <a class="btn" href={href(routes.links[lang])}>{t('home.contactCta')}</a>
     </div>
   </section>
+  <HelloCta lang={lang} variant="block" />
 </Base>
 
 <script>
@@ -203,23 +221,28 @@ const stats = [
     background:
       radial-gradient(60rem 30rem at 85% -10%, var(--primary-soft), transparent 70%),
       var(--bg);
-  }
-  .hero :global(.hero-stripes) {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    /* Square, as tall as the hero: on narrow/tall layouts it spans the whole
-       section top to bottom and is clipped on the left. */
-    height: 100%;
-    width: auto;
-    aspect-ratio: 1;
-    max-width: none;
-    opacity: 0.9;
-  }
-  @media (max-width: 1100px) {
-    .hero :global(.hero-stripes) {
-      opacity: 0.25;
+
+    & :global(.hero-stripes) {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      /* Square, as tall as the hero: on narrow/tall layouts it spans the whole
+         section top to bottom and is clipped on the left. */
+      height: 100%;
+      width: auto;
+      aspect-ratio: 1;
+      max-width: none;
+      opacity: 0.9;
+
+      @media (max-width: 1100px) {
+        opacity: 0.25;
+      }
     }
+  }
+  /* Full-width row along the hero's bottom edge; the container aligns the marker with the content. */
+  .hero-marker {
+    position: absolute;
+    inset: auto 0 0;
   }
   .hero-inner {
     position: relative;
@@ -235,6 +258,9 @@ const stats = [
     line-height: 1;
   }
   .now {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
     font-family: var(--font-mono);
     font-size: var(--step--1);
     color: var(--text-muted);
@@ -258,6 +284,7 @@ const stats = [
     gap: var(--space-6);
     margin: var(--space-4) 0 0;
   }
+  /* Descendants stay flat: Astro doesn't scope nested ones (see README → Styles). */
   .stats div {
     display: flex;
     flex-direction: column-reverse;
@@ -377,17 +404,21 @@ const stats = [
       clip-path 220ms cubic-bezier(0.3, 1.4, 0.5, 1),
       background 200ms;
   }
-  .switch:hover .track {
-    border-color: var(--primary);
+  .track {
+    .switch:hover & {
+      border-color: var(--primary);
+    }
   }
-  /* Pressed: the knob stretches towards the side it will move to.
-     [data-pressed] is the script's version of :active (Safari drops :active early). */
-  .switch:active .thumb,
-  .switch[data-pressed] .thumb {
-    clip-path: inset(0 0 0 0 round 999px);
-    transition:
-      clip-path 150ms ease-out,
-      background 200ms;
+  .thumb {
+    /* Pressed: the knob stretches towards the side it will move to.
+       [data-pressed] is the script's version of :active (Safari drops :active early). */
+    .switch:active &,
+    .switch[data-pressed] & {
+      clip-path: inset(0 0 0 0 round 999px);
+      transition:
+        clip-path 150ms ease-out,
+        background 200ms;
+    }
   }
   .switch input:checked + .track {
     background: var(--primary-fill);
@@ -405,17 +436,19 @@ const stats = [
   .switch input:checked ~ * {
     color: var(--text);
   }
-  /* After a toggle (data-animate is set by the script, so nothing plays on page load):
-     stretch towards the target, then spring over and round off again. Different names
-     for on/off, so the animation restarts on every toggle. */
-  .switch[data-animate] .thumb {
-    /* No fill-mode: once done, the regular (and :active) styles take over again. */
-    animation: knob-off 400ms;
-  }
-  /* Pointer press: the knob is already stretched, so skip the stretch phase (first 25%)
-     and move right away. */
-  .switch[data-animate='pressed'] .thumb {
-    animation-delay: -100ms;
+  .thumb {
+    /* After a toggle (data-animate is set by the script, so nothing plays on page load):
+       stretch towards the target, then spring over and round off again. Different names
+       for on/off, so the animation restarts on every toggle. */
+    .switch[data-animate] & {
+      /* No fill-mode: once done, the regular (and :active) styles take over again. */
+      animation: knob-off 400ms;
+    }
+    /* Pointer press: the knob is already stretched, so skip the stretch phase (first 25%)
+       and move right away. */
+    .switch[data-animate='pressed'] & {
+      animation-delay: -100ms;
+    }
   }
   .switch[data-animate] input:checked + .track .thumb {
     animation-name: knob-on;
@@ -469,8 +502,10 @@ const stats = [
     .thumb {
       transition: none;
     }
-    .switch[data-animate] .thumb {
-      animation: none;
+    .thumb {
+      .switch[data-animate] & {
+        animation: none;
+      }
     }
   }
   .stack {
@@ -515,15 +550,19 @@ const stats = [
     color: var(--text);
     text-decoration: none;
     transition: border-color 200ms, background 200ms;
-  }
-  .timeline a:hover {
-    /* local preview of the company's brand (data-brand scope) */
-    border-color: var(--primary);
-    background: var(--primary-soft);
-  }
-  .timeline a:active {
-    translate: 0 1px;
-    background: var(--primary-line);
+
+    &:hover {
+      /* local preview of the company's brand (data-brand scope) */
+      border-color: var(--primary);
+      background: var(--primary-soft);
+    }
+    &:active {
+      translate: 0 1px;
+      background: var(--primary-line);
+    }
+    @media (max-width: 560px) {
+      flex-wrap: wrap;
+    }
   }
   .tl-main {
     display: grid;
@@ -542,19 +581,13 @@ const stats = [
     font-size: var(--step--1);
     color: var(--text-subtle);
     white-space: nowrap;
-  }
-  @media (max-width: 560px) {
-    .timeline a {
-      flex-wrap: wrap;
-    }
-    .tl-period {
+
+    @media (max-width: 560px) {
       width: 100%;
       padding-left: calc(3.5rem + var(--space-4));
       margin-top: calc(var(--space-2) * -1);
     }
-  }
-  @media (max-width: 400px) {
-    .tl-period {
+    @media (max-width: 400px) {
       white-space: normal;
     }
   }
@@ -564,43 +597,5 @@ const stats = [
     flex-wrap: wrap;
     gap: var(--space-3);
     margin-top: var(--space-6);
-  }
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.7em 1.2em;
-    border-radius: 999px;
-    border: 1px solid var(--border-strong);
-    color: var(--text);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: var(--step--1);
-    transition:
-      background 120ms,
-      border-color 120ms,
-      color 120ms,
-      translate 80ms;
-  }
-  .btn:hover {
-    border-color: var(--primary);
-    color: var(--primary);
-  }
-  .btn.primary {
-    background: var(--primary-fill);
-    border-color: var(--primary-fill);
-    color: var(--primary-contrast);
-  }
-  .btn.primary:hover {
-    background: var(--primary-fill-strong);
-    color: var(--primary-contrast);
-  }
-  /* Pressed: sinks a pixel and darkens. */
-  .btn:active {
-    translate: 0 1px;
-    background: var(--primary-soft);
-  }
-  .btn.primary:active {
-    background: var(--primary-fill-pressed);
-    border-color: var(--primary-fill-pressed);
   }
 </style>

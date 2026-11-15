@@ -94,21 +94,22 @@ const t = useT(Astro.props.lang);
     background: transparent;
     color: var(--text-muted);
     cursor: pointer;
-  }
-  .mode-toggle:hover {
-    border-color: var(--primary);
-    color: var(--primary);
-  }
-  /* Keyboard focus: the border takes the primary color instead of the global outline
-     (whose offset and smaller radius looked like a second, inset border). */
-  .mode-toggle:focus-visible {
-    outline: none;
-    border-color: var(--primary);
-    color: var(--primary);
-  }
-  /* JS-only control: out of the layout without JS (data-js is set before first paint). */
-  :global(:root:not([data-js])) .mode-toggle {
-    display: none;
+
+    &:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    /* Keyboard focus: the border takes the primary color instead of the global outline
+       (whose offset and smaller radius looked like a second, inset border). */
+    &:focus-visible {
+      outline: none;
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    /* JS-only control: out of the layout without JS (data-js is set before first paint). */
+    :global(:root:not([data-js])) & {
+      display: none;
+    }
   }
   .icon {
     width: 1.1rem;
@@ -123,18 +124,26 @@ const t = useT(Astro.props.lang);
   .moon {
     display: none;
   }
-  :global([data-mode='light']) .sun {
-    display: none;
-  }
-  :global([data-mode='light']) .moon {
-    display: block;
-  }
-  @media (prefers-color-scheme: light) {
-    :global(:root:not([data-mode='dark'])) .sun {
+  .sun {
+    :global([data-mode='light']) & {
       display: none;
     }
-    :global(:root:not([data-mode='dark'])) .moon {
+  }
+  .moon {
+    :global([data-mode='light']) & {
       display: block;
+    }
+  }
+  @media (prefers-color-scheme: light) {
+    .sun {
+      :global(:root:not([data-mode='dark'])) & {
+        display: none;
+      }
+    }
+    .moon {
+      :global(:root:not([data-mode='dark'])) & {
+        display: block;
+      }
     }
   }
 </style>

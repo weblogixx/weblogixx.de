@@ -43,6 +43,27 @@ inherited text color is already resolved. For the whole page, use `data-mode` on
 instead (a class there would override the toggle). Elements with color transitions
 (e.g. skill chips) fade over when the class is changed at runtime.
 
+## Styles
+
+Native CSS nesting throughout. In components (Astro's scoped `<style>`), nest only what
+refers to the element itself or its context:
+
+```css
+.lang {
+  &:hover { … }                     /* states, modifiers, pseudo-elements */
+  &.active { … }
+  .featured & { … }                 /* context: "this element inside .featured" */
+  :global([data-mode='light']) & { … }
+  @media (max-width: 860px) { … }
+}
+.nav a { … }                        /* descendants stay flat */
+```
+
+Astro doesn't add its scope attribute to nested descendant selectors (`.nav { a { … } }`
+compiles to `.nav[data-astro-cid-…] a`), which lowers their specificity and lets them leak into
+child components. Write those flat, as before. `:global(…)` descendants are unscoped on
+purpose and may be nested. Global stylesheets (`src/styles/`) aren't scoped, so anything goes there.
+
 ## Fonts
 
 Self-hosted from Fontsource (`src/styles/fonts.css`), all under the SIL Open Font License 1.1:
