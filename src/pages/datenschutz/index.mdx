@@ -7,12 +7,13 @@ variant: legal
 ---
 
 {/*
-  Geschrieben für das, was diese Website tatsächlich tut: statische Seiten auf GitHub Pages,
+  Geschrieben für das, was diese Website tatsächlich tut: statische Seiten bei einem Webhoster,
   selbst gehostete Schriften, keine Cookies, kein Tracking, keine Embeds, zwei localStorage-Einstellungen.
   Anpassen, sobald sich das ändert (Analytics, Formulare, Embeds …), und die englische Fassung mitziehen.
 */}
 
 import ImprintAddress from '../../components/ImprintAddress.astro';
+import { hoster } from '../../data/imprint';
 import { route } from '../../i18n/routes';
 
 ## Verantwortlicher
@@ -26,14 +27,9 @@ Inhalte von fremden Servern. Auch die Schriften werden von dieser Website selbst
 
 ## Hosting und Server-Logfiles
 
-Die Website wird über GitHub Pages bereitgestellt (GitHub, Inc., 88 Colin P. Kelly Jr. Street, San
-Francisco, CA 94107, USA). Beim Aufruf verarbeitet GitHub technisch notwendige Daten, insbesondere
-Ihre IP-Adresse, Datum und Uhrzeit sowie die aufgerufene Seite, um die Website auszuliefern und vor
-Missbrauch zu schützen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO; mein berechtigtes Interesse
-liegt in einer sicheren und zuverlässigen Bereitstellung der Website.
+Die Website liegt bei {hoster.name}, {hoster.address}. Beim Aufruf verarbeitet der Hoster technisch notwendige Daten, insbesondere Ihre IP-Adresse, Datum und Uhrzeit sowie die aufgerufene Seite, um die Website auszuliefern und vor Missbrauch zu schützen (Server-Logfiles). Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO; mein berechtigtes Interesse liegt in einer sicheren und zuverlässigen Bereitstellung der Website.
 
-Dabei können Daten in die USA übertragen werden. GitHub ist nach dem EU-US Data Privacy Framework
-zertifiziert. Details: [Datenschutzerklärung von GitHub](https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement).
+Der Hoster verarbeitet diese Daten in meinem Auftrag (Art. 28 DSGVO). Details: <a href={hoster.privacyUrl}>Datenschutzerklärung von {hoster.name}</a>.
 
 ## Einstellungen in Ihrem Browser
 

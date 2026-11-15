@@ -103,5 +103,14 @@ with the npm packages (`node_modules/@fontsource-variable/*/LICENSE`).
 
 ## Deployment
 
-Every push to `main` builds, checks and deploys the site to GitHub Pages via
-`.github/workflows/deploy.yml` (repo `weblogixx/weblogixx.github.io`, Pages source: GitHub Actions).
+Every push to `main` builds, checks and uploads `dist/` to the web host via FTP
+(`.github/workflows/deploy.yml`, needs the `FTP_*` secrets and variables listed at its top).
+The target folder is mirrored, so files that aren't in the build are deleted there. Run the
+workflow by hand (Actions → Deploy → Run workflow) for a dry run that only lists the changes.
+
+Apache settings (404 page, www redirect, caching, the prepared HTTPS redirect) live in
+`public/.htaccess`. The site runs on plain `http://` until the host serves a certificate for
+the domain; then switch `site` in `astro.config.mjs` and the redirect in `.htaccess` together.
+
+The privacy policy names the host from `hoster` in `src/data/imprint.ts`; like the imprint,
+the production build fails while it still has placeholders.

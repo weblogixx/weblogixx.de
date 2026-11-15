@@ -1,44 +1,87 @@
-# Build and deploy to GitHub Pages on every push to main.
-# Repo settings → Pages → Source must be "GitHub Actions".
-name: Deploy to GitHub Pages
+# Build, check and upload the site to the web host via FTP on every push to main.
+#
+# Repo settings → Secrets and variables → Actions:
+#   Secrets (hidden, masked in logs):
+#     FTP_USERNAME   FTP user (ideally one restricted to the web folder)
+#     FTP_PASSWORD   its password
+#   Variables (readable; as secrets they'd be masked as *** all over the log):
+#     FTP_SERVER     host name of the FTP server, e.g. ftp.example.com
+#     FTP_TARGET_DIR folder on the server the site goes into, e.g. / or /htdocs/
+#
+# The target folder is mirrored: files there that aren't in the build get DELETED (except the
+# excludes below). Run it by hand with "dry run" first (Actions → Deploy → Run workflow) and
+# check the log before the first real deploy.
+#
+# The host only speaks plain FTP, so the credentials travel unencrypted. Use a separate FTP user
+# with a unique password that only reaches the web folder.
+name: Deploy
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Only list what would be uploaded/deleted
+        type: boolean
+        default: true
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 # One deployment at a time; don't cancel a running one mid-way.
 concurrency:
-  group: pages
+  group: deploy
   cancel-in-progress: false
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v7
 
-      # Installs deps (npm, from package-lock.json), builds and uploads dist/ as the Pages artifact.
-      - name: Build with Astro
-        uses: withastro/action@v6
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Install
+        run: npm ci
 
       # Same gate as locally: astro check + oxlint + oxfmt. A failure here blocks the deploy.
       - name: Check
         run: npm run check
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v5
+      # Also fails while src/data/imprint.ts still has [placeholders].
+      - name: Build
+        run: npm run build
+
+      - name: Install lftp
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+
+      - name: Upload via FTP
+        env:
+          FTP_SERVER: ${{ vars.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          # lftp reads the password from LFTP_PASSWORD (--env-password): no quoting issues,
+          # and it never appears on a command line.
+          LFTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_TARGET_DIR: ${{ vars.FTP_TARGET_DIR }}
+          DRY_RUN: ${{ inputs.dry_run && '--dry-run' || '' }}
+        run: |
+          for v in FTP_SERVER FTP_USERNAME LFTP_PASSWORD FTP_TARGET_DIR; do
+            if [ -z "${!v}" ]; then echo "::error::$v is not set (secret or variable, see the top of deploy.yml)"; exit 1; fi
+          done
+          # --delete: remove files that are gone from the build; .well-known/ (certificate
+          # validation) and cgi-bin/ belong to the host and stay untouched.
+          lftp -c "
+            set ftp:ssl-allow no
+            set net:max-retries 3
+            set net:timeout 30
+            open --user \"$FTP_USERNAME\" --env-password \"$FTP_SERVER\"
+            mirror --reverse --delete --verbose --parallel=4 $DRY_RUN \
+              --exclude-glob .well-known/ --exclude-glob cgi-bin/ \
+              dist/ \"$FTP_TARGET_DIR\"
+          "

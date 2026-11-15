@@ -7,12 +7,13 @@ variant: legal
 ---
 
 {/*
-  Written for what this site actually does: static pages on GitHub Pages, self-hosted fonts,
+  Written for what this site actually does: static pages on a web host, self-hosted fonts,
   no cookies, no tracking, no embeds, two localStorage preferences.
   Update it when that changes (analytics, forms, embeds…), together with the German version.
 */}
 
 import ImprintAddress from '../../../components/ImprintAddress.astro';
+import { hoster } from '../../../data/imprint';
 import { route } from '../../../i18n/routes';
 
 ## Controller
@@ -26,13 +27,9 @@ third-party servers. The fonts are served by this website itself, too.
 
 ## Hosting and server logs
 
-The website is served via GitHub Pages (GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco,
-CA 94107, USA). When you visit it, GitHub processes technically necessary data, in particular your
-IP address, the date and time and the requested page, to deliver the website and protect it against
-abuse. The legal basis is Art. 6(1)(f) GDPR; my legitimate interest is a secure and reliable website.
+The website is hosted by {hoster.name}, {hoster.address}. When you visit it, the host processes technically necessary data, in particular your IP address, the date and time and the requested page, to deliver the website and protect it against abuse (server logs). The legal basis is Art. 6(1)(f) GDPR; my legitimate interest is a secure and reliable website.
 
-Data may be transferred to the USA. GitHub is certified under the EU-US Data Privacy Framework.
-Details: [GitHub's privacy statement](https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement).
+The host processes this data on my behalf (Art. 28 GDPR). Details: <a href={hoster.privacyUrl}>{hoster.name}'s privacy policy</a>.
 
 ## Settings in your browser
 

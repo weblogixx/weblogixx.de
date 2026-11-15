@@ -34,11 +34,33 @@ export const imprint: Imprint = {
   vatId: undefined,
 };
 
-/** Placeholder values still in the imprint (empty when complete). */
-export const imprintPlaceholders = () =>
-  Object.entries(imprint)
+/**
+ * The web host, named in the privacy policy (it processes visitors' IP addresses in its server
+ * logs). Same placeholder rule as the imprint.
+ */
+export interface Hoster {
+  /** Company name, e.g. "Example Hosting GmbH". */
+  name: string;
+  /** Postal address in one line, e.g. "Musterstraße 1, 12345 Musterstadt". */
+  address: string;
+  /** Link to the host's privacy policy. */
+  privacyUrl: string;
+}
+
+// TODO(chris): fill in your web host (see your contract or the host's own imprint).
+export const hoster: Hoster = {
+  name: 'ALL-INKL.COM - Neue Medien Münnich',
+  address: 'Hauptstraße 68, D-02742 Friedersdorf',
+  privacyUrl: 'https://all-inkl.com/datenschutzinformationen',
+};
+
+const placeholders = (data: object, prefix = '') =>
+  Object.entries(data)
     .filter(([, v]) => typeof v === 'string' && /^\[.*\]$/.test(v))
-    .map(([k]) => k);
+    .map(([k]) => prefix + k);
+
+/** Placeholder values still in the imprint or hoster (empty when complete). */
+export const imprintPlaceholders = () => [...placeholders(imprint), ...placeholders(hoster, 'hoster.')];
 
 /** Throws in production builds while placeholders are left: never ship an incomplete legal notice. */
 export function assertImprintComplete() {

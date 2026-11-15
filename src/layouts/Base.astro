@@ -27,7 +27,7 @@ const fullTitle = title ? `${title} · ${profile.name}` : `${profile.name} · ${
 const desc = description ?? profile.intro[lang];
 const other: Locale = lang === 'de' ? 'en' : 'de';
 const altHref = altPath ?? href(routes[page][other]);
-const site = Astro.site ?? new URL('https://weblogixx.github.io');
+const site = Astro.site ?? new URL('http://weblogixx.de');
 ---
 
 <!doctype html>

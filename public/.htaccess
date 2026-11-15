@@ -1,0 +1,45 @@
+# Apache config for the static site. Lives in public/, so the build copies it into dist/ and the
+# FTP deploy puts it in the web root. Astro doesn't generate server config for static builds.
+
+# Our own 404 page (src/pages/404.astro) instead of the host's default one.
+ErrorDocument 404 /404.html
+
+# No directory listings; folders without index.html answer 403.
+Options -Indexes
+
+AddDefaultCharset UTF-8
+AddType image/webp .webp
+AddType image/svg+xml .svg
+AddType font/woff2 .woff2
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # One address: www.weblogixx.de → weblogixx.de
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^ http://%1%{REQUEST_URI} [R=301,L]
+
+  # HTTPS: the host serves no certificate for this domain yet, so a redirect would lock
+  # everyone out. Once https://weblogixx.de works without a warning, uncomment these two
+  # lines, change the www redirect above to https:// and set `site` in astro.config.mjs.
+  # RewriteCond %{HTTPS} off
+  # RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+</IfModule>
+
+# Compress text files on the fly (fonts are woff2, images webp: already compressed).
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain application/javascript image/svg+xml application/xml
+</IfModule>
+
+# Caching: pages must always be fresh (no-cache = revalidate every time); the files in /_astro/
+# carry a content hash in their name, so a changed file gets a new name: cache them for a year.
+<IfModule mod_headers.c>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  <If "%{REQUEST_URI} =~ m#^/_astro/#">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </If>
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
