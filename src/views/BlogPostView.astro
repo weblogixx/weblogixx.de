@@ -92,12 +92,21 @@ const altPath = hasTranslation ? blogPostPath(postSlug(post), other) : route('bl
       max-width: none;
       height: clamp(20rem, 60vw, 32rem);
     }
+    /* Larger than the photo by --pad-x/-y (set in SunnyGuitar.astro) so Safari doesn't clip the
+       halo; only the shapes take the pointer, not the padding over the gap. */
     & :global(.sunny-guitar svg) {
       position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
+      top: calc(-1 * var(--pad-y));
+      left: calc(-1 * var(--pad-x));
+      /* Explicit size: an absolutely positioned <svg> may not stretch between its insets. */
+      width: calc(100% + 2 * var(--pad-x));
+      height: calc(100% + 2 * var(--pad-y));
+      max-width: none;
       overflow: visible;
+      pointer-events: none;
+    }
+    & :global(.sunny-guitar .spot) {
+      pointer-events: auto;
     }
     & :global(.sunny-source .swatches) {
       grid-area: primary;
