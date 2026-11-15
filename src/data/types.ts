@@ -41,6 +41,8 @@ export interface Employer<SkillId extends string = string> {
   /** Logo fills its tile edge to edge (no padding), e.g. for full-bleed marks. */
   logoBleed?: boolean;
   location?: string;
+  /** Number of client projects I worked on there (e.g. at an agency). Shown on the Experience page. */
+  clientProjects?: number;
   /** Roles held there, any order (sorted newest first). At least one. */
   positions: [Position, ...Position[]];
   /**

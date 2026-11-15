@@ -1,0 +1,87 @@
+---
+import Base from '../layouts/Base.astro';
+import type { Locale } from '../data';
+import { imprint, imprintPlaceholders } from '../data/imprint';
+import { useT } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const t = useT(lang);
+
+// Never ship an incomplete legal notice: placeholders are fine while developing,
+// but a production build stops here until src/data/imprint.ts is filled in.
+const missing = imprintPlaceholders();
+if (import.meta.env.PROD && missing.length) {
+  throw new Error(`Imprint incomplete: fill in ${missing.join(', ')} in src/data/imprint.ts`);
+}
+
+const { name, business, street, postalCode, city, email, phone, vatId } = imprint;
+---
+
+<Base lang={lang} page="imprint" title={t('imprint.title')}>
+  <div class="container">
+    <header class="page-head">
+      <h1>{t('imprint.title')}</h1>
+    </header>
+
+    <div class="prose imprint">
+      <section>
+        <h2>{t('imprint.provider')}</h2>
+        <address>
+          {name}<br />
+          {business && (<>{business}<br /></>)}
+          {street}<br />
+          {postalCode} {city}<br />
+          {t('imprint.country')}
+        </address>
+      </section>
+
+      <section>
+        <h2>{t('imprint.contact')}</h2>
+        <p>
+          {t('imprint.email')}: <a href={`mailto:${email}`}>{email}</a>
+          {phone && (<><br />{t('imprint.phone')}: <a href={`tel:${phone.replace(/[^+\d]/g, '')}`}>{phone}</a></>)}
+        </p>
+      </section>
+
+      {vatId && (
+        <section>
+          <h2>{t('imprint.vat')}</h2>
+          <p>{t('imprint.vatText')} {vatId}</p>
+        </section>
+      )}
+
+      <section>
+        <h2>{t('imprint.responsible')}</h2>
+        <address>
+          {name}<br />
+          {street}<br />
+          {postalCode} {city}
+        </address>
+      </section>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .imprint {
+    display: grid;
+    gap: var(--space-6);
+    max-width: 42rem;
+    margin-bottom: var(--space-9);
+  }
+  .imprint h2 {
+    margin-bottom: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    font-weight: 500;
+    color: var(--text-subtle);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  address {
+    font-style: normal;
+  }
+</style>

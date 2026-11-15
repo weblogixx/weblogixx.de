@@ -63,6 +63,8 @@ const site = Astro.site ?? new URL('https://weblogixx.github.io');
         <link rel="preload" href={font} as="font" type="font/woff2" crossorigin />
       ))
     }
+    {/* ICO (16/32/48 px, rendered from the SVG) for browsers without SVG favicons; the rest pick the SVG. */}
+    <link rel="icon" href={href('/favicon.ico')} sizes="32x32" />
     <link rel="icon" type="image/svg+xml" href={href('/favicon.svg')} />
     <link rel="canonical" href={new URL(Astro.url.pathname, site)} />
     <link rel="alternate" hreflang={other} href={new URL(altHref, site)} />

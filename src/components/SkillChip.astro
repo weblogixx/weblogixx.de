@@ -1,4 +1,6 @@
 ---
+import type { SkillTip } from '../i18n/skillTip';
+
 interface Props {
   name: string;
   /** Anchor id, so other pages can deep-link to this chip. */
@@ -9,11 +11,8 @@ interface Props {
   sinceLabel?: string;
   /** Last year used. Turns "since 2004" into a span "2004–2012". */
   until?: number;
-  /**
-   * Tooltip: a label plus a list (e.g. "Used when working for" + companies with brand colors),
-   * and an optional note below it.
-   */
-  tip?: { label: string; items: { name: string; color?: string }[]; note?: string };
+  /** Tooltip content: description, "Used when working for" + companies, legacy note. */
+  tip?: SkillTip;
   /** Highlight: primary border and tint (no extra element, so the chip keeps its size). */
   featured?: boolean;
   /** Discontinued tool: muted look. */
@@ -23,7 +22,9 @@ const { name, id, href, since, sinceLabel, until, tip, featured, legacy } = Astr
 const Tag = href ? 'a' : 'span';
 // Plain `title` is the no-JS / old-browser fallback; Tooltip.astro swaps it for the rich version.
 const title = tip
-  ? [`${tip.label}: ${tip.items.map((i) => i.name).join(', ')}`, tip.note].filter(Boolean).join('\n')
+  ? [tip.text, tip.items.length && `${tip.label}: ${tip.items.map((i) => i.name).join(', ')}`, tip.note]
+      .filter(Boolean)
+      .join('\n')
   : undefined;
 const tipData = tip ? JSON.stringify(tip) : undefined;
 const period = since && (until ? (until === since ? `${since}` : `${since}–${until}`) : `${sinceLabel} ${since}`);

@@ -2,9 +2,10 @@
 import Base from '../layouts/Base.astro';
 import CompanyLogo from '../components/CompanyLogo.astro';
 import SkillChip from '../components/SkillChip.astro';
-import { career, skills, formatPeriod, sortSkillIds, yearOf, type Locale } from '../data';
+import { career, skills, skillUsageById, formatPeriod, sortSkillIds, yearOf, type Locale } from '../data';
 import { brandScope, themeDataAttrs, sunny } from '../theme/color';
 import { useT } from '../i18n/ui';
+import { skillTip } from '../i18n/skillTip';
 import { route } from '../i18n/routes';
 
 interface Props {
@@ -52,6 +53,11 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
                 {e.current && <p class="badge">{t('career.current')}</p>}
                 {e.selfEmployed && <p class="badge">{t('career.selfEmployed')}</p>}
                 {e.location && <p class="location">{e.location}</p>}
+                {e.clientProjects && (
+                  <p class="client-projects">
+                    <strong>{e.clientProjects.toLocaleString(lang)}</strong> {t('career.clientProjects')}
+                  </p>
+                )}
               </div>
             </div>
           </aside>
@@ -106,7 +112,13 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
               <ul class="chips">
                 {/* Featured → normal → legacy, alphabetical within each group. */}
                 {sortSkillIds(e.stack, lang).map((id) => (
-                  <SkillChip name={skills[id].name} href={`${route('home', lang)}#skill-${id}`} />
+                  <SkillChip
+                    name={skills[id].name}
+                    href={`${route('home', lang)}#skill-${id}`}
+                    tip={skillTip(skillUsageById[id], lang)}
+                    featured={skillUsageById[id].featured}
+                    legacy={skillUsageById[id].legacy}
+                  />
                 ))}
               </ul>
             </section>
@@ -240,6 +252,15 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
   .location {
     font-size: var(--step--1);
     color: var(--text-subtle);
+  }
+  .client-projects {
+    font-size: var(--step--1);
+    color: var(--text-muted);
+  }
+  .client-projects strong {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--primary);
   }
   .badge {
     font-family: var(--font-mono);

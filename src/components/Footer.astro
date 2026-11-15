@@ -14,7 +14,13 @@ const year = new Date().getFullYear();
 
 <footer class="footer">
   <div class="container row">
-    <p>© {year} {profile.name}</p>
+    <p class="meta">
+      © {year} {profile.name}
+      <span class="sep" aria-hidden="true">·</span>
+      <a class="legal" href={route('imprint', lang)}>{t('footer.imprint')}</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a class="legal" href={route('privacy', lang)}>{t('footer.privacy')}</a>
+    </p>
     <p class="theme" aria-live="polite">
       <span class="swatch" aria-hidden="true"></span>
       {t('theme.label')}: <a href={route('about', lang, 'about-the-sunny-theme')} data-theme-label>Sunny</a>
@@ -35,6 +41,36 @@ const year = new Date().getFullYear();
     justify-content: space-between;
     gap: var(--space-3);
     padding-block: var(--space-5);
+  }
+  /* Copyright · Impressum · Datenschutz: even spacing around the dots, and on narrow
+     screens it wraps between the items instead of inside them. */
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-1) var(--space-3);
+  }
+  /* Small phones: one item per line; the dots only make sense side by side. */
+  @media (max-width: 480px) {
+    .row {
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+    .meta {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-2);
+    }
+    .sep {
+      display: none;
+    }
+  }
+  /* Quiet like the copyright next to it; primary on hover. */
+  .legal {
+    color: inherit;
+  }
+  .legal:hover {
+    color: var(--primary);
   }
   .theme {
     display: flex;

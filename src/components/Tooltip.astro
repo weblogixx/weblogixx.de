@@ -13,6 +13,7 @@
 ---
 
 <div class="tooltip" id="tooltip" popover="manual" role="tooltip" data-tooltip>
+  <p class="tip-text" hidden></p>
   <p class="tip-label"></p>
   <ul class="tip-list"></ul>
   <p class="tip-note" hidden></p>
@@ -22,6 +23,7 @@
   const fromEvent = (e: Event) => (e.target as Element | null)?.closest?.<HTMLElement>('[data-tip]');
 
   interface TipData {
+    text?: string;
     label: string;
     items: { name: string; color?: string }[];
     note?: string;
@@ -31,6 +33,7 @@
   const supported = tip && 'showPopover' in tip && CSS.supports('anchor-name: --tip');
 
   if (tip && supported) {
+    const text = tip.querySelector<HTMLElement>('.tip-text')!;
     const label = tip.querySelector<HTMLElement>('.tip-label')!;
     const list = tip.querySelector<HTMLElement>('.tip-list')!;
     const note = tip.querySelector<HTMLElement>('.tip-note')!;
@@ -54,6 +57,8 @@
       } catch {
         data = { label: '', items: [{ name: el.dataset.tip ?? '' }] };
       }
+      text.textContent = data.text ?? '';
+      text.hidden = !data.text;
       label.textContent = data.label;
       label.hidden = !data.label;
       note.textContent = data.note ?? '';
@@ -206,6 +211,18 @@
     color: var(--primary);
   }
 
+  .tip-text {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: var(--text);
+  }
+  /* Description followed by the company list: a little air and a divider between them. */
+  .tip-text:not([hidden]) + .tip-label:not([hidden]) {
+    margin-top: 0.55rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed var(--border-strong);
+  }
   .tip-note {
     margin: 0.55rem 0 0;
     padding-top: 0.5rem;

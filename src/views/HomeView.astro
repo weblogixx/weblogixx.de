@@ -7,19 +7,24 @@ import { profile, career, skillsByCategory, skillUsage, formatPeriod, type Local
 import { route, href, routes } from '../i18n/routes';
 import { brandScope } from '../theme/color';
 import { useT } from '../i18n/ui';
+import { skillTip } from '../i18n/skillTip';
 
 interface Props {
   lang: Locale;
 }
 const { lang } = Astro.props;
 const t = useT(lang);
-const legacyNote = (successor?: string) =>
-  successor ? t('skill.legacySuccessor').replace('{0}', successor) : t('skill.legacy');
+const stackTip = {
+  label: t('home.stackTipLabel'),
+  items: [{ name: t('home.stackTipOff') }, { name: t('home.stackTipOn') }],
+};
+const stackTipText = stackTip.items.map((i) => i.name).join(' · ');
 const years = new Date().getFullYear() - profile.since;
 const current = career.find((e) => e.current);
 const stats = [
   { value: `${years}+`, label: t('home.yearsLabel') },
-  { value: String(career.length), label: t('home.companiesLabel') },
+  // Unique names: a company with a gap (Weblogixx) has two entries but counts once.
+  { value: String(new Set(career.map((e) => e.name)).size), label: t('home.companiesLabel') },
   { value: String(skillUsage.length), label: t('home.skillsLabel') },
 ];
 ---
@@ -67,11 +72,21 @@ const stats = [
     <h2 id="stack-title" class="section-title">{t('home.stack')}</h2>
     <div class="stack-head">
       <p class="lede stack-lede">{t('home.stackLede')}</p>
-      <label class="switch">
-        <input type="checkbox" role="switch" class="stack-toggle" data-stack-toggle />
+      {/* Tooltip (Tooltip.astro) explains both states; `title` is the no-JS fallback and the
+          hidden span the description for screen readers (the tooltip is pointer-only). */}
+      <label class="switch" data-tip={JSON.stringify(stackTip)} title={stackTipText}>
+        <input
+          type="checkbox"
+          role="switch"
+          class="stack-toggle"
+          aria-describedby="stack-toggle-desc"
+          data-stack-toggle
+        />
         <span class="track" aria-hidden="true"><span class="thumb"></span></span>
         {t('home.stackAll')}
       </label>
+      {/* Outside the label: text inside it would become part of the switch's name. */}
+      <span id="stack-toggle-desc" class="visually-hidden">{stackTipText}</span>
       {/* Restore the saved choice before the chips render, so nothing jumps on load. */}
       <script is:inline>
         try {
@@ -95,11 +110,7 @@ const stats = [
                   since={s.since}
                   sinceLabel={t('skill.since')}
                   until={s.until}
-                  tip={
-                    s.usedAt.length
-                      ? { label: t('skill.usedAt'), items: s.usedAt, note: s.legacy ? legacyNote(s.successor) : undefined }
-                      : undefined
-                  }
+                  tip={skillTip(s, lang)}
                   featured={s.featured}
                   legacy={s.legacy}
                 />

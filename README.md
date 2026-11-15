@@ -43,6 +43,12 @@ inherited text color is already resolved. For the whole page, use `data-mode` on
 instead (a class there would override the toggle). Elements with color transitions
 (e.g. skill chips) fade over when the class is changed at runtime.
 
+## Fonts
+
+Self-hosted from Fontsource (`src/styles/fonts.css`), all under the SIL Open Font License 1.1:
+Inter, JetBrains Mono, Fraunces. The OFL needs no credit on the page; the license texts ship
+with the npm packages (`node_modules/@fontsource-variable/*/LICENSE`).
+
 ## Commands
 
 | Command          | Action                                                    |

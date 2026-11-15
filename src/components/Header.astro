@@ -14,7 +14,8 @@ interface Props {
 const { lang, page, altPath } = Astro.props;
 const t = useT(lang);
 const other: Locale = lang === 'de' ? 'en' : 'de';
-const items: RouteKey[] = ['home', 'about', 'career', 'blog', 'links'];
+// The pages in the nav (not every route: the imprint is linked from the footer).
+const items = ['home', 'about', 'career', 'blog', 'links'] as const satisfies readonly RouteKey[];
 const switchHref = altPath ?? href(routes[page][other]);
 ---
 
