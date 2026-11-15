@@ -15,15 +15,18 @@ AddType font/woff2 .woff2
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
-  # One address: www.weblogixx.de → weblogixx.de
+  # One address: www.weblogixx.de → https://weblogixx.de (in one hop, from http or https)
   RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
-  RewriteRule ^ http://%1%{REQUEST_URI} [R=301,L]
+  RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
 
-  # HTTPS: the host serves no certificate for this domain yet, so a redirect would lock
-  # everyone out. Once https://weblogixx.de works without a warning, uncomment these two
-  # lines, change the www redirect above to https:// and set `site` in astro.config.mjs.
-  # RewriteCond %{HTTPS} off
-  # RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+  # http → https. The host's SSL setting already does this; kept so it doesn't depend on it.
+  RewriteCond %{HTTPS} off
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+</IfModule>
+
+# Browsers remember to use https for this domain (one year). Only sent over https.
+<IfModule mod_headers.c>
+  Header always set Strict-Transport-Security "max-age=31536000" "expr=%{HTTPS} == 'on'"
 </IfModule>
 
 # Compress text files on the fly (fonts are woff2, images webp: already compressed).

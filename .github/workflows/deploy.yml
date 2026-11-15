@@ -5,15 +5,16 @@
 #     FTP_USERNAME   FTP user (ideally one restricted to the web folder)
 #     FTP_PASSWORD   its password
 #   Variables (readable; as secrets they'd be masked as *** all over the log):
-#     FTP_SERVER     host name of the FTP server, e.g. ftp.example.com
+#     FTP_SERVER     host name of the FTP server: the ALL-INKL server name (w0…….kasserver.com,
+#                    see KAS), not the domain; its certificate is issued for *.kasserver.com
 #     FTP_TARGET_DIR folder on the server the site goes into, e.g. / or /htdocs/
 #
 # The target folder is mirrored: files there that aren't in the build get DELETED (except the
 # excludes below). Run it by hand with "dry run" first (Actions → Deploy → Run workflow) and
 # check the log before the first real deploy.
 #
-# The host only speaks plain FTP, so the credentials travel unencrypted. Use a separate FTP user
-# with a unique password that only reaches the web folder.
+# FTP over TLS (explicit, AUTH TLS): login and files are encrypted and the server certificate
+# is verified. Still best to use a separate FTP user that only reaches the web folder.
 name: Deploy
 
 on:
@@ -77,7 +78,9 @@ jobs:
           # --delete: remove files that are gone from the build; .well-known/ (certificate
           # validation) and cgi-bin/ belong to the host and stay untouched.
           lftp -c "
-            set ftp:ssl-allow no
+            set ftp:ssl-force true
+            set ftp:ssl-protect-data true
+            set ssl:verify-certificate true
             set net:max-retries 3
             set net:timeout 30
             open --user \"$FTP_USERNAME\" --env-password \"$FTP_SERVER\"
