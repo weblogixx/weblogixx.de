@@ -62,22 +62,46 @@ const altPath = hasTranslation ? blogPostPath(postSlug(post), other) : route('bl
     & :global(code) {
       font-family: var(--font-mono);
     }
-    /* Color swatches (HTML block in the Sunny theme post). */
-    & :global(.palette) {
+    /*
+     * Sunny post: the guitar (cut-out photo, transparent background) with the palette taken
+     * from it, side by side: guitar | nine primary steps | three accent steps, all as tall as
+     * the guitar – wide next to narrow, like the stripe. Fits down to small phones.
+     */
+    & :global(.sunny-source) {
       margin: var(--space-4) 0;
       display: grid;
-      gap: var(--space-2);
+      grid-template-columns: auto minmax(4rem, 7rem) minmax(1.75rem, 2.75rem);
+      grid-template-areas:
+        'guitar primary accent'
+        'caption caption caption';
+      justify-content: center;
+      gap: var(--space-4) var(--space-5);
+
+      @media (max-width: 600px) {
+        gap: var(--space-3) var(--space-4);
+      }
     }
-    & :global(.swatches) {
+    & :global(.sunny-source img) {
+      grid-area: guitar;
+      width: auto;
+      height: clamp(20rem, 60vw, 32rem);
+    }
+    & :global(.sunny-source .swatches) {
+      grid-area: primary;
       display: grid;
-      grid-template-columns: repeat(9, 1fr);
-      height: 3rem;
+      grid-template-rows: repeat(9, 1fr);
       border-radius: var(--radius-m);
       overflow: hidden;
     }
-    & :global(.swatches.accent) {
-      grid-template-columns: repeat(3, 1fr);
-      height: 1.25rem;
+    & :global(.sunny-source .swatches.accent) {
+      grid-area: accent;
+      grid-template-rows: repeat(3, 1fr);
+    }
+    & :global(.sunny-source figcaption) {
+      grid-area: caption;
+      text-align: center;
+      /* Wraps to the guitar + palette width instead of widening the columns. */
+      contain: inline-size;
     }
     & :global(figcaption) {
       font-family: var(--font-mono);

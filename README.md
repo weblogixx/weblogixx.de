@@ -15,7 +15,10 @@ All content is typed TS in `src/data/`:
 
 Logos go into `public/logos/` (SVG or PNG) and are referenced as `logo: '/logos/acme.svg'`.
 
-Blog posts: `src/content/blog/<de|en>/<slug>.md` (or `.mdx` to use components). Same slug = translation. `draft: true` hides a post in builds.
+Blog posts: `src/content/blog/<de|en>/<slug>.md` (or `.mdx` to use components, e.g. images via
+`astro:assets` as in the Sunny post; images live in `src/assets/blog/`). Same slug = translation. `draft: true` hides a post in builds.
+
+Highlight a word with `<mark>Sunny</mark>` (accent color); `inline code` gets a small Sunny chip.
 
 Code blocks get a header with language and copy button, and line numbers from two lines on.
 Options after the language: ` ```ts title="src/theme/color.ts" ` (title in the header),

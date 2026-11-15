@@ -54,9 +54,13 @@ const el = (
 const text = (value: string): ElementContent => ({ type: 'text', value });
 
 /** The copy icon used by the contact block's copy button too. */
-const copyIcon = el('svg', { viewBox: '0 0 24 24', ariaHidden: 'true' }, [
+const copyIcon = el('svg', { viewBox: '0 0 24 24', ariaHidden: 'true', className: ['icon-copy'] }, [
   el('rect', { x: '9', y: '9', width: '11', height: '11', rx: '2' }),
   el('path', { d: 'M5 15V6a2 2 0 0 1 2-2h9' }),
+]);
+/** Shown for two seconds after copying, in place of the copy icon. */
+const checkIcon = el('svg', { viewBox: '0 0 24 24', ariaHidden: 'true', className: ['icon-check'] }, [
+  el('path', { d: 'M5 12.5l4.5 4.5L19 7.5' }),
 ]);
 
 export function codeBlocks(): ShikiTransformer {
@@ -80,7 +84,9 @@ export function codeBlocks(): ShikiTransformer {
         ...(label ? [el('span', { className: ['code-lang'] }, [text(label)])] : []),
         el('button', { type: 'button', className: ['code-copy'], dataCodeCopy: '' }, [
           copyIcon,
-          el('span', { className: ['copied'], ariaLive: 'polite' }),
+          checkIcon,
+          // "Kopiert" for screen readers; sighted users get the tooltip and the checkmark.
+          el('span', { className: ['copied', 'visually-hidden'], ariaLive: 'polite' }),
         ]),
       ]);
 

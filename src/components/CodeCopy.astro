@@ -2,6 +2,8 @@
 /**
  * Copy buttons for Markdown code blocks (rendered by src/markdown/codeBlocks.ts, which
  * doesn't know the page language): sets their labels and copies the block's code.
+ * Feedback: the shared tooltip (Tooltip.astro) switches to "Kopiert" and the icon to a
+ * checkmark for two seconds; screen readers hear it via a live region.
  * Include once on pages that render Markdown.
  */
 import type { Locale } from '../data/types';
@@ -17,14 +19,25 @@ const t = useT(Astro.props.lang);
 
 <script>
   const labels = document.querySelector<HTMLElement>('[data-code-labels]')?.dataset ?? {};
+  const copyLabel = labels.copy ?? 'Copy';
+  const copiedLabel = labels.copied ?? 'Copied';
+  /** Same check as Tooltip.astro: without it, fall back to the native title. */
+  const hasTooltip = 'showPopover' in HTMLElement.prototype && CSS.supports('anchor-name: --tip');
+  const tipFor = (text: string) => JSON.stringify({ text, label: '', items: [] });
 
   for (const button of document.querySelectorAll<HTMLButtonElement>('[data-code-copy]')) {
-    const block = button.closest('.code-block');
-    const code = block?.querySelector('pre code');
+    const code = button.closest('.code-block')?.querySelector('pre code');
     const status = button.querySelector<HTMLElement>('.copied');
     if (!code) continue;
-    button.setAttribute('aria-label', labels.copy ?? 'Copy');
-    button.title = labels.copy ?? 'Copy';
+    button.setAttribute('aria-label', copyLabel);
+    if (hasTooltip) button.dataset.tip = tipFor(copyLabel);
+    else button.title = copyLabel;
+
+    const setTip = (text: string) => {
+      if (!hasTooltip) return;
+      button.dataset.tip = tipFor(text);
+      button.dispatchEvent(new CustomEvent('tip:update', { bubbles: true }));
+    };
 
     let timer = 0;
     button.addEventListener('click', async () => {
@@ -36,10 +49,15 @@ const t = useT(Astro.props.lang);
         getSelection()?.selectAllChildren(code);
         return;
       }
-      if (!status) return;
-      status.textContent = labels.copied ?? '';
+      button.dataset.copied = '';
+      if (status) status.textContent = copiedLabel;
+      setTip(copiedLabel);
       clearTimeout(timer);
-      timer = window.setTimeout(() => (status.textContent = ''), 2000);
+      timer = window.setTimeout(() => {
+        delete button.dataset.copied;
+        if (status) status.textContent = '';
+        setTip(copyLabel);
+      }, 2000);
     });
   }
 </script>

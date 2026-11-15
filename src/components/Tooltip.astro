@@ -9,6 +9,9 @@
  *
  * Progressive enhancement: without popover + anchor support, nothing is touched and
  * the element's plain `title` (rendered by SkillChip as fallback) keeps working.
+ *
+ * Changing `data-tip` while the tooltip is open (e.g. "Kopiert" after copying): dispatch a
+ * bubbling `tip:update` event on the element and the open tooltip re-renders.
  */
 ---
 
@@ -116,6 +119,11 @@
       if (el) show(el);
     });
     document.addEventListener('focusout', hide);
+    document.addEventListener('tip:update', (e) => {
+      if (e.target !== current || !current) return;
+      render(current);
+      pointArrow();
+    });
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') hide();
     });
@@ -207,6 +215,11 @@
       top: -6px;
       transform: translateX(-50%) rotate(-135deg);
     }
+  }
+
+  /* Text-only tips (no company list, e.g. "Code kopieren"): as narrow as the text. */
+  .tooltip:has(.tip-list:empty) {
+    min-width: 0;
   }
 
   .tip-label {
