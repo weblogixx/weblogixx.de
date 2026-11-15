@@ -1,0 +1,45 @@
+---
+/**
+ * Copy buttons for Markdown code blocks (rendered by src/markdown/codeBlocks.ts, which
+ * doesn't know the page language): sets their labels and copies the block's code.
+ * Include once on pages that render Markdown.
+ */
+import type { Locale } from '../data/types';
+import { useT } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+}
+const t = useT(Astro.props.lang);
+---
+
+<span hidden data-code-labels data-copy={t('code.copy')} data-copied={t('code.copied')}></span>
+
+<script>
+  const labels = document.querySelector<HTMLElement>('[data-code-labels]')?.dataset ?? {};
+
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-code-copy]')) {
+    const block = button.closest('.code-block');
+    const code = block?.querySelector('pre code');
+    const status = button.querySelector<HTMLElement>('.copied');
+    if (!code) continue;
+    button.setAttribute('aria-label', labels.copy ?? 'Copy');
+    button.title = labels.copy ?? 'Copy';
+
+    let timer = 0;
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(code.textContent ?? '');
+      } catch {
+        // Clipboard blocked (permissions, embedded browser): select the code instead,
+        // so ⌘C / Ctrl+C does the rest.
+        getSelection()?.selectAllChildren(code);
+        return;
+      }
+      if (!status) return;
+      status.textContent = labels.copied ?? '';
+      clearTimeout(timer);
+      timer = window.setTimeout(() => (status.textContent = ''), 2000);
+    });
+  }
+</script>

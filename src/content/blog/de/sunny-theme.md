@@ -3,29 +3,29 @@ title: Das Sunny-Theme
 description: Wie aus einer gelben Gitarre mit rotem Rennstreifen das Farbschema dieser Seite wurde – sechs Zahlen, OKLCH und ein paar Tricks.
 date: 2026-11-15
 tags: [design, css]
-skills: [css, designtokens, designsystems, astro]
+skills: [css, designtokens, responsiveDesign, designsystems, astro]
 ---
 
 Das Farbschema dieser Seite heißt **Sunny**. Es stammt von meiner gelben Gitarre im Stil der Siebziger: warmgelber Korpus, roter Rennstreifen. Genau diese beiden Farben sind Primär- und Akzentfarbe. Und der Streifen – schmal, breit, schmal, im 45°-Winkel – taucht überall auf: im Logo, im Hero und an jeder Station auf der Seite _Erfahrung_.
 
 <figure class="palette" aria-label="Sunny-Palette">
-<div class="swatches">
-<span style="background: var(--primary-100)"></span>
-<span style="background: var(--primary-200)"></span>
-<span style="background: var(--primary-300)"></span>
-<span style="background: var(--primary-400)"></span>
-<span style="background: var(--primary-500)"></span>
-<span style="background: var(--primary-600)"></span>
-<span style="background: var(--primary-700)"></span>
-<span style="background: var(--primary-800)"></span>
-<span style="background: var(--primary-900)"></span>
-</div>
-<div class="swatches accent">
-<span style="background: var(--accent-300)"></span>
-<span style="background: var(--accent-500)"></span>
-<span style="background: var(--accent-700)"></span>
-</div>
-<figcaption>Sunny · oklch</figcaption>
+  <div class="swatches">
+    <span style="background: var(--primary-100)"></span>
+    <span style="background: var(--primary-200)"></span>
+    <span style="background: var(--primary-300)"></span>
+    <span style="background: var(--primary-400)"></span>
+    <span style="background: var(--primary-500)"></span>
+    <span style="background: var(--primary-600)"></span>
+    <span style="background: var(--primary-700)"></span>
+    <span style="background: var(--primary-800)"></span>
+    <span style="background: var(--primary-900)"></span>
+  </div>
+  <div class="swatches accent">
+    <span style="background: var(--accent-300)"></span>
+    <span style="background: var(--accent-500)"></span>
+    <span style="background: var(--accent-700)"></span>
+  </div>
+  <figcaption>Sunny · oklch</figcaption>
 </figure>
 
 ## Sechs Zahlen

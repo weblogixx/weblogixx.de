@@ -34,7 +34,9 @@ const site = Astro.site ?? new URL('https://weblogixx.github.io');
 <html lang={lang}>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {/* viewport-fit=cover: the page (and the header's background) reaches into the notch / status
+        bar area; the header, container and footer pad themselves by the safe-area insets. */}
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{fullTitle}</title>
     <meta name="description" content={desc} />
     <meta name="theme-color" content="#faf6ee" media="(prefers-color-scheme: light)" />

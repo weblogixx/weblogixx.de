@@ -5,6 +5,7 @@
  * Blog posts don't use this: they're a content collection rendered by BlogPostView.
  */
 import Base from './Base.astro';
+import CodeCopy from '../components/CodeCopy.astro';
 import type { Locale } from '../data/types';
 import type { RouteKey } from '../i18n/routes';
 
@@ -38,6 +39,7 @@ const { lang, page, title, description, eyebrow, lede, variant } = Astro.props.f
     <div class:list={['prose', 'md', variant]}>
       <slot />
     </div>
+    <CodeCopy lang={lang} />
   </div>
 </Base>
 

@@ -99,7 +99,9 @@ svg {
   width: 100%;
   max-width: var(--content-width);
   margin-inline: auto;
-  padding-inline: var(--gutter);
+  /* In landscape the notch sits at a side: keep content out of it. */
+  padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
 }
 
 .eyebrow {
@@ -124,6 +126,118 @@ svg {
 
   strong {
     color: var(--text);
+  }
+}
+
+/*
+ * Code blocks from Markdown/MDX (Shiki + src/markdown/codeBlocks.ts): a Sunny frame with a
+ * header (title, language, copy button), GitHub's token colors for the current mode and
+ * optional line numbers. The copy button's script: src/components/CodeCopy.astro.
+ */
+.code-block {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  background: var(--surface);
+  overflow: hidden;
+
+  & pre {
+    margin: 0;
+    padding: var(--space-4);
+    overflow-x: auto;
+    font-size: var(--step--1);
+    line-height: 1.6;
+  }
+  & code {
+    font-family: var(--font-mono);
+  }
+  & .astro-code,
+  & .astro-code span {
+    color: light-dark(var(--shiki-light), var(--shiki-dark));
+  }
+
+  /* Line numbers: a counter per line, outside the copied text (::before isn't in textContent). */
+  &[data-lines] code {
+    counter-reset: line;
+  }
+  &[data-lines] .line::before {
+    counter-increment: line;
+    content: counter(line);
+    display: inline-block;
+    width: calc(var(--ln-digits, 2) * 1ch);
+    margin-inline-end: 2ch;
+    text-align: right;
+    color: var(--text-subtle);
+    opacity: 0.6;
+    user-select: none;
+  }
+}
+.code-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 2.5rem;
+  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+}
+.code-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-muted);
+}
+.code-lang {
+  color: var(--text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.85em;
+}
+.code-copy {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  background: transparent;
+  color: var(--text-subtle);
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--border-strong);
+    color: var(--primary);
+    outline: none;
+  }
+  /* Copying needs JS (data-js is set before first paint). */
+  :root:not([data-js]) & {
+    display: none;
+  }
+  & svg {
+    width: 0.95rem;
+    height: 0.95rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  /* "Kopiert" appears to the left of the button for two seconds. */
+  & .copied {
+    position: absolute;
+    right: calc(100% + var(--space-2));
+    white-space: nowrap;
+    color: var(--primary);
+
+    &:empty {
+      display: none;
+    }
   }
 }
 

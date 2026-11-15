@@ -88,6 +88,8 @@ const switchHref = altPath ?? href(routes[page][other]);
     position: sticky;
     top: 0;
     z-index: 10;
+    /* Reaches up into the notch / status bar area (viewport-fit=cover in Base.astro). */
+    padding-top: env(safe-area-inset-top, 0px);
     background: oklch(from var(--bg) l c h / 0.82);
     /* Prefixed first, standard last: the build minifier treats them as duplicates and keeps
        only the last one, which must be the one Chrome/Firefox understand. */

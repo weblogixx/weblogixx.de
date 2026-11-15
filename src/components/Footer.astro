@@ -31,6 +31,8 @@ const year = new Date().getFullYear();
 <style>
   .footer {
     margin-top: auto;
+    /* Clear of the home indicator (viewport-fit=cover in Base.astro). */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
     border-top: 1px solid var(--border);
     color: var(--text-subtle);
     font-size: var(--step--1);

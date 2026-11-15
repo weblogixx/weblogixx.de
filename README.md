@@ -17,6 +17,11 @@ Logos go into `public/logos/` (SVG or PNG) and are referenced as `logo: '/logos/
 
 Blog posts: `src/content/blog/<de|en>/<slug>.md` (or `.mdx` to use components). Same slug = translation. `draft: true` hides a post in builds.
 
+Code blocks get a header with language and copy button, and line numbers from two lines on.
+Options after the language: ` ```ts title="src/theme/color.ts" ` (title in the header),
+`nolines` (no line numbers), `lines` (line numbers for a single line too).
+See `src/markdown/codeBlocks.ts`.
+
 Prose pages are MDX files in `src/pages/` using `layout: …/layouts/MarkdownPage.astro`; the
 frontmatter sets `lang`, `page` (route key), `title` and optionally `eyebrow`, `lede`,
 `description` and `variant: legal`:

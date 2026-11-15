@@ -38,15 +38,28 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
           <aside class="meta">
             <div class="meta-sticky">
               <span class="marker stripe-marker" aria-hidden="true" />
-              <CompanyLogo
-                name={e.name}
-                logo={e.logo}
-                mark={e.logoMark}
-                background={e.logoBackground}
-                bleed={e.logoBleed}
-                color={e.colors?.primary}
-                variant="full"
-              />
+              {/* Full logo; on small phones the square tile from the home page instead, so the
+                  period and location fit next to it. The hidden one isn't loaded (lazy). */}
+              <span class="logo-full">
+                <CompanyLogo
+                  name={e.name}
+                  logo={e.logo}
+                  mark={e.logoMark}
+                  background={e.logoBackground}
+                  bleed={e.logoBleed}
+                  color={e.colors?.primary}
+                  variant="full"
+                />
+              </span>
+              <span class="logo-mark">
+                <CompanyLogo
+                  name={e.name}
+                  mark={e.logoMark}
+                  background={e.logoBackground}
+                  bleed={e.logoBleed}
+                  color={e.colors?.primary}
+                />
+              </span>
               <div class="meta-text">
                 <p class="period">{formatPeriod(e, lang)}</p>
                 {e.current && <p class="badge">{t('career.current')}</p>}
@@ -186,7 +199,7 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
     background: linear-gradient(var(--border), var(--border)) no-repeat 106px 0 / 100% 1px;
     background-origin: border-box;
     position: relative;
-    scroll-margin-top: 4rem;
+    scroll-margin-top: calc(4rem + env(safe-area-inset-top, 0px));
 
     @media (max-width: 760px) {
       /* minmax(0, …): a long word (CLICKSPORTS) must not widen the column past the screen. */
@@ -214,8 +227,8 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
   }
   .meta-sticky {
     position: sticky;
-    /* Right below the header (4rem + its 1px border). */
-    top: calc(4rem + 1px);
+    /* Right below the header (4rem + its 1px border + the notch area it covers). */
+    top: calc(4rem + 1px + env(safe-area-inset-top, 0px));
     /* Pulled up through the job's top padding, so the marker sits on the job's top edge. */
     margin-top: calc(-1 * var(--job-pad) - 1px);
     display: grid;
@@ -229,6 +242,20 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
       flex-wrap: wrap;
       align-items: center;
       gap: var(--space-3) var(--space-4);
+    }
+  }
+  .logo-full {
+    display: contents;
+
+    @media (max-width: 480px) {
+      display: none;
+    }
+  }
+  .logo-mark {
+    display: none;
+
+    @media (max-width: 480px) {
+      display: contents;
     }
   }
   .meta-text {

@@ -9,23 +9,23 @@ skills: [css, designtokens, designsystems, astro]
 This site's color scheme is called **Sunny**. It comes from my yellow '70s-style guitar: a warm yellow body with a red racing stripe. Those two colors are the primary and accent colors. And the stripe – thin, wide, thin, at 45° – shows up everywhere: in the logo, in the hero and on every position on the _Experience_ page.
 
 <figure class="palette" aria-label="Sunny palette">
-<div class="swatches">
-<span style="background: var(--primary-100)"></span>
-<span style="background: var(--primary-200)"></span>
-<span style="background: var(--primary-300)"></span>
-<span style="background: var(--primary-400)"></span>
-<span style="background: var(--primary-500)"></span>
-<span style="background: var(--primary-600)"></span>
-<span style="background: var(--primary-700)"></span>
-<span style="background: var(--primary-800)"></span>
-<span style="background: var(--primary-900)"></span>
-</div>
-<div class="swatches accent">
-<span style="background: var(--accent-300)"></span>
-<span style="background: var(--accent-500)"></span>
-<span style="background: var(--accent-700)"></span>
-</div>
-<figcaption>Sunny · oklch</figcaption>
+  <div class="swatches">
+    <span style="background: var(--primary-100)"></span>
+    <span style="background: var(--primary-200)"></span>
+    <span style="background: var(--primary-300)"></span>
+    <span style="background: var(--primary-400)"></span>
+    <span style="background: var(--primary-500)"></span>
+    <span style="background: var(--primary-600)"></span>
+    <span style="background: var(--primary-700)"></span>
+    <span style="background: var(--primary-800)"></span>
+    <span style="background: var(--primary-900)"></span>
+  </div>
+  <div class="swatches accent">
+    <span style="background: var(--accent-300)"></span>
+    <span style="background: var(--accent-500)"></span>
+    <span style="background: var(--accent-700)"></span>
+  </div>
+  <figcaption>Sunny · oklch</figcaption>
 </figure>
 
 ## Six numbers
