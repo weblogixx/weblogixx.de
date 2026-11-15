@@ -81,10 +81,23 @@ const altPath = hasTranslation ? blogPostPath(postSlug(post), other) : route('bl
         gap: var(--space-3) var(--space-4);
       }
     }
-    & :global(.sunny-source img) {
+    /* The photo sizes the cell; the traced areas (SunnyGuitar.astro) lie on top of it. */
+    & :global(.sunny-guitar) {
       grid-area: guitar;
+      position: relative;
+    }
+    & :global(.sunny-guitar img) {
       width: auto;
+      /* The global max-width: 100% would be circular in this auto-sized cell (→ 0 wide). */
+      max-width: none;
       height: clamp(20rem, 60vw, 32rem);
+    }
+    & :global(.sunny-guitar svg) {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
     }
     & :global(.sunny-source .swatches) {
       grid-area: primary;
@@ -97,6 +110,50 @@ const altPath = hasTranslation ? blogPostPath(postSlug(post), other) : route('bl
       grid-area: accent;
       grid-template-rows: repeat(3, 1fr);
     }
+    /*
+     * Guitar ↔ palette: hovering (or focusing/tapping) the body or a primary swatch makes the
+     * body and the primary column glow in the primary color; the stripe or an accent swatch
+     * does the same in the accent color. The traced shapes (.spot) are invisible hit areas;
+     * the halo (.glow, an SVG filter in SunnyGuitar.astro) only appears outside the shape's
+     * edge. The stripe lies on top of the body and wins.
+     */
+    & :global(.spot) {
+      fill: transparent;
+      cursor: pointer;
+      outline: none;
+    }
+    & :global(.glow) {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 200ms;
+    }
+    & :global(.flood-primary) {
+      flood-color: var(--primary);
+    }
+    & :global(.flood-accent) {
+      flood-color: var(--accent);
+    }
+    & :global(.sunny-source .swatches) {
+      --glow: transparent;
+      box-shadow: 0 0 1.1rem var(--glow);
+      transition: box-shadow 200ms;
+    }
+    & :global(.sunny-source:has(.spot-body:is(:hover, :focus-visible), .swatches:not(.accent):hover)) {
+      & :global(.glow-body) {
+        opacity: 1;
+      }
+      & :global(.swatches:not(.accent)) {
+        --glow: color-mix(in oklch, var(--primary) 70%, transparent);
+      }
+    }
+    & :global(.sunny-source:has(.spot-stripe:is(:hover, :focus-visible), .swatches.accent:hover)) {
+      & :global(.glow-stripe) {
+        opacity: 1;
+      }
+      & :global(.swatches.accent) {
+        --glow: color-mix(in oklch, var(--accent) 75%, transparent);
+      }
+    }
     & :global(.sunny-source figcaption) {
       grid-area: caption;
       text-align: center;
@@ -107,6 +164,11 @@ const altPath = hasTranslation ? blogPostPath(postSlug(post), other) : route('bl
       font-family: var(--font-mono);
       font-size: var(--step--1);
       color: var(--text-subtle);
+      hyphens: manual;
+    }
+    /* Lists: the grid gap already spaces them; the default margin would double it. */
+    & :global(:is(ul, ol)) {
+      margin: 0;
     }
   }
 </style>

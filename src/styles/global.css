@@ -267,6 +267,8 @@ svg {
     font-family: var(--font-mono);
     font-size: 0.875em;
     overflow-wrap: anywhere;
+    /* body hyphenates on tiny screens; a hyphen inside code would read as part of it. */
+    hyphens: manual;
   }
   & mark {
     background: none;
