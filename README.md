@@ -10,12 +10,25 @@ All content is typed TS in `src/data/`:
 | -------------- | ------------------------------------------------------------------------- |
 | `employers.ts` | Career entries incl. brand colors (hex). Sorted by `start` automatically. |
 | `skills.ts`    | Skill ids → name/category. `employers[].stack` references these ids.      |
-| `profile.ts`   | Name, intro, focus areas, about text.                                     |
+| `profile.ts`   | Name, intro, focus areas.                                                 |
 | `links.ts`     | Links page.                                                               |
 
 Logos go into `public/logos/` (SVG or PNG) and are referenced as `logo: '/logos/acme.svg'`.
 
-Blog posts: `src/content/blog/<de|en>/<slug>.md`. Same slug = translation. `draft: true` hides a post in builds.
+Blog posts: `src/content/blog/<de|en>/<slug>.md` (or `.mdx` to use components). Same slug = translation. `draft: true` hides a post in builds.
+
+Prose pages are MDX files in `src/pages/` using `layout: …/layouts/MarkdownPage.astro`; the
+frontmatter sets `lang`, `page` (route key), `title` and optionally `eyebrow`, `lede`,
+`description` and `variant: legal`:
+
+| Page    | DE                                | EN                                    |
+| ------- | --------------------------------- | ------------------------------------- |
+| About   | `src/pages/ueber-mich/index.mdx`  | `src/pages/en/about/index.mdx`        |
+| Imprint | `src/pages/impressum/index.mdx`   | `src/pages/en/legal-notice/index.mdx` |
+| Privacy | `src/pages/datenschutz/index.mdx` | `src/pages/en/privacy/index.mdx`      |
+
+Imprint and privacy pull name, address and contact details from `src/data/imprint.ts` via
+`<ImprintAddress />`, which fails the production build while placeholders are left.
 
 ## Sunny theme
 

@@ -2,7 +2,7 @@
  * Legal notice (Impressum) per § 5 DDG and § 18 Abs. 2 MStV.
  *
  * Values in [brackets] are placeholders: the production build fails while any are left
- * (see ImprintView.astro), so the site can't go live with an incomplete imprint.
+ * (see ImprintAddress.astro), so the site can't go live with an incomplete imprint.
  * Optional fields: leave them out (undefined) and their block disappears.
  */
 export interface Imprint {
@@ -39,3 +39,14 @@ export const imprintPlaceholders = () =>
   Object.entries(imprint)
     .filter(([, v]) => typeof v === 'string' && /^\[.*\]$/.test(v))
     .map(([k]) => k);
+
+/** Throws in production builds while placeholders are left: never ship an incomplete legal notice. */
+export function assertImprintComplete() {
+  const missing = imprintPlaceholders();
+  if (import.meta.env.PROD && missing.length) {
+    throw new Error(`Imprint incomplete: fill in ${missing.join(', ')} in src/data/imprint.ts`);
+  }
+}
+
+/** tel: link for a phone number as written ("0171 / 830 47 62" → "tel:01718304762"). */
+export const telHref = (phone: string) => `tel:${phone.replace(/[^+\d]/g, '')}`;

@@ -1,0 +1,31 @@
+---
+layout: ../../layouts/MarkdownPage.astro
+lang: de
+page: imprint
+title: Impressum
+variant: legal
+---
+
+{/* Impressum nach § 5 DDG und § 18 Abs. 2 MStV. Adresse und Kontaktdaten kommen aus src/data/imprint.ts. */}
+
+import ImprintAddress from '../../components/ImprintAddress.astro';
+import { imprint, telHref } from '../../data/imprint';
+
+## Angaben gemäß § 5 DDG
+
+<ImprintAddress country="Deutschland" />
+
+## Kontakt
+
+<p>E-Mail: <a href={`mailto:${imprint.email}`}>{imprint.email}</a>{imprint.phone && (<><br />Telefon: <a href={telHref(imprint.phone)}>{imprint.phone}</a></>)}</p>
+
+{imprint.vatId && (
+  <>
+    <h2>Umsatzsteuer-ID</h2>
+    <p>Umsatzsteuer-Identifikationsnummer gemäß § 27a UStG: {imprint.vatId}</p>
+  </>
+)}
+
+## Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV
+
+<ImprintAddress business={false} />

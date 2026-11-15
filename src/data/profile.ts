@@ -48,15 +48,4 @@ export const profile = {
       },
     },
   ] satisfies { title: L10n; text: L10n }[],
-  // TODO(chris): personal "About me" text.
-  about: {
-    de: [
-      'Platzhalter: Wer ich bin, wo ich lebe und was mich antreibt.',
-      'Platzhalter: Was ich abseits des Bildschirms mache — zum Beispiel Gitarre spielen.',
-    ],
-    en: [
-      'Placeholder: who I am, where I live and what drives me.',
-      'Placeholder: what I do away from the screen — playing guitar, for example.',
-    ],
-  } satisfies L10n<string[]>,
 };

@@ -198,7 +198,8 @@ svg {
 
 /*
  * Section marker = a miniature of the logo: a brand-colored block with 45° cuts on both ends,
- * then thin–wide–thin accent stripes slanted the same way (top-left → bottom-right).
+ * then thin–wide–thin stripes in the logo mark's colors, slanted the same way
+ * (top-left → bottom-right).
  * Fixed px geometry (110 × 8), drawn with two clip-paths so each part keeps its color.
  * Used on each job of the Experience page and at the bottom of the home hero; the pages
  * only position it.
@@ -220,7 +221,14 @@ svg {
     clip-path: polygon(0 0, 64px 0, 72px 100%, 8px 100%);
   }
   &::after {
-    background: var(--accent);
+    /* The stripes' edges run at 45°, so a 45deg gradient splits them cleanly. A point (x, y)
+       sits at (x - y + 8) / √2 px along it: the gaps at x = 75 and 95 (top edge) → 58.7 / 72.8px. */
+    background: linear-gradient(
+      45deg,
+      var(--mark-thin) 58.7px,
+      var(--mark-wide) 58.7px 72.8px,
+      var(--mark-thin) 72.8px
+    );
     clip-path: path('M68 0H73L81 8H76Z M77 0H93L101 8H85Z M97 0H102L110 8H105Z');
   }
 }

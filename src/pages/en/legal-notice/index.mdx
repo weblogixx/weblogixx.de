@@ -1,0 +1,31 @@
+---
+layout: ../../../layouts/MarkdownPage.astro
+lang: en
+page: imprint
+title: Legal notice
+variant: legal
+---
+
+{/* Legal notice per § 5 DDG and § 18(2) MStV. Address and contact details come from src/data/imprint.ts. */}
+
+import ImprintAddress from '../../../components/ImprintAddress.astro';
+import { imprint, telHref } from '../../../data/imprint';
+
+## Information pursuant to § 5 DDG (German Digital Services Act)
+
+<ImprintAddress country="Germany" />
+
+## Contact
+
+<p>Email: <a href={`mailto:${imprint.email}`}>{imprint.email}</a>{imprint.phone && (<><br />Phone: <a href={telHref(imprint.phone)}>{imprint.phone}</a></>)}</p>
+
+{imprint.vatId && (
+  <>
+    <h2>VAT ID</h2>
+    <p>VAT identification number pursuant to § 27a UStG: {imprint.vatId}</p>
+  </>
+)}
+
+## Responsible for the content pursuant to § 18(2) MStV
+
+<ImprintAddress business={false} />

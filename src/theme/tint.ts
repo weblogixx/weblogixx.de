@@ -2,8 +2,9 @@
  * Scroll-driven theme tinting.
  *
  * Every element with [data-tint] carries a serialized theme (see themeDataAttrs).
- * Whichever one crosses a line 30% down the viewport becomes active, and the six
- * theme numbers on :root (--p-l/c/h, --a-l/c/h) are tweened towards it.
+ * Whichever one crosses a line 30% down the viewport becomes active, and the theme
+ * colors on :root (--p-*, --a-*, and the logo mark's --mt-* / --mw-* / --mn-*, each
+ * l/c/h) are tweened towards it.
  *
  * Why a JS tween and not a CSS transition on the registered properties:
  * while a CSS transition runs, Chrome updates styles through an optimized path
@@ -13,13 +14,11 @@
  */
 
 const DURATION = 750;
-const PROPS = ['--p-l', '--p-c', '--p-h', '--a-l', '--a-c', '--a-h'] as const;
-type Values = [number, number, number, number, number, number];
+/** Color groups, in the order themeDataAttrs() writes them (see src/theme/color.ts). */
+const GROUPS = ['p', 'a', 'mt', 'mw', 'mn'] as const;
+const PROPS = GROUPS.flatMap((g) => [`--${g}-l`, `--${g}-c`, `--${g}-h`]);
 
-interface TintTheme {
-  p: [number, number, number];
-  a: [number, number, number];
-}
+type TintTheme = Record<(typeof GROUPS)[number], [number, number, number]>;
 
 /*
  * Colors are blended in OKLab, not by turning the hue. Brand hues can sit almost opposite
@@ -47,6 +46,9 @@ const lerp = (from: Lab, to: Lab, k: number): Lab => [
   from[1] + (to[1] - from[1]) * k,
   from[2] + (to[2] - from[2]) * k,
 ];
+
+/** The i-th [l, c, h] triple of a flat value list. */
+const triple = (v: number[], i: number): Lch => [v[i * 3]!, v[i * 3 + 1]!, v[i * 3 + 2]!];
 
 /** Same feel as cubic-bezier(0.65, 0, 0.35, 1). */
 const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2);
@@ -98,32 +100,31 @@ export function initTint() {
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const computed = getComputedStyle(root);
   // Start from whatever :root currently has (the @property initial values = Sunny).
-  const current = PROPS.map((p) => Number.parseFloat(computed.getPropertyValue(p)) || 0) as Values;
+  const current = PROPS.map((p) => Number.parseFloat(computed.getPropertyValue(p)) || 0);
 
-  const write = (v: Values) => {
+  const write = (v: number[]) => {
     PROPS.forEach((p, i) => root.style.setProperty(p, String(Math.round(v[i]! * 1e4) / 1e4)));
   };
 
   let frame = 0;
-  const tweenTo = (to: Values) => {
+  const tweenTo = (to: number[]) => {
     cancelAnimationFrame(frame);
     if (reduceMotion.matches) {
-      current.splice(0, 6, ...to);
+      current.splice(0, to.length, ...to);
       write(current);
       return;
     }
-    // Primary and accent each travel in a straight line through OKLab.
-    const fromP = toLab([current[0], current[1], current[2]]);
-    const fromA = toLab([current[3], current[4], current[5]]);
-    const toP = toLab([to[0], to[1], to[2]]);
-    const toA = toLab([to[3], to[4], to[5]]);
+    // Each color travels in a straight line through OKLab.
+    const from = GROUPS.map((_, i) => toLab(triple(current, i)));
+    const target = GROUPS.map((_, i) => toLab(triple(to, i)));
     const start = performance.now();
     const step = (now: number) => {
       const t = Math.min(1, (now - start) / DURATION);
       const k = easeInOutCubic(t);
-      const p = t < 1 ? toLch(lerp(fromP, toP, k), current[2]) : ([to[0], to[1], to[2]] as Lch);
-      const a = t < 1 ? toLch(lerp(fromA, toA, k), current[5]) : ([to[3], to[4], to[5]] as Lch);
-      current.splice(0, 6, ...p, ...a);
+      const next = GROUPS.flatMap((_, i) =>
+        t < 1 ? toLch(lerp(from[i]!, target[i]!, k), current[i * 3 + 2]!) : triple(to, i),
+      );
+      current.splice(0, next.length, ...next);
       write(current);
       if (t < 1) frame = requestAnimationFrame(step);
     };
@@ -140,7 +141,7 @@ export function initTint() {
     } catch {
       return;
     }
-    tweenTo([...theme.p, ...theme.a]);
+    tweenTo(GROUPS.flatMap((g) => theme[g]));
     if (label) label.textContent = el.dataset.themeName ?? '';
     if (prompt) swapText(prompt, el.dataset.handle ?? '', reduceMotion.matches);
   };

@@ -51,6 +51,11 @@ export interface Employer<SkillId extends string = string> {
    * Omit entirely to keep Sunny.
    */
   colors?: { primary: string; accent?: string };
+  /**
+   * Overrides for the logo mark (header logo, section marker), hex. By default the tile is a
+   * near-black shade of the primary hue and the thin stripes a tone of the primary.
+   */
+  mark?: { tile?: string; thin?: string };
   /** Short one-liner shown in compact timelines. */
   tagline: L10n;
   /** Paragraphs about the company and my role there. */

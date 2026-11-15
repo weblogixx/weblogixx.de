@@ -1,0 +1,65 @@
+---
+layout: ../../../layouts/MarkdownPage.astro
+lang: en
+page: privacy
+title: Privacy policy
+variant: legal
+---
+
+{/*
+  Written for what this site actually does: static pages on GitHub Pages, self-hosted fonts,
+  no cookies, no tracking, no embeds, two localStorage preferences.
+  Update it when that changes (analytics, forms, embeds…), together with the German version.
+*/}
+
+import ImprintAddress from '../../../components/ImprintAddress.astro';
+import { route } from '../../../i18n/routes';
+
+## Controller
+
+<ImprintAddress email="Email" />
+
+## In short
+
+This website sets no cookies, uses no tracking or analytics services and loads no content from
+third-party servers. The fonts are served by this website itself, too.
+
+## Hosting and server logs
+
+The website is served via GitHub Pages (GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco,
+CA 94107, USA). When you visit it, GitHub processes technically necessary data, in particular your
+IP address, the date and time and the requested page, to deliver the website and protect it against
+abuse. The legal basis is Art. 6(1)(f) GDPR; my legitimate interest is a secure and reliable website.
+
+Data may be transferred to the USA. GitHub is certified under the EU-US Data Privacy Framework.
+Details: [GitHub's privacy statement](https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement).
+
+## Settings in your browser
+
+Two settings are stored only when you change them yourself, and only in your browser's local storage
+(localStorage): your light/dark mode choice (`sunny-mode`) and the skills view on the home
+page (`stack-all`). They are never sent to me or anyone else. Storing them is necessary for
+the feature you asked for (§ 25(2) no. 2 TDDDG). You can delete them at any time in your browser
+settings.
+
+## Contact by email
+
+If you email me, I process your details to answer your request (Art. 6(1)(b) GDPR for inquiries about
+a possible project, otherwise (f)). I delete them once they're no longer needed for that and no legal
+retention periods apply.
+
+## Links to other websites
+
+Links to other services (e.g. GitHub or LinkedIn) are plain links. Only when you follow one does that
+provider's privacy policy apply.
+
+## Your rights
+
+You have the right to access, rectification, erasure and restriction of processing of your data, to
+data portability and to object to processing based on Art. 6(1)(f) GDPR (Art. 15–21 GDPR). Just
+write to the email address above. You can also lodge a complaint with a data protection supervisory
+authority (Art. 77 GDPR).
+
+<p class="meta">
+  Last updated: November 2026 · <a href={route('imprint', 'en')}>Legal notice</a>
+</p>

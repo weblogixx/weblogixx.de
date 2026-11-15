@@ -3,6 +3,7 @@
  *
  *   --p-l / --p-c / --p-h   primary  (OKLCH lightness, chroma, hue)
  *   --a-l / --a-c / --a-h   accent
+ *   --mt-* / --mw-* / --mn-*  logo mark: tile, wide stripe, thin stripes
  *
  * Everything else (backgrounds, text, borders, swatches) is derived from these,
  * so re-tinting the whole page = changing six numbers on :root.
@@ -38,6 +39,52 @@
   initial-value: 0.1996;
 }
 @property --a-h {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 34.62;
+}
+/* Logo mark (header logo, section markers): tile, wide stripe, thin stripes. Sunny = yellow + red. */
+@property --mt-l {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0.8197;
+}
+@property --mt-c {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0.167;
+}
+@property --mt-h {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 79.11;
+}
+@property --mw-l {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0.6515;
+}
+@property --mw-c {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0.1996;
+}
+@property --mw-h {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 34.62;
+}
+@property --mn-l {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0.6515;
+}
+@property --mn-c {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0.1996;
+}
+@property --mn-h {
   syntax: '<number>';
   inherits: true;
   initial-value: 34.62;
@@ -182,6 +229,11 @@
 
   --accent: oklch(var(--a-l) var(--a-c) var(--a-h));
   --accent-soft: oklch(var(--a-l) var(--a-c) var(--a-h) / 0.16);
+
+  /* Logo mark: the real brand color, not contrast-normalized (see markFromBrand in color.ts). */
+  --mark-tile: oklch(var(--mt-l) var(--mt-c) var(--mt-h));
+  --mark-wide: oklch(var(--mw-l) var(--mw-c) var(--mw-h));
+  --mark-thin: oklch(var(--mn-l) var(--mn-c) var(--mn-h));
 }
 
 :root {

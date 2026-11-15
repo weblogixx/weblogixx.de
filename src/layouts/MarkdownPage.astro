@@ -1,0 +1,93 @@
+---
+/**
+ * Layout for the prose pages written in MDX under src/pages (about, imprint, privacy).
+ * Pick it with `layout:` in the page's frontmatter; the frontmatter fields below are its props.
+ * Blog posts don't use this: they're a content collection rendered by BlogPostView.
+ */
+import Base from './Base.astro';
+import type { Locale } from '../data/types';
+import type { RouteKey } from '../i18n/routes';
+
+interface Props {
+  frontmatter: {
+    lang: Locale;
+    /** Route key: highlights the nav item and points the language switch at the other version. */
+    page: RouteKey;
+    title: string;
+    /** Meta description; defaults to the profile intro. */
+    description?: string;
+    /** Small line above the heading. */
+    eyebrow?: string;
+    /** Intro line below the heading. */
+    lede?: string;
+    /** `legal`: compact, uppercase section headings (imprint, privacy). Default: larger body text. */
+    variant?: 'legal';
+  };
+}
+const { lang, page, title, description, eyebrow, lede, variant } = Astro.props.frontmatter;
+---
+
+<Base lang={lang} page={page} title={title} description={description}>
+  <div class="container">
+    <header class="page-head">
+      {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+      <h1>{title}</h1>
+      {lede && <p class="lede">{lede}</p>}
+    </header>
+
+    <div class:list={['prose', 'md', variant]}>
+      <slot />
+    </div>
+  </div>
+</Base>
+
+<style>
+  /* The page's Markdown is rendered by the page, not this component, hence :global. */
+  .md {
+    /* Room above the footer once the text gets long (same as blog posts). */
+    margin-bottom: var(--space-9);
+
+    & :global(h2) {
+      font-size: var(--step-2);
+      margin-top: var(--space-5);
+    }
+    & :global(code) {
+      font-family: var(--font-mono);
+    }
+    & :global(address) {
+      font-style: normal;
+    }
+  }
+  .md:not(.legal) {
+    font-size: var(--step-1);
+  }
+
+  /* Legal pages: plain flow instead of the prose grid, headings tight to their text. */
+  .legal {
+    display: block;
+    max-width: 42rem;
+  }
+  .legal > :global(* + *) {
+    margin-top: var(--space-3);
+  }
+  .legal > :global(h2) {
+    margin-top: var(--space-6);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    font-weight: 500;
+    color: var(--text-subtle);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .legal > :global(h2 + *) {
+    margin-top: var(--space-2);
+  }
+  .legal > :global(:first-child) {
+    margin-top: 0;
+  }
+  .legal > :global(.meta) {
+    margin-top: var(--space-6);
+    font-size: var(--step--1);
+    color: var(--text-subtle);
+  }
+</style>

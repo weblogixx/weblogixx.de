@@ -1,0 +1,67 @@
+---
+layout: ../../layouts/MarkdownPage.astro
+lang: de
+page: privacy
+title: Datenschutz
+variant: legal
+---
+
+{/*
+  Geschrieben für das, was diese Website tatsächlich tut: statische Seiten auf GitHub Pages,
+  selbst gehostete Schriften, keine Cookies, kein Tracking, keine Embeds, zwei localStorage-Einstellungen.
+  Anpassen, sobald sich das ändert (Analytics, Formulare, Embeds …), und die englische Fassung mitziehen.
+*/}
+
+import ImprintAddress from '../../components/ImprintAddress.astro';
+import { route } from '../../i18n/routes';
+
+## Verantwortlicher
+
+<ImprintAddress email="E-Mail" />
+
+## Kurz gesagt
+
+Diese Website setzt keine Cookies, nutzt kein Tracking und keine Analyse-Dienste und lädt keine
+Inhalte von fremden Servern. Auch die Schriften werden von dieser Website selbst ausgeliefert.
+
+## Hosting und Server-Logfiles
+
+Die Website wird über GitHub Pages bereitgestellt (GitHub, Inc., 88 Colin P. Kelly Jr. Street, San
+Francisco, CA 94107, USA). Beim Aufruf verarbeitet GitHub technisch notwendige Daten, insbesondere
+Ihre IP-Adresse, Datum und Uhrzeit sowie die aufgerufene Seite, um die Website auszuliefern und vor
+Missbrauch zu schützen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO; mein berechtigtes Interesse
+liegt in einer sicheren und zuverlässigen Bereitstellung der Website.
+
+Dabei können Daten in die USA übertragen werden. GitHub ist nach dem EU-US Data Privacy Framework
+zertifiziert. Details: [Datenschutzerklärung von GitHub](https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement).
+
+## Einstellungen in Ihrem Browser
+
+Zwei Einstellungen werden nur gespeichert, wenn Sie sie selbst ändern, und zwar ausschließlich im
+lokalen Speicher Ihres Browsers (localStorage): der gewählte Hell-/Dunkelmodus (`sunny-mode`)
+und die Ansicht der Skills auf der Startseite (`stack-all`). Diese Daten werden nicht an
+mich oder Dritte übertragen. Die Speicherung ist für diese von Ihnen gewünschte Funktion erforderlich
+(§ 25 Abs. 2 Nr. 2 TDDDG). Sie können sie jederzeit über die Einstellungen Ihres Browsers löschen.
+
+## Kontakt per E-Mail
+
+Wenn Sie mir eine E-Mail schreiben, verarbeite ich Ihre Angaben, um Ihre Anfrage zu beantworten
+(Art. 6 Abs. 1 lit. b DSGVO bei Anfragen zu einem möglichen Auftrag, sonst lit. f). Ich lösche sie,
+sobald sie dafür nicht mehr nötig sind und keine gesetzlichen Aufbewahrungspflichten bestehen.
+
+## Links zu anderen Websites
+
+Links zu anderen Angeboten (z. B. GitHub oder LinkedIn) sind normale Links. Erst wenn Sie einem Link
+folgen, gelten dort die Datenschutzbestimmungen des jeweiligen Anbieters.
+
+## Ihre Rechte
+
+Sie haben das Recht auf Auskunft, Berichtigung, Löschung und Einschränkung der Verarbeitung Ihrer
+Daten, auf Datenübertragbarkeit sowie auf Widerspruch gegen eine Verarbeitung auf Grundlage von
+Art. 6 Abs. 1 lit. f DSGVO (Art. 15 bis 21 DSGVO). Wenden Sie sich dazu an die oben genannte
+E-Mail-Adresse. Außerdem können Sie sich bei einer Datenschutz-Aufsichtsbehörde beschweren (Art. 77
+DSGVO).
+
+<p class="meta">
+  Stand: November 2026 · <a href={route('imprint', 'de')}>Impressum</a>
+</p>
