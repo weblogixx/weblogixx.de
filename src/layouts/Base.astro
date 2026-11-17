@@ -19,15 +19,25 @@ interface Props {
   description?: string;
   /** Alternate-language URL when it isn't the plain route (blog posts). */
   altPath?: string;
+  /**
+   * Whether the page at altPath has the same content in the other language. Only then do the
+   * hreflang links go out; an untranslated post (altPath = the other blog index) and the 404
+   * page set this to false. The language switcher in the header uses altPath either way.
+   */
+  translated?: boolean;
 }
 
-const { lang, page, title, description, altPath } = Astro.props;
+const { lang, page, title, description, altPath, translated = true } = Astro.props;
 const t = useT(lang);
 const fullTitle = title ? `${title} · ${profile.name}` : `${profile.name} · ${profile.title[lang]}`;
 const desc = description ?? profile.intro[lang];
 const other: Locale = lang === 'de' ? 'en' : 'de';
 const altHref = altPath ?? href(routes[page][other]);
 const site = Astro.site ?? new URL('https://weblogixx.de');
+const selfUrl = new URL(Astro.url.pathname, site);
+const altUrl = new URL(altHref, site);
+/* hreflang: every version names all versions, itself included; German is the fallback. */
+const alternates = { [lang]: selfUrl, [other]: altUrl } as Record<Locale, URL>;
 ---
 
 <!doctype html>
@@ -68,9 +78,21 @@ const site = Astro.site ?? new URL('https://weblogixx.de');
     {/* ICO (16/32/48 px, rendered from the SVG) for browsers without SVG favicons; the rest pick the SVG. */}
     <link rel="icon" href={href('/favicon.ico')} sizes="32x32" />
     <link rel="icon" type="image/svg+xml" href={href('/favicon.svg')} />
-    <link rel="canonical" href={new URL(Astro.url.pathname, site)} />
-    <link rel="alternate" hreflang={other} href={new URL(altHref, site)} />
+    {/* Home screen icon for iOS: 180 px PNG of the favicon artwork, square and opaque (iOS
+        rounds the corners itself and would fill transparent ones with black). */}
+    <link rel="apple-touch-icon" href={href('/apple-touch-icon.png')} />
+    <link rel="canonical" href={selfUrl} />
+    {
+      translated && (
+        <>
+          <link rel="alternate" hreflang="de" href={alternates.de} />
+          <link rel="alternate" hreflang="en" href={alternates.en} />
+          <link rel="alternate" hreflang="x-default" href={alternates.de} />
+        </>
+      )
+    }
     {/* Feed readers and browser extensions find the blog feed from any page. */}
+    <link rel="sitemap" href={href('/sitemap-index.xml')} />
     <link rel="alternate" type="application/rss+xml" title={`${profile.name} · Blog`} href={new URL(feedPath(lang), site)} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={desc} />

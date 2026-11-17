@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
+import sitemap from '@astrojs/sitemap';
 import { codeBlocks } from './src/markdown/codeBlocks';
 
 // Deployed to the web host's root via FTP (.github/workflows/deploy.yml); https and the
@@ -10,8 +11,13 @@ import { codeBlocks } from './src/markdown/codeBlocks';
 export default defineConfig({
   site: 'https://weblogixx.de',
   trailingSlash: 'always',
-  // MDX: prose pages in src/pages (about, imprint, privacy) and blog posts can use components.
-  integrations: [mdx()],
+  integrations: [
+    // MDX: prose pages in src/pages (about, imprint, privacy) and blog posts can use components.
+    mdx(),
+    // sitemap-index.xml + sitemap-0.xml with every built page. Linked from Base.astro's <head>
+    // and from public/robots.txt. The 404 page isn't a real page, so it stays out.
+    sitemap({ filter: (page) => !page.includes('/404') }),
+  ],
   markdown: {
     shikiConfig: {
       // Token colors only, as --shiki-light / --shiki-dark: global.css picks one per mode

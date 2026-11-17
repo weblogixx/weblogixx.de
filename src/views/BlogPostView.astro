@@ -24,7 +24,7 @@ const altPath = hasTranslation ? blogPostPath(postSlug(post), other) : route('bl
 const metaDescription = post.data.summary ?? `${post.data.title} – ${post.data.description}`;
 ---
 
-<Base lang={lang} page="blog" title={post.data.title} description={metaDescription} altPath={altPath}>
+<Base lang={lang} page="blog" title={post.data.title} description={metaDescription} altPath={altPath} translated={hasTranslation}>
   <article class="container post">
     <header class="page-head">
       <a class="back" href={route('blog', lang)}>← {t('blog.back')}</a>
