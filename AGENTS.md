@@ -32,6 +32,8 @@ Rules for blog posts and prose pages (MDX). Check new content against them.
 - `summary` is what search results and link previews show (meta and OG description). One or two
   sentences that make sense without the title, about 150 characters at most. Without it the
   page uses "<title> – <description>", so every new post should have one.
+- `updated` (optional date) marks the last real change to the content, not a typo fix. Search
+  engines get it as `dateModified`; without it, `date` is used.
 
 ### Languages
 

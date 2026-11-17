@@ -23,6 +23,8 @@ const blog = defineCollection({
      */
     summary: z.string().optional(),
     date: z.coerce.date(),
+    /** Last real change to the content (not typo fixes). Search engines get it as dateModified. */
+    updated: z.coerce.date().optional(),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
     /** Skills the post is about, shown as chips like on the Experience page. */

@@ -25,6 +25,11 @@ export interface Position {
   summary?: L10n;
 }
 
+/** A skill in a job's stack: the plain id, or the id with its own period within the job. */
+export type StackEntry<SkillId extends string = string> =
+  | SkillId
+  | { id: SkillId; from?: YearMonth; until?: YearMonth };
+
 export interface Employer<SkillId extends string = string> {
   /** Stable id, used for anchors (#id). */
   id: string;
@@ -65,8 +70,13 @@ export interface Employer<SkillId extends string = string> {
   facts?: Fact[];
   /** Extra links shown with the entry (projects, products, …). */
   links?: { label: string; url: string }[];
-  /** Skill ids from skills.ts — type-checked. */
-  stack: SkillId[];
+  /**
+   * Skill ids from skills.ts — type-checked. A skill counts for the job's whole period; when that's
+   * wrong (picked it up later, or it didn't exist yet), give it its own dates:
+   * `{ id: 'webawesome', from: '2025-02' }`. `from` / `until` replace the job's start / end for
+   * that skill only.
+   */
+  stack: StackEntry<SkillId>[];
 
   /** Whether the person was self-employed at this employer. */
   selfEmployed?: boolean;

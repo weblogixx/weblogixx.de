@@ -1,6 +1,6 @@
 ---
 /**
- * A list of skill chips: sorted featured → normal → legacy (alphabetical within each group),
+ * A list of skill chips: sorted featured → normal → retired (alphabetical within each group),
  * with the same tooltip, highlight and legacy look everywhere. Used on the Experience page
  * (a job's stack) and in the blog (a post's skills).
  */
@@ -26,7 +26,7 @@ const { ids, lang, linked = true } = Astro.props;
         href={linked ? `${route('home', lang)}#skill-${id}` : undefined}
         tip={skillTip(skillUsageById[id], lang)}
         featured={skillUsageById[id].featured}
-        legacy={skillUsageById[id].legacy}
+        legacy={!!skillUsageById[id].retired}
       />
     ))
   }

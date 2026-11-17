@@ -9,8 +9,6 @@ import type { SkillId } from './skills';
  * No brand colors? Leave out `colors` and the section stays Sunny.
  * Logos live in /public/logos/. `logo` is the full (wide) logo for the career
  * page, `logoMark` a square-ish crop for small tiles.
- *
- * Content drafted from LinkedIn — TODO(chris): review wording.
  */
 export const employers: Employer<SkillId>[] = [
   {
@@ -66,7 +64,7 @@ export const employers: Employer<SkillId>[] = [
       'storybook',
       'github',
       'rest',
-      'claude',
+      { id: 'claude', from: '2026-10' },
       'cursor',
       'macos',
       'responsiveDesign',
@@ -81,6 +79,9 @@ export const employers: Employer<SkillId>[] = [
       'webawesome',
       'linux',
       'markdown',
+      'knowledgeArch',
+      'linting',
+      'testing',
     ],
   },
   {
@@ -157,8 +158,9 @@ export const employers: Employer<SkillId>[] = [
       'a11y',
       'storybook',
       'figma',
-      'figmaMCP',
-      'mcp',
+      { id: 'figmaMCP', from: '2025-08' },
+      { id: 'mcp', from: '2025-08' },
+      { id: 'knowledgeArch', from: '2025-08' },
       'agents',
       'astro',
       'typescript',
@@ -192,8 +194,10 @@ export const employers: Employer<SkillId>[] = [
       'ci',
       'visres',
       'shoelace',
-      'webawesome',
+      { id: 'webawesome', from: '2025-02' },
       'markdown',
+      'linting',
+      'testing',
     ],
   },
   {
@@ -290,6 +294,8 @@ export const employers: Employer<SkillId>[] = [
       'zend',
       'ci',
       'markdown',
+      'linting',
+      'testing',
     ],
   },
   {
@@ -378,6 +384,9 @@ export const employers: Employer<SkillId>[] = [
       'magento',
       'redaxo',
       'markdown',
+      'networking',
+      'linting',
+      'testing',
     ],
   },
   {
@@ -441,8 +450,10 @@ export const employers: Employer<SkillId>[] = [
       'macos',
       'performance',
       'legacyBrowsers',
-      'prototype',
       'linux',
+      'networking',
+      'webdesign',
+      'linting',
     ],
   },
   {
@@ -496,6 +507,7 @@ export const employers: Employer<SkillId>[] = [
       'legacyBrowsers',
       'fireworks',
       'linux',
+      'linting',
     ],
   },
   {

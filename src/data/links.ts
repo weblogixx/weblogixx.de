@@ -9,7 +9,6 @@ export interface ProfileLink {
   description?: L10n;
 }
 
-// TODO(chris): verify URLs, add more.
 export const links: ProfileLink[] = [
   {
     label: 'E-Mail',

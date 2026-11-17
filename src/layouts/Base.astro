@@ -8,7 +8,8 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Tooltip from '../components/Tooltip.astro';
 import type { Locale } from '../data/types';
-import { profile } from '../data';
+import { profile, currentJob } from '../data';
+import { links } from '../data/links';
 import { routes, href, feedPath, type RouteKey } from '../i18n/routes';
 import { useT } from '../i18n/ui';
 
@@ -25,9 +26,12 @@ interface Props {
    * page set this to false. The language switcher in the header uses altPath either way.
    */
   translated?: boolean;
+  /** Extra structured data (a schema.org object) for this page, e.g. a blog post's BlogPosting. */
+  structuredData?: object;
 }
 
-const { lang, page, title, description, altPath, translated = true } = Astro.props;
+const { lang, page, title, description, altPath, translated = true, structuredData } =
+  Astro.props;
 const t = useT(lang);
 const fullTitle = title ? `${title} · ${profile.name}` : `${profile.name} · ${profile.title[lang]}`;
 const desc = description ?? profile.intro[lang];
@@ -38,6 +42,30 @@ const selfUrl = new URL(Astro.url.pathname, site);
 const altUrl = new URL(altHref, site);
 /* hreflang: every version names all versions, itself included; German is the fallback. */
 const alternates = { [lang]: selfUrl, [other]: altUrl } as Record<Locale, URL>;
+
+/*
+ * Structured data (JSON-LD) for search engines: who this site is about. Only on the home and
+ * about pages (not the 404 page, which renders with page="home" under a different URL).
+ * sameAs ties the profiles on other sites to the same person.
+ */
+const isProfilePage =
+  (page === 'home' || page === 'about') && Astro.url.pathname === href(routes[page][lang]);
+const job = currentJob();
+const person = isProfilePage && {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: profile.name,
+  ...(job && {
+    jobTitle: job.position.role[lang],
+    worksFor: { '@type': 'Organization', name: job.employer.name, url: job.employer.url },
+  }),
+  description: profile.intro[lang],
+  url: new URL(href(routes.home[lang]), site).href,
+  email: profile.email,
+  sameAs: links.map((l) => l.url).filter((url) => url.startsWith('https://')),
+};
+/* JSON inside <script>: escape "<" so no string in it can close the tag early. */
+const jsonLd = (data: object) => JSON.stringify(data).replaceAll('<', '\\u003c');
 ---
 
 <!doctype html>
@@ -98,6 +126,12 @@ const alternates = { [lang]: selfUrl, [other]: altUrl } as Record<Locale, URL>;
     <meta property="og:description" content={desc} />
     <meta property="og:locale" content={lang === 'de' ? 'de_DE' : 'en_US'} />
     <meta name="generator" content={Astro.generator} />
+    {person && <script type="application/ld+json" is:inline set:html={jsonLd(person)} />}
+    {
+      structuredData && (
+        <script type="application/ld+json" is:inline set:html={jsonLd(structuredData)} />
+      )
+    }
   </head>
   <body>
     <a class="skip visually-hidden" href="#main">{t('nav.skip')}</a>

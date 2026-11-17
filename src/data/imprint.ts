@@ -21,7 +21,6 @@ export interface Imprint {
 
 import { profile } from './profile';
 
-// TODO(chris): fill in the bracketed values.
 export const imprint: Imprint = {
   name: 'Christian Schilling',
   business: 'weblogixx',
@@ -47,7 +46,6 @@ export interface Hoster {
   privacyUrl: string;
 }
 
-// TODO(chris): fill in your web host (see your contract or the host's own imprint).
 export const hoster: Hoster = {
   name: 'ALL-INKL.COM - Neue Medien Münnich',
   address: 'Hauptstraße 68, D-02742 Friedersdorf',

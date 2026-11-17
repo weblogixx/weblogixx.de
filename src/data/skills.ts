@@ -4,81 +4,46 @@ export const skillCategories = {
   languages: { de: 'Sprachen', en: 'Languages' },
   frameworks: { de: 'Frameworks & Libraries', en: 'Frameworks & libraries' },
   design: { de: 'Design Systems & UI', en: 'Design systems & UI' },
-  architecture: { de: 'Architektur & Web', en: 'Architecture & web' },
-  infrastructure: { de: 'Infrastruktur & Daten', en: 'Infrastructure & data' },
+  architecture: { de: 'Architektur & Plattform', en: 'Architecture & platform' },
+  tooling: { de: 'Tooling & Qualität', en: 'Tooling & quality' },
   ai: { de: 'KI & Agentic', en: 'AI & agentic' },
 } satisfies Record<string, L10n>;
 
 export type SkillCategory = keyof typeof skillCategories;
+
+export type RetiredKind = 'discontinued' | 'movedOn';
 
 export interface Skill {
   name: string;
   category: SkillCategory;
   /** Highlight on the home page. */
   featured?: boolean;
-  /** Discontinued tool/library: shown muted, with a note in the tooltip. */
-  legacy?: boolean;
-  /** For legacy skills: what the know-how carried over to (another skill id). */
-  successor?: string;
+  /** No longer in my toolbox: shown muted and sorted last, with a note in the tooltip. */
+  retired?: {
+    /**
+     * Why: `discontinued` — the tool itself is dead (no more releases, e.g. Prototype.js);
+     * `movedOn` — it's still alive, I just don't use it anymore (e.g. REDAXO → Astro).
+     */
+    kind: RetiredKind;
+    /** What the know-how carried over to / what I use instead (another skill id). */
+    successor?: string;
+    /** Optional extra sentence for the tooltip, after the generated note. */
+    reason?: L10n;
+  };
   /** Optional short explanation, shown at the top of the skill's tooltip. */
   description?: L10n;
 }
 
 /**
  * All skills. The key is the id you reference in employers.ts → `stack`.
- * Order within a category = display order on the home page.
+ * Grouped by category (in the order of skillCategories), alphabetical by name within each group,
+ * the same order the home page shows them in.
  * Mostly taken from LinkedIn; adjust freely.
  */
 export const skills = {
-  astro: {
-    description: {
-      de: 'Framework für die Entwicklung von Webanwendungen, das auf Komponenten basiert. Unterstützt moderne Frontend-Frameworks wie React, Vue und Svelte.',
-      en: 'Framework for building web applications that is based on components. Supports modern frontend frameworks like React, Vue, and Svelte.',
-    },
-    name: 'Astro',
-    category: 'frameworks',
-    featured: true,
-  },
-  angular: { name: 'Angular', category: 'frameworks' },
-
-  docker: { name: 'Docker', category: 'infrastructure' },
-
-  playwright: {
-    description: {
-      de: 'End-to-End-Test-Framework für Webanwendungen. Unterstützt moderne Browser und ermöglicht automatisierte Tests von Benutzeroberflächen.',
-      en: 'End-to-end testing framework for web applications. Supports modern browsers and enables automated testing of user interfaces.',
-    },
-    name: 'Playwright',
-    category: 'frameworks',
-    featured: true,
-  },
-
-  storybook: { name: 'Storybook', category: 'design', featured: true },
-
-  mcp: {
-    name: 'Model Context Protocol',
-    category: 'ai',
-    featured: true,
-    description: {
-      de: 'Offener Standard, über den KI-Assistenten auf Tools und Datenquellen zugreifen.',
-      en: 'Open standard that lets AI assistants access tools and data sources.',
-    },
-  },
-
-  html: { name: 'HTML', category: 'languages', featured: true },
+  // ── Languages ──
 
   css: { name: 'CSS', category: 'languages', featured: true },
-
-  javascript: { name: 'JavaScript', category: 'languages', featured: true },
-
-  typescript: { name: 'TypeScript', category: 'languages', featured: true },
-
-  php: {
-    name: 'PHP',
-    category: 'languages',
-    legacy: true,
-    successor: 'node',
-  },
 
   gleam: {
     description: {
@@ -89,28 +54,80 @@ export const skills = {
     category: 'languages',
   },
 
-  zend: {
-    description: {
-      de: 'PHP-Framework, das in den 2000er Jahren populär war. Heute weitgehend durch modernere Frameworks ersetzt.',
-      en: 'PHP framework that was popular in the 2000s. Today largely replaced by more modern frameworks.',
+  html: { name: 'HTML', category: 'languages', featured: true },
+
+  javascript: { name: 'JavaScript', category: 'languages', featured: true },
+
+  less: {
+    name: 'LESS',
+    category: 'languages',
+    retired: {
+      kind: 'movedOn',
+      successor: 'css',
     },
-    name: 'Zend Framework',
-    category: 'frameworks',
-    legacy: true,
   },
 
-  sql: { name: 'SQL', category: 'languages' },
+  markdown: {
+    description: {
+      de: 'Markdown ist eine schlanke Auszeichnungssprache, die schon als reiner Text gut lesbar ist – noch bevor sie in HTML umgewandelt wird.',
+      en: 'Markdown is a lightweight markup language that stays easy to read as plain text, even before it is converted to HTML.',
+    },
+    name: 'Markdown',
+    category: 'languages',
+  },
+
+  php: {
+    name: 'PHP',
+    category: 'languages',
+    retired: { kind: 'movedOn', successor: 'node' },
+  },
+
+  sass: {
+    name: 'Sass',
+    category: 'languages',
+  },
 
   shell: { name: 'Shell Scripting', category: 'languages' },
 
-  prototype: {
-    name: 'Prototype.js',
+  sql: { name: 'SQL', category: 'languages' },
+
+  typescript: { name: 'TypeScript', category: 'languages', featured: true },
+
+  // ── end Languages ──
+
+  // ── Frameworks & libraries ──
+
+  angular: { name: 'Angular', category: 'frameworks' },
+
+  astro: {
+    description: {
+      de: 'Framework für die Entwicklung von Webanwendungen, das auf Komponenten basiert. Unterstützt moderne Frontend-Frameworks wie React, Vue und Svelte.',
+      en: 'Framework for building web applications that is based on components. Supports modern frontend frameworks like React, Vue, and Svelte.',
+    },
+    name: 'Astro',
     category: 'frameworks',
-    legacy: true,
-    successor: 'jquery',
+    featured: true,
   },
 
-  jquery: { name: 'jQuery', category: 'frameworks' },
+  cakephp: {
+    name: 'CakePHP',
+    category: 'frameworks',
+    retired: {
+      kind: 'movedOn',
+      successor: 'astro',
+    },
+  },
+
+  jquery: {
+    name: 'jQuery',
+    category: 'frameworks',
+    retired: {
+      kind: 'movedOn',
+      successor: 'javascript',
+    },
+  },
+
+  lit: { name: 'Lit', category: 'frameworks', featured: true },
 
   magento: {
     description: {
@@ -119,50 +136,6 @@ export const skills = {
     },
     name: 'Magento',
     category: 'frameworks',
-  },
-
-  rest: {
-    description: {
-      de: 'Architekturstil für verteilte Systeme, der auf HTTP und RESTful-Prinzipien basiert. Häufig für Web-APIs verwendet.',
-      en: 'Architectural style for distributed systems that is based on HTTP and RESTful principles. Commonly used for web APIs.',
-    },
-    name: 'REST',
-    category: 'architecture',
-  },
-
-  websockets: { name: 'WebSockets', category: 'architecture' },
-
-  npm: { name: 'npm', category: 'frameworks' },
-
-  pnpm: { name: 'pnpm', category: 'frameworks' },
-
-  responsiveDesign: {
-    name: 'Responsive Design',
-    category: 'design',
-    featured: true,
-  },
-
-  lit: { name: 'Lit', category: 'frameworks', featured: true },
-
-  webcomponents: {
-    name: 'Web Components',
-    category: 'frameworks',
-    featured: true,
-  },
-
-  react: { name: 'React', category: 'frameworks', featured: true },
-
-  redux: { name: 'Redux', category: 'frameworks' },
-
-  vue: { name: 'Vue.js', category: 'frameworks', featured: true },
-
-  ci: {
-    description: {
-      de: 'Continuous Integration (CI) bezeichnet den Prozess, bei dem Codeänderungen automatisch gebaut, getestet und integriert werden. Ziel ist es, Fehler frühzeitig zu erkennen und die Qualität des Codes zu sichern. CD steht für Continuous Delivery/Deployment, also die kontinuierliche Auslieferung von Software.',
-      en: 'Continuous Integration (CI) refers to the process of automatically building, testing, and integrating code changes. The goal is to catch errors early and ensure code quality. CD stands for Continuous Delivery/Deployment, i.e., the continuous delivery of software.',
-    },
-    name: 'CI/CD',
-    category: 'infrastructure',
   },
 
   node: {
@@ -175,11 +148,77 @@ export const skills = {
     featured: true,
   },
 
-  cakephp: { name: 'CakePHP', category: 'frameworks' },
+  prototype: {
+    name: 'Prototype.js',
+    category: 'frameworks',
+    retired: { kind: 'discontinued', successor: 'javascript' },
+  },
 
-  github: { name: 'GitHub', category: 'infrastructure', featured: true },
+  react: { name: 'React', category: 'frameworks', featured: true },
 
-  gitlab: { name: 'GitLab', category: 'infrastructure' },
+  redaxo: {
+    description: {
+      de: 'Content-Management-System (CMS) auf PHP-Basis. Häufig für kleinere bis mittelgroße Websites verwendet.',
+      en: 'Content management system (CMS) based on PHP. Commonly used for small to medium-sized websites.',
+    },
+    name: 'REDAXO',
+    category: 'frameworks',
+    retired: { kind: 'movedOn', successor: 'astro' },
+  },
+
+  redux: { name: 'Redux', category: 'frameworks' },
+
+  shoelace: {
+    description: {
+      de: 'Komponenten-Bibliothek, die auf dem Web Components-Standard basiert. Bietet eine Sammlung von wiederverwendbaren UI-Komponenten.',
+      en: 'Components library that is based on the Web Components standard. Provides a collection of reusable UI components.',
+    },
+    name: 'Shoelace',
+    category: 'frameworks',
+    retired: { kind: 'discontinued', successor: 'webawesome' },
+  },
+
+  vue: { name: 'Vue.js', category: 'frameworks', featured: true },
+
+  webawesome: {
+    description: {
+      de: 'Komponenten-Bibliothek, die auf dem Web Components-Standard basiert. Bietet eine Sammlung von wiederverwendbaren UI-Komponenten.',
+      en: 'Components library that is based on the Web Components standard. Provides a collection of reusable UI components.',
+    },
+    featured: false,
+    name: 'Web Awesome',
+    category: 'frameworks',
+  },
+
+  webcomponents: {
+    name: 'Web Components',
+    category: 'frameworks',
+    featured: false,
+  },
+
+  zend: {
+    description: {
+      de: 'PHP-Framework, das in den 2000er Jahren populär war. Heute weitgehend durch modernere Frameworks ersetzt.',
+      en: 'PHP framework that was popular in the 2000s. Today largely replaced by more modern frameworks.',
+    },
+    name: 'Zend Framework',
+    category: 'frameworks',
+    retired: { kind: 'discontinued', successor: 'astro' },
+  },
+
+  // ── end Frameworks & libraries ──
+
+  // ── Design systems & UI ──
+
+  a11y: {
+    description: {
+      de: 'Kurz für "Accessibility". Entwicklung von barrierefreien Webanwendungen, die für Menschen mit Behinderungen zugänglich sind. Berücksichtigung von Screenreadern, Tastaturnavigation und Farbkontrasten.',
+      en: 'Short for "Accessibility". Development of accessible web applications that are usable by people with disabilities. Consideration of screen readers, keyboard navigation, and color contrasts.',
+    },
+    name: 'A11y',
+    category: 'design',
+    featured: true,
+  },
 
   designsystems: {
     description: {
@@ -201,50 +240,48 @@ export const skills = {
     featured: true,
   },
 
-  sass: { name: 'Sass', category: 'design' },
-
-  less: { name: 'LESS', category: 'design' },
-
-  postcss: { name: 'PostCSS', category: 'design' },
-
-  webdesign: { name: 'Web Design', category: 'design' },
-
-  photoshop: { name: 'Photoshop', category: 'design' },
+  figma: { name: 'Figma', category: 'design' },
 
   fireworks: {
     name: 'Fireworks',
     category: 'design',
-    legacy: true,
-    successor: 'figma',
+    retired: { kind: 'discontinued', successor: 'figma' },
   },
 
-  figma: { name: 'Figma', category: 'design' },
+  photoshop: {
+    name: 'Photoshop',
+    category: 'design',
+    retired: { kind: 'movedOn', successor: 'figma' },
+  },
 
-  figmaMCP: {
+  postcss: { name: 'PostCSS', category: 'design' },
+
+  responsiveDesign: {
+    name: 'Responsive Design',
+    category: 'design',
+    featured: true,
+  },
+
+  storybook: { name: 'Storybook', category: 'design', featured: true },
+
+  webdesign: { name: 'Web Design', category: 'design' },
+
+  // ── end Design systems & UI ──
+
+  // ── Architecture & platform ──
+
+  cms: {
     description: {
-      de: 'Figma-Plugin, das den Model Context Protocol (MCP) Standard implementiert und so KI-Assistenten Zugriff auf Figma-Daten ermöglicht. Ermöglicht z.B. Code-to-Design- und Design-to-Code-Workflows.',
-      en: 'Figma plugin that implements the Model Context Protocol (MCP) standard, allowing AI assistants to access Figma data. Enables code-to-design and design-to-code workflows, for example.',
+      de: 'Content-Management-Systeme (CMS) sind Softwaresysteme, mit denen sich Inhalte einer Website ohne tiefere technische Kenntnisse pflegen und veröffentlichen lassen.',
+      en: 'Content management systems (CMS) let people create, edit and publish website content without deeper technical knowledge.',
     },
-    name: 'Figma MCP',
-    category: 'ai',
-    featured: true,
-  },
-
-  frontendarch: {
-    name: 'Frontend Architecture',
+    name: 'CMS',
     category: 'architecture',
-    featured: true,
   },
 
-  microfrontends: {
-    name: 'Microfrontends',
-    category: 'architecture',
-    featured: true,
-  },
+  docker: { name: 'Docker', category: 'architecture' },
 
-  webapps: { name: 'Web Applications', category: 'architecture' },
-
-  webservices: { name: 'Web Services & APIs', category: 'architecture' },
+  ecommerce: { name: 'E-Commerce', category: 'architecture' },
 
   embeddedui: {
     description: {
@@ -256,23 +293,30 @@ export const skills = {
     featured: true,
   },
 
-  ecommerce: { name: 'E-Commerce', category: 'architecture' },
-
-  markdown: {
-    description: {
-      de: 'Markdown ist eine schlanke Auszeichnungssprache, die schon als reiner Text gut lesbar ist – noch bevor sie in HTML umgewandelt wird.',
-      en: 'Markdown is a lightweight markup language that stays easy to read as plain text, even before it is converted to HTML.',
-    },
-    name: 'Markdown',
-    category: 'languages',
+  frontendarch: {
+    name: 'Frontend Architecture',
+    category: 'architecture',
+    featured: true,
   },
 
-  cms: {
+  linux: { name: 'Linux / Unix', category: 'architecture' },
+
+  microfrontends: {
+    name: 'Microfrontends',
+    category: 'architecture',
+    featured: true,
+  },
+
+  mysql: { name: 'MySQL', category: 'architecture' },
+
+  networking: { name: 'Networking', category: 'architecture' },
+
+  rest: {
     description: {
-      de: 'Content-Management-Systeme (CMS) sind Softwaresysteme, mit denen sich Inhalte einer Website ohne tiefere technische Kenntnisse pflegen und veröffentlichen lassen.',
-      en: 'Content management systems (CMS) let people create, edit and publish website content without deeper technical knowledge.',
+      de: 'Architekturstil für verteilte Systeme, der auf HTTP und RESTful-Prinzipien basiert. Häufig für Web-APIs verwendet.',
+      en: 'Architectural style for distributed systems that is based on HTTP and RESTful principles. Commonly used for web APIs.',
     },
-    name: 'CMS',
+    name: 'REST',
     category: 'architecture',
   },
 
@@ -285,11 +329,9 @@ export const skills = {
     category: 'architecture',
   },
 
-  linux: { name: 'Linux / Unix', category: 'infrastructure' },
+  webapps: { name: 'Web Applications', category: 'architecture' },
 
-  macos: { name: 'macOS', category: 'infrastructure', featured: true },
-
-  mysql: { name: 'MySQL', category: 'infrastructure' },
+  webservices: { name: 'Web Services & APIs', category: 'architecture' },
 
   webserver: {
     description: {
@@ -297,29 +339,104 @@ export const skills = {
       en: 'Deployment of web applications on servers, configuration of web server software (e.g., Apache, Nginx, Mail), setup of domains and SSL certificates.',
     },
     name: 'Webserver & Hosting',
-    category: 'infrastructure',
+    category: 'architecture',
   },
 
-  networking: { name: 'Networking', category: 'infrastructure' },
+  websockets: { name: 'WebSockets', category: 'architecture' },
 
-  a11y: {
+  // ── end Architecture & platform ──
+
+  // ── Tooling & quality ──
+
+  ci: {
     description: {
-      de: 'Entwicklung von barrierefreien Webanwendungen, die für Menschen mit Behinderungen zugänglich sind. Berücksichtigung von Screenreadern, Tastaturnavigation und Farbkontrasten.',
-      en: 'Development of accessible web applications that are usable by people with disabilities. Consideration of screen readers, keyboard navigation, and color contrasts.',
+      de: 'Continuous Integration (CI) bezeichnet den Prozess, bei dem Codeänderungen automatisch gebaut, getestet und integriert werden. Ziel ist es, Fehler frühzeitig zu erkennen und die Qualität des Codes zu sichern. CD steht für Continuous Delivery/Deployment, also die kontinuierliche Auslieferung von Software.',
+      en: 'Continuous Integration (CI) refers to the process of automatically building, testing, and integrating code changes. The goal is to catch errors early and ensure code quality. CD stands for Continuous Delivery/Deployment, i.e., the continuous delivery of software.',
     },
-    name: 'Accessibility',
-    category: 'infrastructure',
+    featured: true,
+    name: 'CI/CD',
+    category: 'tooling',
+  },
+
+  github: { name: 'GitHub', category: 'tooling', featured: true },
+
+  gitlab: { name: 'GitLab', category: 'tooling' },
+
+  legacyBrowsers: {
+    description: {
+      de: 'Entwicklung von Webanwendungen, die auch auf älteren Browsern (z.B. Internet Explorer) funktionieren. Oft mit Polyfills und Fallbacks.',
+      en: 'Development of web applications that also work on older browsers (e.g., Internet Explorer). Often with polyfills and fallbacks.',
+    },
+    name: 'Legacy Browsers',
+    category: 'tooling',
+    retired: { kind: 'discontinued', successor: 'responsiveDesign' },
+  },
+
+  linting: {
+    description: {
+      de: 'Automatische Prüfung und Formatierung von Code (z.B. jshint, ESLint, oxlint, Prettier, oxfmt) – Fehler und Stilfragen fallen auf, bevor jemand sie im Review suchen muss.',
+      en: 'Automated code checks and formatting (e.g. jshint, ESLint, oxlint, Prettier, oxfmt) – mistakes and style issues show up before anyone has to look for them in review.',
+    },
+    name: 'Linting & Formatting',
+    category: 'tooling',
+  },
+
+  macos: { name: 'macOS', category: 'tooling', featured: true },
+
+  npm: { name: 'npm', category: 'tooling' },
+
+  opensource: {
+    description: {
+      de: 'Ab und an erlaubt es mir meine Tätigkeit, direkt an Open-Source-Projekten mitzuarbeiten, sei es als Nutzer, Entwickler oder Contributor.',
+      en: 'From time to time, my work allows me to contribute directly to open-source projects, whether as a user, developer, or contributor.',
+    },
+    name: 'Open Source',
+    category: 'tooling',
     featured: true,
   },
 
   performance: {
     name: 'Performance Optimization',
-    category: 'infrastructure',
+    category: 'tooling',
     description: {
       de: 'Optimierung der Ladezeit und Performance von Webanwendungen, Troubleshooting bei Leistungsproblemen.',
       en: 'Optimization of loading time and performance of web applications, troubleshooting performance issues.',
     },
   },
+
+  playwright: {
+    description: {
+      de: 'End-to-End-Test-Framework für Webanwendungen. Unterstützt moderne Browser und ermöglicht automatisierte Tests von Benutzeroberflächen.',
+      en: 'End-to-end testing framework for web applications. Supports modern browsers and enables automated testing of user interfaces.',
+    },
+    name: 'Playwright',
+    category: 'tooling',
+    featured: true,
+  },
+
+  pnpm: { name: 'pnpm', category: 'tooling' },
+
+  testing: {
+    description: {
+      de: 'Unit- und Integrationstests (z.B. node:assert, Vitest, Jest, Testing Library), die Logik und Komponenten absichern und Refactorings ohne Angst möglich machen.',
+      en: 'Unit and integration tests (e.g. node:assert, Vitest, Jest, Testing Library) that cover logic and components and make refactoring safe.',
+    },
+    name: 'Unit & Integration Testing',
+    category: 'tooling',
+  },
+
+  visres: {
+    description: {
+      de: 'Visual Regression Testing ist eine Methode, um visuelle Änderungen in Webanwendungen zu erkennen. Automatisierte Tests vergleichen Screenshots von verschiedenen Versionen der Anwendung, um unerwünschte Änderungen zu identifizieren.',
+      en: 'Visual Regression Testing is a method for detecting visual changes in web applications. Automated tests compare screenshots of different versions of the application to identify unwanted changes.',
+    },
+    name: 'Visual Regression Testing',
+    category: 'tooling',
+  },
+
+  // ── end Tooling & quality ──
+
+  // ── AI & agentic ──
 
   agents: {
     description: {
@@ -343,6 +460,16 @@ export const skills = {
 
   cursor: { name: 'Cursor', category: 'ai' },
 
+  figmaMCP: {
+    description: {
+      de: 'Figma-Plugin, das den Model Context Protocol (MCP) Standard implementiert und so KI-Assistenten Zugriff auf Figma-Daten ermöglicht. Ermöglicht z.B. Code-to-Design- und Design-to-Code-Workflows.',
+      en: 'Figma plugin that implements the Model Context Protocol (MCP) standard, allowing AI assistants to access Figma data. Enables code-to-design and design-to-code workflows, for example.',
+    },
+    name: 'Figma MCP',
+    category: 'ai',
+    featured: true,
+  },
+
   githubCopilot: {
     description: {
       de: 'KI-gestützter Code-Assistent von GitHub. Unterstützt Entwickler beim Schreiben von Code, indem er Vorschläge und Autovervollständigungen liefert.',
@@ -353,67 +480,26 @@ export const skills = {
     featured: true,
   },
 
-  opensource: {
+  knowledgeArch: {
     description: {
-      de: 'Ab und an erlaubt es mir meine Tätigkeit, direkt an Open-Source-Projekten mitzuarbeiten, sei es als Nutzer, Entwickler oder Contributor.',
-      en: 'From time to time, my work allows me to contribute directly to open-source projects, whether as a user, developer, or contributor.',
+      de: 'Rohdaten in Wissensschichten überführen – von Quellen über kuratierte Fakten bis zu Zusammenfassungen, mit denen KI-Agenten zuverlässig arbeiten können. Dazu gehört ein gemeinsames Vokabular, damit Begriffe überall dasselbe bedeuten.',
+      en: 'Turning raw data into knowledge layers – from sources to curated facts to summaries that AI agents can reliably work with. Including a shared vocabulary, so terms mean the same thing everywhere.',
     },
-    name: 'Open Source',
-    category: 'infrastructure',
+    name: 'Knowledge Architecture',
+    category: 'ai',
+  },
+
+  mcp: {
+    name: 'MCP',
+    category: 'ai',
     featured: true,
+    description: {
+      de: 'Kurz für "Model Context Protocol". Offener Standard, über den KI-Assistenten auf Tools und Datenquellen zugreifen.',
+      en: 'Short for "Model Context Protocol". Open standard that lets AI assistants access tools and data sources.',
+    },
   },
 
-  shoelace: {
-    description: {
-      de: 'Webkomponenten-Bibliothek, die auf dem Web Components-Standard basiert. Bietet eine Sammlung von wiederverwendbaren UI-Komponenten.',
-      en: 'Web components library that is based on the Web Components standard. Provides a collection of reusable UI components.',
-    },
-    name: 'Shoelace',
-    category: 'frameworks',
-    legacy: true,
-    successor: 'webawesome',
-  },
-
-  webawesome: {
-    description: {
-      de: 'Webkomponenten-Bibliothek, die auf dem Web Components-Standard basiert. Bietet eine Sammlung von wiederverwendbaren UI-Komponenten.',
-      en: 'Web components library that is based on the Web Components standard. Provides a collection of reusable UI components.',
-    },
-    featured: true,
-    name: 'Web Awesome',
-    category: 'frameworks',
-  },
-
-  visres: {
-    description: {
-      de: 'Visual Regression Testing ist eine Methode, um visuelle Änderungen in Webanwendungen zu erkennen. Automatisierte Tests vergleichen Screenshots von verschiedenen Versionen der Anwendung, um unerwünschte Änderungen zu identifizieren.',
-      en: 'Visual Regression Testing is a method for detecting visual changes in web applications. Automated tests compare screenshots of different versions of the application to identify unwanted changes.',
-    },
-    name: 'Visual Regression Testing',
-    category: 'design',
-  },
-
-  legacyBrowsers: {
-    description: {
-      de: 'Entwicklung von Webanwendungen, die auch auf älteren Browsern (z.B. Internet Explorer) funktionieren. Oft mit Polyfills und Fallbacks.',
-      en: 'Development of web applications that also work on older browsers (e.g., Internet Explorer). Often with polyfills and fallbacks.',
-    },
-    name: 'Legacy Browsers',
-    category: 'infrastructure',
-    legacy: true,
-    successor: 'responsiveDesign',
-  },
-
-  redaxo: {
-    description: {
-      de: 'Content-Management-System (CMS) auf PHP-Basis. Häufig für kleinere bis mittelgroße Websites verwendet.',
-      en: 'Content management system (CMS) based on PHP. Commonly used for small to medium-sized websites.',
-    },
-    name: 'REDAXO',
-    category: 'frameworks',
-    legacy: true,
-    successor: 'astro',
-  },
+  // ── end AI & agentic ──
 } as const satisfies Record<string, Skill>;
 
 export type SkillId = keyof typeof skills;
