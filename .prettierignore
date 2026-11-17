@@ -1,0 +1,11 @@
+# The project is formatted with oxfmt (.oxfmtrc.json, `npm run format`). This file only exists
+# for editors that run Prettier on save.
+#
+# MDX: Prettier still parses it with MDX 1 rules, where a line starting with a tag is a block of
+# JSX. It reflows such a line (e.g. a paragraph that starts with <Link …>) onto several lines,
+# and MDX then renders it as a separate block instead of inline text.
+**/*.mdx
+dist/
+.astro/
+package-lock.json
+pnpm-lock.yaml

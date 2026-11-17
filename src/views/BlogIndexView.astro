@@ -2,8 +2,8 @@
 import Base from '../layouts/Base.astro';
 import SkillList from '../components/SkillList.astro';
 import type { Locale } from '../data';
-import { getPosts, postSlug } from '../i18n/blog';
-import { blogPostPath } from '../i18n/routes';
+import { getListedPosts, postLang, postSlug } from '../i18n/blog';
+import { blogPostPath, feedPath } from '../i18n/routes';
 import { useT } from '../i18n/ui';
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
 }
 const { lang } = Astro.props;
 const t = useT(lang);
-const posts = await getPosts(lang);
+const posts = await getListedPosts(lang);
 const dateFmt = new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { dateStyle: 'long' });
 ---
 
@@ -20,6 +20,13 @@ const dateFmt = new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { dat
     <header class="page-head">
       <h1>{t('blog.title')}</h1>
       <p class="lede">{t('blog.lede')}</p>
+      <a class="feed" href={feedPath(lang)} type="application/rss+xml">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16" />
+          <circle cx="5" cy="19" r="1.5" />
+        </svg>
+        {t('blog.feed')}
+      </a>
     </header>
 
     {
@@ -27,24 +34,37 @@ const dateFmt = new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { dat
         <p class="empty">{t('blog.empty')}</p>
       ) : (
         <ul class="posts">
-          {posts.map((p) => (
-            <li>
-              <a href={blogPostPath(postSlug(p), lang)}>
-                <time datetime={p.data.date.toISOString()}>{dateFmt.format(p.data.date)}</time>
-                <span class="title">
-                  {p.data.title}
-                  {p.data.draft && <em> (draft)</em>}
-                </span>
-                <span class="desc">{p.data.description}</span>
-                {/* Not linked: the whole entry is already a link. */}
-                {p.data.skills.length > 0 && (
-                  <span class="skills">
-                    <SkillList ids={p.data.skills} lang={lang} linked={false} />
+          {posts.map((p) => {
+            /* A post without a version in this language links to the one that exists. */
+            const pLang = postLang(p);
+            const foreign = pLang !== lang;
+            return (
+              <li>
+                <a href={blogPostPath(postSlug(p), pLang)} hreflang={foreign ? pLang : undefined}>
+                  <span class="meta">
+                    <time datetime={p.data.date.toISOString()}>{dateFmt.format(p.data.date)}</time>
+                    {foreign && (
+                      <span class="lang" title={t('blog.otherLang')}>
+                        {pLang.toUpperCase()}
+                        <span class="visually-hidden"> – {t('blog.otherLang')}</span>
+                      </span>
+                    )}
                   </span>
-                )}
-              </a>
-            </li>
-          ))}
+                  <span class="title" lang={foreign ? pLang : undefined}>
+                    {p.data.title}
+                    {p.data.draft && <em> (draft)</em>}
+                  </span>
+                  <span class="desc" lang={foreign ? pLang : undefined}>{p.data.description}</span>
+                  {/* Not linked: the whole entry is already a link. */}
+                  {p.data.skills.length > 0 && (
+                    <span class="skills">
+                      <SkillList ids={p.data.skills} lang={lang} linked={false} />
+                    </span>
+                  )}
+                </a>
+              </li>
+            );
+          })}
         </ul>
       )
     }
@@ -52,6 +72,27 @@ const dateFmt = new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { dat
 </Base>
 
 <style>
+  .feed {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+
+    & svg {
+      width: 1em;
+      height: 1em;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+    }
+    & circle {
+      fill: currentColor;
+      stroke: none;
+    }
+  }
   .empty {
     padding: var(--space-6);
     margin-bottom: var(--space-9);
@@ -78,6 +119,21 @@ const dateFmt = new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { dat
     font-family: var(--font-mono);
     font-size: var(--step--1);
     color: var(--text-subtle);
+  }
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  /* Language tag of a post that only exists in the other language. */
+  .lang {
+    padding: 0 0.4em;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-s);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
   }
   .title {
     font-family: var(--font-display);

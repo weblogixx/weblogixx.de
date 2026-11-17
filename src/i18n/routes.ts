@@ -36,3 +36,6 @@ export const route = (key: RouteKey, lang: Locale, anchor?: string) =>
   href(routes[key][lang] + (anchor ? `#${anchor}` : ''));
 
 export const blogPostPath = (slug: string, lang: Locale) => href(`${routes.blog[lang]}${slug}/`);
+
+/** RSS feed of the blog, one per language (src/pages/rss.xml.ts, src/pages/en/rss.xml.ts). */
+export const feedPath = (lang: Locale) => href(`${routes.blog[lang]}rss.xml`);

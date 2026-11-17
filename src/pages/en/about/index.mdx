@@ -6,7 +6,8 @@ title: About me
 eyebrow: weblogixx
 ---
 
-import { blogPostPath } from "../../../i18n/routes";
+import Link from '../../../components/Link.astro';
+import { blogPostPath } from '../../../i18n/routes';
 
 Hello, my name is Christian Schilling.
 I am specialized in frontend and design system architecture.
@@ -30,4 +31,4 @@ I work with a variety of tools and technologies, including:
 
 In my free time I engage in music and family activities, archaeology, history and learning new technologies.
 I play guitar - unfortunately not in a band.
-My preference for <a href="https://de.fender.com/pages/mustang" target="_blank" rel="noopener noreferrer">Fender Mustang Guitars</a> served as inspiration for the <a href={blogPostPath('sunny-theme', 'en')}>Sunny-Theme</a>.
+My preference for <Link href="https://de.fender.com/pages/mustang">Fender Mustang Guitars</Link> served as inspiration for the <Link href={blogPostPath('sunny-theme', 'en')}>Sunny-Theme</Link>.

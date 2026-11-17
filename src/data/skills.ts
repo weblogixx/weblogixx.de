@@ -73,7 +73,12 @@ export const skills = {
 
   typescript: { name: 'TypeScript', category: 'languages', featured: true },
 
-  php: { name: 'PHP', category: 'languages' },
+  php: {
+    name: 'PHP',
+    category: 'languages',
+    legacy: true,
+    successor: 'node',
+  },
 
   gleam: {
     description: {
@@ -253,9 +258,32 @@ export const skills = {
 
   ecommerce: { name: 'E-Commerce', category: 'architecture' },
 
-  cms: { name: 'CMS', category: 'architecture' },
+  markdown: {
+    description: {
+      de: 'Markdown ist eine schlanke Auszeichnungssprache, die schon als reiner Text gut lesbar ist – noch bevor sie in HTML umgewandelt wird.',
+      en: 'Markdown is a lightweight markup language that stays easy to read as plain text, even before it is converted to HTML.',
+    },
+    name: 'Markdown',
+    category: 'languages',
+  },
 
-  seo: { name: 'SEO', category: 'architecture' },
+  cms: {
+    description: {
+      de: 'Content-Management-Systeme (CMS) sind Softwaresysteme, mit denen sich Inhalte einer Website ohne tiefere technische Kenntnisse pflegen und veröffentlichen lassen.',
+      en: 'Content management systems (CMS) let people create, edit and publish website content without deeper technical knowledge.',
+    },
+    name: 'CMS',
+    category: 'architecture',
+  },
+
+  seo: {
+    description: {
+      de: 'SEO (Search Engine Optimization, Suchmaschinenoptimierung) umfasst alles, was eine Website für Suchmaschinen verständlich macht – damit sie leichter gefunden wird.',
+      en: 'SEO, short for search engine optimization, is the craft of making a website easy for search engines to understand and rank, so people can find it.',
+    },
+    name: 'SEO',
+    category: 'architecture',
+  },
 
   linux: { name: 'Linux / Unix', category: 'infrastructure' },
 
@@ -383,6 +411,8 @@ export const skills = {
     },
     name: 'REDAXO',
     category: 'frameworks',
+    legacy: true,
+    successor: 'astro',
   },
 } as const satisfies Record<string, Skill>;
 

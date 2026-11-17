@@ -1,4 +1,5 @@
 ---
+import Link from '../components/Link.astro';
 import Base from '../layouts/Base.astro';
 import { links, type Locale } from '../data';
 import { useT } from '../i18n/ui';
@@ -20,19 +21,15 @@ const t = useT(lang);
     <ul class="links">
       {links.map((l) => (
         <li>
-          {/* External profiles open in a new tab; mailto: opens the mail app instead. */}
-          <a
-            href={l.url}
-            rel={l.url.startsWith('mailto:') ? undefined : 'me noopener'}
-            target={l.url.startsWith('mailto:') ? undefined : '_blank'}
-          >
+          {/* Link opens profiles in a new tab; mailto: opens the mail app instead. */}
+          <Link href={l.url} rel={l.url.startsWith('mailto:') ? undefined : 'me'}>
             <span class="label">{l.label}</span>
             <span class="handle">{l.handle}</span>
             {l.description && <span class="desc">{l.description[lang]}</span>}
             <span class="arrow" aria-hidden="true">
               {l.url.startsWith('mailto:') ? '→' : '↗'}
             </span>
-          </a>
+          </Link>
         </li>
       ))}
     </ul>

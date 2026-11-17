@@ -1,0 +1,16 @@
+---
+/**
+ * An abbreviation with its expansion: <Abbr title="Common Gateway Interface">CGI</Abbr>.
+ * Shows the expansion in the shared tooltip (Tooltip.astro), which also works on tap, unlike
+ * the plain `title` (kept as the no-JS / old-browser fallback). Styles: global.css.
+ * When to use it (vs. `code`): AGENTS.md → Writing content.
+ */
+interface Props {
+  /** The written-out form. */
+  title: string;
+}
+const { title } = Astro.props;
+const tip = JSON.stringify({ text: title, label: '', items: [] });
+---
+
+<abbr title={title} data-tip={tip} tabindex="0"><slot /></abbr>

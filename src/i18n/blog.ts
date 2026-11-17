@@ -14,3 +14,15 @@ export async function getPosts(lang: Locale) {
   );
   return posts.toSorted((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 }
+
+/**
+ * Posts for a language's blog index: its own posts, plus posts that only exist in the other
+ * language (listed in their own language, so the index never hides a post).
+ */
+export async function getListedPosts(lang: Locale) {
+  const all = await getCollection('blog', (p) => import.meta.env.DEV || !p.data.draft);
+  const own = new Set(all.filter((p) => postLang(p) === lang).map(postSlug));
+  return all
+    .filter((p) => postLang(p) === lang || !own.has(postSlug(p)))
+    .toSorted((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+}

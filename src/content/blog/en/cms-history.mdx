@@ -1,0 +1,109 @@
+---
+title: A brief history of content management
+description: 'Or: why this site runs on Astro'
+summary: 'From hand-crafted HTML to LAMP stacks and back again: why a big CMS is overkill for most small sites, and why this one runs on Astro.'
+date: 2026-11-16
+tags: [astro, ci, cd, ftp]
+skills: [astro, cms, markdown, ci, github, webserver, opensource, seo]
+---
+
+import { route } from '../../../i18n/routes';
+import Abbr from '../../../components/Abbr.astro';
+import Link from '../../../components/Link.astro';
+
+## In the beginning it was all static files
+
+In the late 90s and early 2000s, when dinosaurs still ruled the world and most people thought the answer to dynamic content was <Abbr title="Common Gateway Interface">CGI</Abbr> scripts written in Perl, websites commonly consisted of dozens, sometimes hundreds of carefully hand-crafted pages.
+Updating them was a pain, and redesigns were costly: every file had to be edited by hand and uploaded via FTP (or `rsync`, if you were fancy).
+It was a job usually reserved for experienced webmasters.
+
+## The rise of dynamic content management
+
+A change was needed, and it came in the form of content management systems: TYPO3, Drupal, Joomla and, from 2003 on, WordPress.
+A CMS made it easy to build a full-blown website by separating the content from its visual presentation.
+
+Web hosts began specializing in <Abbr title="Linux, Apache, MySQL, PHP">LAMP</Abbr> setups.
+Suddenly, everyone was able to create a website.
+But the complexity didn't disappear. It moved from the editor to the server, which now needed:
+
+1. A database, knowledge of SQL and data normalization, and, most of all, someone who knew how to manage it.
+2. A programming language that could talk to the database, and a developer who knew the language.
+3. A web server that didn't just serve static files, but ran that language whenever certain URLs were requested.
+
+And it came with new problems:
+
+1. Backups got harder: you had to save not just the files, but the database too.
+2. Search engines struggled with dynamic URLs like `index.php?id=42&cat=7`.
+3. Every page view ran code and database queries: slower pages, and a lot more computing power.
+4. More code meant more attack surface. The language, the CMS and every plugin needed security updates, and they all had to keep working together.
+
+For big sites, online shops or anything whose content changes constantly or depends on the visitor, that trade-off is still worth it.
+But what about small sites? Do they need all this complexity, or do they use it just because everyone else does?
+
+## …and why I never got around to using it
+
+It was <Link href={route('career', 'en', 'clicksports')}>during this time</Link> that I became a web developer, learning server-side languages like PHP and Ruby and working with relational databases like MySQL and PostgreSQL.
+
+Building a personal blog should have been a breeze.
+Unfortunately, I never had much time to write articles at all.
+There was just too much code hidden in those systems, a whole ecosystem to explore.
+In the evenings, after reading up on all the clever patterns and plugins that friendly strangers had built to make writing easier, I realized I hadn't written a single thing.
+I was too busy installing the next PHP security update or migrating WordPress plugins.
+
+## Intermission: the hunt for an easier alternative
+
+In 2004, <Link href="https://daringfireball.net/projects/markdown/">John Gruber released Markdown</Link>:
+a lightweight markup language for structuring text in a simple way, without writing HTML.
+It became the de facto standard for developers' READMEs and documentation, and looks like this:
+
+```markdown
+# Very big heading (translates to `<h1>` in HTML)
+
+## Big heading (translates to `<h2>` in HTML)
+
+### Heading level 3 (translates to `<h3>` in HTML)
+
+Paragraphs are separated by a blank line.
+Text can be **bold**, _italic_ or a [link](https://weblogixx.de).
+
+- An unordered list
+- May have multiple points
+
+1. Ordered lists are just prefixed with a number
+2. Only the first number counts, the rest are counted up automatically.
+```
+
+Best of all, Markdown isn't only readable as plain text, it can also be compiled into various formats, including HTML.
+In fact, this article is written in MDX: Markdown that can also use components, like the links in this article.
+
+## Coming full circle: static site generators
+
+As it turns out, most small websites (including this one) don't benefit much from a big CMS at all.
+A typical small business site has somewhere between 5 and 15 pages. <Link href="https://blog.duda.co/what-high-traffic-websites-tell-us-about-content-scale-and-seo">Data from the website builder Duda</Link> puts the median at about 11.
+
+Static site generators take Markdown files and templates and turn them into plain HTML, once, at build time.
+<Link href="https://jekyllrb.com/">Jekyll</Link> made the idea popular in 2008.
+Hugo, Eleventy and many others followed.
+This site uses <Link href="https://astro.build/">Astro</Link>.
+I picked it because it's easy to start with, yet never boxes you in when a project gets more complex.
+It's open source, fast, and doesn't care about your favorite framework. React, Vue or Svelte components all work, and so does plain HTML.
+Posts are written as MDX files, and the result ships without JavaScript unless a page actually needs it.
+How Astro pulls that off with its so-called islands is a story for another post.
+
+## Back to 1999, but automated
+
+And the hosting? Plain static files on an Apache web host.
+The site needs no PHP and no database.
+Uploads happen via FTP.
+Sound familiar? It's exactly the setup from the beginning of this article.
+
+The only difference is that nobody uploads anything by hand anymore.
+On every push to the Git repository, a GitHub Actions workflow builds the site and mirrors it to the host, this time over an encrypted FTP connection.
+The backup is the repository, there's nothing to patch, and the server only hands out files.
+
+## So, no more CMS?
+
+Not quite. A static site has its own trade-offs: every change needs a build, editing means a text editor and Git rather than a friendly admin panel, and anything truly dynamic (comments, a shop, user accounts) needs another service.
+For a client who updates their site every day and never wants to open an editor, a CMS is still the right call.
+
+But for a site like this one, and probably a lot of other small sites, the best content management system turned out to be a folder of text files.

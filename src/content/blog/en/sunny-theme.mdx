@@ -1,18 +1,20 @@
 ---
 title: The Sunny theme 🌞
 description: How a yellow guitar with a red racing stripe became this site's color scheme – six numbers, OKLCH and a few tricks.
+summary: 'How a yellow Fender Mustang with a red racing stripe became this site''s color scheme: six OKLCH numbers, light and dark mode, and three fonts.'
 date: 2026-11-15
 tags: [design, css]
 skills: [css, designtokens, responsiveDesign, designsystems, astro, claude]
 ---
 
+import Link from '../../../components/Link.astro';
 import SunnyGuitar from '../../../components/SunnyGuitar.astro';
 import { route } from '../../../i18n/routes';
 
 This site's color scheme is called <mark>Sunny</mark>.
 It comes from my Fender Vintera II Mustang in <mark>Competition Orange</mark> with red racing stripes.
 Those two colors are the primary and the accent color.
-The stripe (thin, wide, then thin again, at 45°) shows up everywhere: in the logo, in the hero and at every job on the <a href={route('career', 'en')}>Experience</a> page.
+The stripe (thin, wide, then thin again, at 45°) shows up everywhere: in the logo, in the hero and at every job on the <Link href={route('career', 'en')}>Experience</Link> page.
 
 {/* Guitar and the palette taken from it, side by side. */}
 <figure class="sunny-source">
@@ -42,7 +44,7 @@ The stripe (thin, wide, then thin again, at 45°) shows up everywhere: in the lo
 
 ## Six numbers
 
-The whole theme hangs on six numbers: lightness, chroma and hue (<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/oklch" target="_blank" rel="noopener noreferrer">OKLCH</a>) for the primary and the accent color. Everything else is derived from them – backgrounds, text, borders and the palette above. Even the grays are tinted slightly towards the hue. Because the six numbers are registered as <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@property" target="_blank" rel="noopener noreferrer">CSS properties</a> (`@property`), the entire color scheme can change at runtime.
+The whole theme hangs on six numbers: lightness, chroma and hue (<Link href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/oklch">OKLCH</Link>) for the primary and the accent color. Everything else is derived from them – backgrounds, text, borders and the palette above. Even the grays are tinted slightly towards the hue. Because the six numbers are registered as <Link href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@property">CSS properties</Link> (`@property`), the entire color scheme can change at runtime.
 
 ## Light and dark
 
@@ -52,33 +54,33 @@ Single sections can be pinned to one mode with the classes <span class="sunny-li
 
 ## Every job in its own colors
 
-On the <a href={route('career', 'en')}>Experience</a> page, the color scheme switches to each company's colors as you scroll. Brand colors come in every lightness, so they're adjusted: light enough to stay readable on a dark background. When switching between two companies, the colors blend in OKLab instead of rotating the hue. That turns yellow to blue into a short, calm transition instead of a rainbow through red and pink. At the end of the page it returns to Sunny.
+On the <Link href={route('career', 'en')}>Experience</Link> page, the color scheme switches to each company's colors as you scroll. Brand colors come in every lightness, so they're adjusted: light enough to stay readable on a dark background. When switching between two companies, the colors blend in OKLab instead of rotating the hue. That turns yellow to blue into a short, calm transition instead of a rainbow through red and pink. At the end of the page it returns to Sunny.
 
 ## Fonts
 
 Three fonts, three jobs: Fraunces for headings, Inter for body text and JetBrains Mono for details.
 
-### <a href="https://fraunces.undercase.xyz/" target="_blank" rel="noopener noreferrer">Fraunces</a>
+### <Link href="https://fraunces.undercase.xyz/">Fraunces</Link>
 
 Brings the character. The font has two unusual axes: `SOFT` rounds off the
 edges, `WONK` gives a few letters a slightly quirky shape. Both are turned all
 the way up here. The result is a soft, round serif that recalls '70s
 advertising posters – the same era as the Mustang.
 
-### <a href="https://rsms.me/inter/" target="_blank" rel="noopener noreferrer">Inter</a>
+### <Link href="https://rsms.me/inter/">Inter</Link>
 
 Stays in the background.
 For longer texts, readability matters more than personality, and Inter is built for exactly that: clear, calm and easy to read even at small sizes.
 Next to the playful Fraunces, it keeps things calm.
 
-### <a href="https://www.jetbrains.com/lp/mono/" target="_blank" rel="noopener noreferrer">JetBrains Mono</a>
+### <Link href="https://www.jetbrains.com/lp/mono/">JetBrains Mono</Link>
 
 Covers everything technical: date ranges, small labels, the prompt in the header (`weblogixx@…`) and, of course, code.
 The monospace font recalls the terminal and the editor, and visibly sets metadata apart from the actual text.
 
 On the technical side, a few deliberate choices:
 
-- **Self-hosted.** The fonts come from this site itself, not from Google Fonts or any other service. There's no request to third-party servers, and the <a href={route('privacy', 'en')}>privacy policy</a> stays short.
+- **Self-hosted.** The fonts come from this site itself, not from Google Fonts or any other service. There's no request to third-party servers, and the <Link href={route('privacy', 'en')}>privacy policy</Link> stays short.
 - **Variable fonts.** One file per font covers all weights, and for Fraunces the `SOFT` and `WONK` axes too.
 - **Latin character set only.** It covers English and German, including ä, ö, ü and ß, and keeps the files small.
 - **No flicker.** The files are preloaded (`preload`), and `font-display: optional` keeps the text from jumping once the font arrives. If you've been here before, the fonts are cached and show up right away. Only on a very slow first visit does that one page stay in the system font.

@@ -1,0 +1,112 @@
+---
+title: Eine kurze Geschichte des Content-Managements
+description: 'Oder: warum diese Seite mit Astro läuft'
+summary: 'Von handgebautem HTML zum LAMP-Stack und wieder zurück: warum ein großes CMS für die meisten kleinen Websites zu viel ist und diese Seite auf Astro setzt.'
+date: 2026-11-16
+tags: [astro, ci, cd, ftp]
+skills: [astro, cms, markdown, ci, github, webserver, opensource, seo]
+translatedFrom: en
+---
+
+import { route } from '../../../i18n/routes';
+import Abbr from '../../../components/Abbr.astro';
+import Link from '../../../components/Link.astro';
+
+## Am Anfang waren statische Dateien
+
+Ende der 90er und Anfang der 2000er, als noch Dinosaurier die Welt beherrschten und die meisten dynamische Inhalte mit <Abbr title="Common Gateway Interface">CGI</Abbr>-Skripten in Perl gelöst wurden, bestanden Websites oft aus Dutzenden, manchmal Hunderten sorgfältig von Hand gebauter Einzelseiten.
+Sie zu aktualisieren war mühsam, und ein Redesign war teuer: Jede Datei musste von Hand bearbeitet und per FTP hochgeladen werden (oder per `rsync`, wenn man es schick mochte).
+Das war meist ein Job für erfahrene Webmaster.
+
+## Der Aufstieg des dynamischen Content-Managements
+
+Es musste sich etwas ändern, und die Lösung hieß Content-Management-System: TYPO3, Drupal, Joomla und ab 2003 WordPress.
+Ein CMS machte es leicht, eine vollwertige Website zu bauen, weil es den Inhalt von seiner Darstellung trennte.
+
+Webhoster spezialisierten sich auf <Abbr title="Linux, Apache, MySQL, PHP">LAMP</Abbr>-Pakete.
+Plötzlich konnte jeder eine Website erstellen.
+Die Komplexität verschwand aber nicht, sie wanderte nur vom Redakteur auf den Server. Der brauchte jetzt:
+
+1. Eine Datenbank, Kenntnisse in SQL und Datennormalisierung und vor allem jemanden, der sie betreuen konnte.
+2. Eine Programmiersprache, die mit der Datenbank sprechen konnte, und einen Entwickler, der diese Sprache beherrschte.
+3. Einen Webserver, der nicht nur statische Dateien auslieferte, sondern bei bestimmten URLs diese Sprache ausführte.
+
+Dazu kamen neue Probleme:
+
+1. Backups wurden aufwendiger, denn neben den Dateien musste auch die Datenbank gesichert werden.
+2. Suchmaschinen taten sich schwer mit dynamischen URLs wie `index.php?id=42&cat=7`.
+3. Jeder Seitenaufruf führte Code und Datenbankabfragen aus. Die Seiten wurden langsamer und brauchten deutlich mehr Rechenleistung.
+4. Mehr Code bedeutete mehr Angriffsfläche. Die Sprache, das CMS und jedes Plugin brauchten Sicherheitsupdates, und alles musste danach noch zusammenspielen.
+
+Für große Websites, Onlineshops oder alles, dessen Inhalt sich ständig ändert oder vom Besucher abhängt, lohnt sich dieser Aufwand bis heute.
+Aber was ist mit kleinen Websites? Brauchen die diese ganze Komplexität, oder nutzen sie sie nur, weil es alle tun?
+
+## …und warum ich nie dazu kam, es zu nutzen
+
+<Link href={route('career', 'de', 'clicksports')}>In dieser Zeit</Link> wurde ich Webentwickler. Ich lernte serverseitige Sprachen wie PHP und Ruby und arbeitete mit relationalen Datenbanken wie MySQL und PostgreSQL.
+
+Ein eigenes Blog hätte also ein Kinderspiel sein sollen.
+Leider fand ich kaum Zeit, überhaupt Artikel zu schreiben.
+In diesen Systemen steckte einfach zu viel Code, ein ganzes Ökosystem, das erkundet werden wollte.
+Wenn ich abends alles über die cleveren Patterns und Plugins gelesen hatte, die freundliche Fremde gebaut hatten, um das Schreiben leichter zu machen, merkte ich, dass ich keine einzige Zeile geschrieben hatte.
+Ich war zu sehr damit beschäftigt, das nächste PHP-Sicherheitsupdate einzuspielen oder WordPress-Plugins zu migrieren.
+
+## Zwischenspiel: die Suche nach einer einfacheren Alternative
+
+2004 <Link href="https://daringfireball.net/projects/markdown/">veröffentlichte John Gruber Markdown</Link>:
+eine schlanke Auszeichnungssprache, mit der sich Text einfach strukturieren lässt, ohne HTML zu schreiben.
+Sie wurde zum De-facto-Standard für READMEs und Dokumentation unter Entwicklern und sieht so aus:
+
+```markdown
+# Sehr große Überschrift (wird in HTML zu `<h1>`)
+
+## Große Überschrift (wird in HTML zu `<h2>`)
+
+### Überschrift der Ebene 3 (wird in HTML zu `<h3>`)
+
+Absätze werden durch eine Leerzeile getrennt.
+Text kann **fett**, _kursiv_ oder ein [Link](https://weblogixx.de) sein.
+
+- Eine ungeordnete Liste
+- Kann mehrere Punkte haben
+
+1. Geordnete Listen bekommen einfach eine Zahl davor
+2. Nur die erste Zahl zählt, der Rest wird automatisch hochgezählt.
+```
+
+Das Beste daran: Markdown ist nicht nur als reiner Text gut lesbar, es lässt sich auch in verschiedene Formate umwandeln, darunter HTML.
+Auch dieser Artikel ist in MDX geschrieben, also Markdown, das zusätzlich Komponenten nutzen kann, wie die Links in diesem Artikel.
+
+## Der Kreis schließt sich: Static Site Generators
+
+Wie sich herausstellt, profitieren die meisten kleinen Websites (diese eingeschlossen) kaum von einem großen CMS.
+Eine typische Website eines kleinen Unternehmens hat irgendwo zwischen 5 und 15 Seiten. <Link href="https://blog.duda.co/what-high-traffic-websites-tell-us-about-content-scale-and-seo">Daten des Website-Baukastens Duda</Link> nennen einen Median von etwa 11.
+
+Static Site Generators machen aus Markdown-Dateien und Templates schlichtes HTML, und zwar einmal, beim Build.
+<Link href="https://jekyllrb.com/">Jekyll</Link> machte die Idee 2008 populär.
+Hugo, Eleventy und viele andere folgten.
+
+Diese Seite nutzt <Link href="https://astro.build/">Astro</Link>.
+Ich habe es gewählt, weil der Einstieg leicht ist und es einen trotzdem nie einengt, wenn ein Projekt komplexer wird.
+Es ist Open Source und schnell.
+React-, Vue- oder Svelte-Komponenten funktionieren, schlichtes HTML ebenso.
+Die Beiträge sind MDX-Dateien, und das Ergebnis kommt ohne JavaScript aus, solange eine Seite es nicht wirklich braucht.
+Wie Astro das mit seinen sogenannten Islands hinbekommt, ist eine Geschichte für einen anderen Beitrag.
+
+## Zurück ins Jahr 1999, nur automatisiert
+
+Und das Hosting? Schlichte statische Dateien auf einem Apache-Webserver.
+Die Seite braucht weder PHP noch eine Datenbank.
+Hochgeladen wird per FTP.
+Kommt bekannt vor? Genau das Setup vom Anfang dieses Artikels.
+
+Der einzige Unterschied: Niemand lädt mehr etwas von Hand hoch.
+Bei jedem Push ins Git-Repository baut ein GitHub-Actions-Workflow die Seite und spiegelt sie auf den Server, diesmal über eine verschlüsselte FTP-Verbindung.
+Das Backup ist das Repository, es gibt nichts zu patchen, und der Server liefert nur Dateien aus.
+
+## Also kein CMS mehr?
+
+Nicht ganz. Auch eine statische Seite hat ihre Nachteile: Jede Änderung braucht einen Build, bearbeitet wird im Texteditor mit Git statt in einer freundlichen Admin-Oberfläche, und alles wirklich Dynamische (Kommentare, ein Shop, Benutzerkonten) braucht einen weiteren Dienst.
+Für Kunden, die ihre Website täglich aktualisieren und nie einen Editor öffnen wollen, ist ein CMS weiterhin die richtige Wahl.
+
+Aber für eine Seite wie diese, und vermutlich für viele andere kleine Websites, hat sich das beste Content-Management-System als ein Ordner voller Textdateien herausgestellt.

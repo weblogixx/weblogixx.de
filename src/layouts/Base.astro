@@ -9,7 +9,7 @@ import Footer from '../components/Footer.astro';
 import Tooltip from '../components/Tooltip.astro';
 import type { Locale } from '../data/types';
 import { profile } from '../data';
-import { routes, href, type RouteKey } from '../i18n/routes';
+import { routes, href, feedPath, type RouteKey } from '../i18n/routes';
 import { useT } from '../i18n/ui';
 
 interface Props {
@@ -70,6 +70,8 @@ const site = Astro.site ?? new URL('https://weblogixx.de');
     <link rel="icon" type="image/svg+xml" href={href('/favicon.svg')} />
     <link rel="canonical" href={new URL(Astro.url.pathname, site)} />
     <link rel="alternate" hreflang={other} href={new URL(altHref, site)} />
+    {/* Feed readers and browser extensions find the blog feed from any page. */}
+    <link rel="alternate" type="application/rss+xml" title={`${profile.name} · Blog`} href={new URL(feedPath(lang), site)} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={desc} />
     <meta property="og:locale" content={lang === 'de' ? 'de_DE' : 'en_US'} />

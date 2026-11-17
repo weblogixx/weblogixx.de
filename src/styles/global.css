@@ -255,9 +255,27 @@ svg {
 /*
  * Inline formatting in Markdown/MDX (blog posts: .content, prose pages: .md).
  *   `code`            → mono chip on a Sunny surface, in the primary color
+ *   <Abbr>CGI</Abbr>  → dotted underline, expansion in the tooltip (Abbr.astro)
  *   <mark>Sunny</mark> → highlight in the accent color (darker in light mode, for contrast)
+ * When to use which: AGENTS.md → Writing content.
  */
 :where(.content, .md) {
+  /* Not abbr[title]: Tooltip.astro removes the title once its own tooltip takes over. */
+  & abbr {
+    /* Longhands: a shorthand with var() plus a longhand after it ends up empty in some engines. */
+    text-decoration-line: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: var(--text-subtle);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    cursor: help;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration-color: var(--primary);
+    }
+  }
+
   & :not(pre) > code {
     padding: 0.1em 0.35em;
     border: 1px solid var(--border);

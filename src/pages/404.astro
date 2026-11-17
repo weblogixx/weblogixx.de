@@ -3,6 +3,7 @@
  * Not-found page. Built as /404.html; Apache serves it for unknown URLs (ErrorDocument in
  * public/.htaccess). One page for both languages, since the URL doesn't tell which one fits.
  */
+import Link from '../components/Link.astro';
 import Base from '../layouts/Base.astro';
 import { route } from '../i18n/routes';
 ---
@@ -13,10 +14,10 @@ import { route } from '../i18n/routes';
       <p class="eyebrow">404</p>
       <h1>Seite nicht gefunden</h1>
       <p class="lede">
-        Diese Adresse gibt es nicht (mehr). <a href={route('home', 'de')}>Zur Startseite</a>
+        Diese Adresse gibt es nicht (mehr). <Link href={route('home', 'de')}>Zur Startseite</Link>
       </p>
       <p class="lede" lang="en">
-        This page doesn't exist (anymore). <a href={route('home', 'en')}>Go to the home page</a>
+        This page doesn't exist (anymore). <Link href={route('home', 'en')}>Go to the home page</Link>
       </p>
     </header>
   </div>

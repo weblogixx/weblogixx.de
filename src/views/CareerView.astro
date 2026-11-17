@@ -1,4 +1,5 @@
 ---
+import Link from '../components/Link.astro';
 import Base from '../layouts/Base.astro';
 import CompanyLogo from '../components/CompanyLogo.astro';
 import SkillList from '../components/SkillList.astro';
@@ -128,18 +129,16 @@ const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
               <ul class="extra-links">
                 {e.links.map((l) => (
                   <li>
-                    <a href={l.url} rel="noopener" target="_blank">
-                      {l.label} ↗
-                    </a>
+                    <Link href={l.url}>{l.label} ↗</Link>
                   </li>
                 ))}
               </ul>
             )}
 
             {e.url && (
-              <a class="site" href={e.url} rel="noopener" target="_blank">
+              <Link class="site" href={e.url}>
                 {t('career.website')}: {new URL(e.url).host} ↗
-              </a>
+              </Link>
             )}
           </article>
         </li>

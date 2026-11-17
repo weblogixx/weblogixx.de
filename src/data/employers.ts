@@ -27,7 +27,7 @@ export const employers: Employer<SkillId>[] = [
           de: 'Freelancer',
           en: 'Freelancer',
         },
-        start: '2026-11',
+        start: '2027-01',
       },
     ],
     tagline: {
@@ -80,6 +80,7 @@ export const employers: Employer<SkillId>[] = [
       'visres',
       'webawesome',
       'linux',
+      'markdown',
     ],
   },
   {
@@ -192,6 +193,7 @@ export const employers: Employer<SkillId>[] = [
       'visres',
       'shoelace',
       'webawesome',
+      'markdown',
     ],
   },
   {
@@ -287,6 +289,7 @@ export const employers: Employer<SkillId>[] = [
       'opensource',
       'zend',
       'ci',
+      'markdown',
     ],
   },
   {
@@ -374,6 +377,7 @@ export const employers: Employer<SkillId>[] = [
       'legacyBrowsers',
       'magento',
       'redaxo',
+      'markdown',
     ],
   },
   {

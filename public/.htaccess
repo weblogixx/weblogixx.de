@@ -34,10 +34,10 @@ AddType font/woff2 .woff2
   AddOutputFilterByType DEFLATE text/html text/css text/plain application/javascript image/svg+xml application/xml
 </IfModule>
 
-# Caching: pages must always be fresh (no-cache = revalidate every time); the files in /_astro/
+# Caching: pages and the RSS feed must always be fresh (no-cache = revalidate every time); the files in /_astro/
 # carry a content hash in their name, so a changed file gets a new name: cache them for a year.
 <IfModule mod_headers.c>
-  <FilesMatch "\.html$">
+  <FilesMatch "\.(html|xml)$">
     Header set Cache-Control "no-cache"
   </FilesMatch>
   <If "%{REQUEST_URI} =~ m#^/_astro/#">

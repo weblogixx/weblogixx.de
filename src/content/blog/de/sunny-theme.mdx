@@ -1,18 +1,20 @@
 ---
 title: Das Sunny-Theme 🌞
 description: Wie aus einer gelben Gitarre mit rotem Rennstreifen das Farbschema dieser Seite wurde – sechs Zahlen, OKLCH und ein paar Tricks.
+summary: 'Wie aus einer gelben Fender Mustang mit rotem Rennstreifen das Farbschema dieser Seite wurde: sechs OKLCH-Zahlen, Hell- und Dunkelmodus und drei Schriften.'
 date: 2026-11-15
 tags: [design, css]
 skills: [css, designtokens, responsiveDesign, designsystems, astro, claude]
 ---
 
-import SunnyGuitar from "../../../components/SunnyGuitar.astro";
-import { route } from "../../../i18n/routes";
+import Link from '../../../components/Link.astro';
+import SunnyGuitar from '../../../components/SunnyGuitar.astro';
+import { route } from '../../../i18n/routes';
 
 Das Farbschema dieser Seite heißt <mark>Sunny</mark>.
 Es stammt von meiner Fender Vintera II Mustang in der Farbe <mark>Competition Orange</mark> mit roten Rennstreifen.
 Genau diese beiden Farben sind Primär- und Akzentfarbe.
-Der Streifen (schmal, breit, dann wieder schmal, im 45°-Winkel) taucht überall auf: im Logo, im Hero und an jeder Station auf der Seite <a href={route('career', 'de')}>Erfahrung</a>.
+Der Streifen (schmal, breit, dann wieder schmal, im 45°-Winkel) taucht überall auf: im Logo, im Hero und an jeder Station auf der Seite <Link href={route('career', 'de')}>Erfahrung</Link>.
 
 {/* Guitar and the palette taken from it, side by side. */}
 
@@ -98,7 +100,7 @@ Der Streifen (schmal, breit, dann wieder schmal, im 45°-Winkel) taucht überall
 
 ## Sechs Zahlen
 
-Das ganze Theme hängt an sechs Zahlen: Helligkeit, Buntheit und Farbton (<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/oklch" target="_blank" rel="noopener noreferrer">OKLCH</a>) für die Primär- und die Akzentfarbe. Alles andere wird daraus abgeleitet – Hintergründe, Text, Rahmen und die Farbpalette oben. Selbst die Grautöne sind leicht zum Farbton hin getönt. Weil die sechs Zahlen als <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@property" target="_blank" rel="noopener noreferrer">CSS-Eigenschaften</a> registriert sind (`@property`), lässt sich das komplette Farbschema zur Laufzeit umstellen.
+Das ganze Theme hängt an sechs Zahlen: Helligkeit, Buntheit und Farbton (<Link href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/oklch">OKLCH</Link>) für die Primär- und die Akzentfarbe. Alles andere wird daraus abgeleitet – Hintergründe, Text, Rahmen und die Farbpalette oben. Selbst die Grautöne sind leicht zum Farbton hin getönt. Weil die sechs Zahlen als <Link href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@property">CSS-Eigenschaften</Link> registriert sind (`@property`), lässt sich das komplette Farbschema zur Laufzeit umstellen.
 
 ## Hell und dunkel
 
@@ -108,33 +110,33 @@ Einzelne Bereiche lassen sich mit den Klassen <span class="sunny-light">`sunny-l
 
 ## Jede Station in ihren Farben
 
-Auf der Seite <a href={route('career', 'de')}>Erfahrung</a> wechselt das Farbschema beim Scrollen zu den Farben des jeweiligen Unternehmens. Markenfarben gibt es in jeder Helligkeit, deshalb werden sie angepasst: hell genug, um auf dunklem Grund lesbar zu bleiben. Beim Wechsel zwischen zwei Unternehmen mischen sich die Farben in OKLab, statt den Farbton zu drehen. So wird aus Gelb zu Blau ein kurzer, ruhiger Übergang statt eines Regenbogens über Rot und Pink. Am Ende der Seite geht es zurück zu Sunny.
+Auf der Seite <Link href={route('career', 'de')}>Erfahrung</Link> wechselt das Farbschema beim Scrollen zu den Farben des jeweiligen Unternehmens. Markenfarben gibt es in jeder Helligkeit, deshalb werden sie angepasst: hell genug, um auf dunklem Grund lesbar zu bleiben. Beim Wechsel zwischen zwei Unternehmen mischen sich die Farben in OKLab, statt den Farbton zu drehen. So wird aus Gelb zu Blau ein kurzer, ruhiger Übergang statt eines Regenbogens über Rot und Pink. Am Ende der Seite geht es zurück zu Sunny.
 
 ## Schriften
 
 Drei Schriften, drei Aufgaben: Fraunces für Überschriften, Inter für Fließtext und JetBrains Mono für Details.
 
-### <a href="https://fraunces.undercase.xyz/" target="_blank" rel="noopener noreferrer">Fraunces</a>
+### <Link href="https://fraunces.undercase.xyz/">Fraunces</Link>
 
 Liefert den Charakter. Die Schrift hat zwei ungewöhnliche Achsen: `SOFT` rundet
 die Kanten ab, `WONK` macht einzelne Buchstaben ein wenig eigenwillig. Beide
 stehen hier auf Anschlag. So entsteht eine weiche, runde Serifenschrift, die an
 die Werbeplakate der Siebziger erinnert – dieselbe Ära wie die Mustang.
 
-### <a href="https://rsms.me/inter/" target="_blank" rel="noopener noreferrer">Inter</a>
+### <Link href="https://rsms.me/inter/">Inter</Link>
 
 Hält sich zurück.
 Für längere Texte zählt Lesbarkeit mehr als Persönlichkeit, und Inter ist genau dafür gebaut: klar, ruhig und auch in kleinen Größen gut lesbar.
 Neben der verspielten Fraunces sorgt sie für Ruhe.
 
-### <a href="https://www.jetbrains.com/lp/mono/" target="_blank" rel="noopener noreferrer">JetBrains Mono</a>
+### <Link href="https://www.jetbrains.com/lp/mono/">JetBrains Mono</Link>
 
 Steht für alles Technische: Zeiträume, kleine Labels, den Prompt im Header (`weblogixx@…`) und natürlich Code.
 Die Monospace-Schrift erinnert an Terminal und Editor und trennt Metadaten sichtbar vom eigentlichen Text.
 
 Technisch gibt es ein paar bewusste Entscheidungen:
 
-- **Selbst gehostet.** Die Schriften kommen von dieser Seite selbst, nicht von Google Fonts oder einem anderen Dienst. Es gibt keine Anfrage an fremde Server, und die <a href={route('privacy', 'de')}>Datenschutzerklärung</a> bleibt kurz.
+- **Selbst gehostet.** Die Schriften kommen von dieser Seite selbst, nicht von Google Fonts oder einem anderen Dienst. Es gibt keine Anfrage an fremde Server, und die <Link href={route('privacy', 'de')}>Datenschutzerklärung</Link> bleibt kurz.
 - **Variable Fonts.** Pro Schrift genügt eine Datei für alle Schriftstärken, bei Fraunces inklusive der `SOFT`- und `WONK`-Achsen.
 - **Nur der lateinische Zeichensatz.** Er deckt Deutsch samt ä, ö, ü und ß ab und hält die Dateien klein.
 - **Kein Flackern.** Die Dateien werden vorab geladen (`preload`), und `font-display: optional` verhindert, dass der Text nach dem Laden noch einmal umspringt. Wer die Seite schon kennt, hat die Schriften im Cache und sieht sie sofort. Nur bei einem sehr langsamen ersten Besuch bleibt es für diese eine Seite bei der Systemschrift.

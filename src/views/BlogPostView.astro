@@ -20,15 +20,27 @@ const other: Locale = lang === 'de' ? 'en' : 'de';
 const { Content } = await render(post);
 const dateFmt = new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { dateStyle: 'long' });
 const altPath = hasTranslation ? blogPostPath(postSlug(post), other) : route('blog', other);
+/* Meta/OG description: the standalone summary, else the description after the title (see content.config.ts). */
+const metaDescription = post.data.summary ?? `${post.data.title} – ${post.data.description}`;
 ---
 
-<Base lang={lang} page="blog" title={post.data.title} description={post.data.description} altPath={altPath}>
+<Base lang={lang} page="blog" title={post.data.title} description={metaDescription} altPath={altPath}>
   <article class="container post">
     <header class="page-head">
       <a class="back" href={route('blog', lang)}>← {t('blog.back')}</a>
       <time datetime={post.data.date.toISOString()}>{dateFmt.format(post.data.date)}</time>
       <h1>{post.data.title}</h1>
       <p class="lede">{post.data.description}</p>
+      {
+        post.data.translatedFrom && hasTranslation && (
+          <p class="translated">
+            {t('blog.translatedFrom')}{' '}
+            <a href={blogPostPath(postSlug(post), post.data.translatedFrom)} hreflang={post.data.translatedFrom}>
+              {t('blog.readOriginal')} →
+            </a>
+          </p>
+        )
+      }
       {post.data.skills.length > 0 && <SkillList ids={post.data.skills} lang={lang} />}
     </header>
     <div class="content">
@@ -47,6 +59,12 @@ const altPath = hasTranslation ? blogPostPath(postSlug(post), other) : route('bl
   time {
     color: var(--text-subtle);
   }
+  /* Translations point to the original, quietly, like the date line. */
+  .translated {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--text-subtle);
+  }
   .content {
     max-width: 42em;
     margin-bottom: var(--space-9);
@@ -57,6 +75,10 @@ const altPath = hasTranslation ? blogPostPath(postSlug(post), other) : route('bl
     & :global(h2) {
       font-size: var(--step-2);
       margin-top: var(--space-5);
+    }
+    /* Only as a break after text: a post that opens with a heading starts right below the header. */
+    & > :global(h2:first-child) {
+      margin-top: 0;
     }
     /* Code blocks: .code-block in global.css. */
     & :global(code) {

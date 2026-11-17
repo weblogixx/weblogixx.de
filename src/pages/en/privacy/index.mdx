@@ -12,6 +12,7 @@ variant: legal
   Update it when that changes (analytics, forms, embeds…), together with the German version.
 */}
 
+import Link from '../../../components/Link.astro';
 import ImprintAddress from '../../../components/ImprintAddress.astro';
 import { hoster } from '../../../data/imprint';
 import { route } from '../../../i18n/routes';
@@ -29,7 +30,7 @@ third-party servers. The fonts are served by this website itself, too.
 
 The website is hosted by {hoster.name}, {hoster.address}. When you visit it, the host processes technically necessary data, in particular your IP address, the date and time and the requested page, to deliver the website and protect it against abuse (server logs). The legal basis is Art. 6(1)(f) GDPR; my legitimate interest is a secure and reliable website.
 
-The host processes this data on my behalf (Art. 28 GDPR). Details: <a href={hoster.privacyUrl}>{hoster.name}'s privacy policy</a>.
+The host processes this data on my behalf (Art. 28 GDPR). Details: <Link href={hoster.privacyUrl}>{hoster.name}'s privacy policy</Link>.
 
 ## Settings in your browser
 
@@ -58,5 +59,5 @@ write to the email address above. You can also lodge a complaint with a data pro
 authority (Art. 77 GDPR).
 
 <p class="meta">
-  Last updated: November 2026 · <a href={route('imprint', 'en')}>Legal notice</a>
+  Last updated: November 2026 · <Link href={route('imprint', 'en')}>Legal notice</Link>
 </p>

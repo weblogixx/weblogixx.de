@@ -8,6 +8,7 @@ variant: legal
 
 {/* Legal notice per § 5 DDG and § 18(2) MStV. Address and contact details come from src/data/imprint.ts. */}
 
+import Link from '../../../components/Link.astro';
 import ImprintAddress from '../../../components/ImprintAddress.astro';
 import { imprint, telHref } from '../../../data/imprint';
 
@@ -17,7 +18,7 @@ import { imprint, telHref } from '../../../data/imprint';
 
 ## Contact
 
-<p>Email: <a href={`mailto:${imprint.email}`}>{imprint.email}</a>{imprint.phone && (<><br />Phone: <a href={telHref(imprint.phone)}>{imprint.phone}</a></>)}</p>
+<p>Email: <Link href={`mailto:${imprint.email}`}>{imprint.email}</Link>{imprint.phone && (<><br />Phone: <Link href={telHref(imprint.phone)}>{imprint.phone}</Link></>)}</p>
 
 {imprint.vatId && (
   <>

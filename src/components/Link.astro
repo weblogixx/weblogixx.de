@@ -1,0 +1,18 @@
+---
+/**
+ * A link that knows whether it leaves the site: links to other sites open in a new tab with
+ * `rel="noopener noreferrer"`; links within the site (relative, or absolute to `site`), mailto:
+ * and tel: stay as they are. Any other <a> attribute (class, aria-label …) is passed through;
+ * a `rel` given here is added to the default one, a `target` given here wins.
+ */
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'a'> & { href: string };
+
+const { href, target, rel, ...rest } = Astro.props;
+
+const isExternal = /^https?:\/\//i.test(href) && new URL(href).origin !== Astro.site?.origin;
+const relTokens = [rel, isExternal && 'noopener noreferrer'].filter(Boolean).join(' ');
+---
+
+<a href={href} target={target ?? (isExternal ? '_blank' : undefined)} rel={relTokens || undefined} {...rest}><slot /></a>
