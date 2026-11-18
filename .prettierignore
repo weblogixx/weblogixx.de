@@ -9,3 +9,6 @@ dist/
 .astro/
 package-lock.json
 pnpm-lock.yaml
+# Google Search Console verification file: Google compares it byte for byte, so no formatter
+# may touch it.
+public/google*.html
