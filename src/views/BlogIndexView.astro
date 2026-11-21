@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import SkillList from '../components/SkillList.astro';
 import type { Locale } from '../data';
-import { getListedPosts, postLang, postSlug } from '../i18n/blog';
+import { getListedPosts, postLang, postSlug, postUpdated } from '../i18n/blog';
 import { blogPostPath, feedPath } from '../i18n/routes';
 import { useT } from '../i18n/ui';
 
@@ -38,15 +38,40 @@ const dateFmt = new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { dat
             /* A post without a version in this language links to the one that exists. */
             const pLang = postLang(p);
             const foreign = pLang !== lang;
+            const updated = postUpdated(p);
+            const aiItems = p.data.ai.map((kind) => ({ name: t(`blog.ai.${kind}`) }));
+            const aiText = `${t('blog.aiDescription')} ${t('blog.aiLabel')}: ${aiItems.map((i) => i.name).join(', ')}`;
             return (
               <li>
                 <a href={blogPostPath(postSlug(p), pLang)} hreflang={foreign ? pLang : undefined}>
                   <span class="meta">
                     <time datetime={p.data.date.toISOString()}>{dateFmt.format(p.data.date)}</time>
+                    {updated && (
+                      <span class="updated">
+                        <span class="sep" aria-hidden="true">
+                          ·
+                        </span>
+                        {t('blog.updated')} <time datetime={updated.toISOString()}>{dateFmt.format(updated)}</time>
+                      </span>
+                    )}
                     {foreign && (
-                      <span class="lang" title={t('blog.otherLang')}>
+                      <span
+                        class="tag"
+                        title={t('blog.otherLang')}
+                        data-tip={JSON.stringify({ text: t('blog.otherLang'), label: '', items: [] })}
+                      >
                         {pLang.toUpperCase()}
                         <span class="visually-hidden"> – {t('blog.otherLang')}</span>
+                      </span>
+                    )}
+                    {aiItems.length > 0 && (
+                      <span
+                        class="tag"
+                        title={aiText}
+                        data-tip={JSON.stringify({ text: t('blog.aiDescription'), label: t('blog.aiLabel'), items: aiItems })}
+                      >
+                        {t('blog.ai')}
+                        <span class="visually-hidden"> – {aiText}</span>
                       </span>
                     )}
                   </span>
@@ -122,11 +147,25 @@ const dateFmt = new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { dat
   }
   .meta {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-2);
+    gap: var(--space-1) var(--space-2);
   }
-  /* Language tag of a post that only exists in the other language. */
-  .lang {
+  .updated {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--text-subtle);
+  }
+  /* Small phones: the update gets its own line, without a leading dot. */
+  .sep {
+    margin-right: var(--space-2);
+
+    @media (max-width: 480px) {
+      display: none;
+    }
+  }
+  /* Small tags with a tooltip: the post's other language, AI assistance. */
+  .tag {
     padding: 0 0.4em;
     border: 1px solid var(--border-strong);
     border-radius: var(--radius-s);
@@ -134,6 +173,7 @@ const dateFmt = new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { dat
     font-size: var(--step--1);
     letter-spacing: 0.06em;
     color: var(--text-muted);
+    cursor: help;
   }
   .title {
     font-family: var(--font-display);

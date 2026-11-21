@@ -1,0 +1,296 @@
+---
+title: A trip down memory lane
+description: 'What I learned while revisiting one of my first open source projects after letting it sit idle on GitHub and npm for nearly 6 years.'
+summary: 'I revisited an npm package I abandoned years ago. Its 82 vulnerabilities were mostly noise. The real risk was hiding in its dependencies.'
+date: 2026-11-20
+tags: [github, opensource, npm]
+skills: [ci, github, opensource, markdown, websockets, embeddedui, javascript, frontendarch, dx]
+ai: [writing, fact-check]
+---
+
+import { route } from '../../../i18n/routes';
+import Abbr from '../../../components/Abbr.astro';
+import Link from '../../../components/Link.astro';
+
+> I have become the ecosystem's worst enemy
+> <cite>Me, after running `npm audit` after 6 years</cite>
+
+## Preface
+
+When I was <Link href={route('career', 'en', 'hella-gutmann')}>tasked with creating "SDI"</Link>, the web-based UI that would eventually power flagship <Link href="https://www.hella.com/techworld/uk/workshop-equipment/diagnostic-solutions/mega-macs-x/">diagnostic devices</Link>, I assessed multiple approaches to bring application data to the UI.
+
+<Abbr title="Asynchronous JavaScript and XML">Ajax</Abbr> was the state of the art for transferring data in those days.
+For me, long polling was not a viable option for devices that had to respond and update the screen in milliseconds.
+Help came from the web platform and its <Link href="https://developer.mozilla.org/en-US/docs/Glossary/WebSockets">WebSocket</Link> protocol, which keeps a single connection open in both directions.
+
+However, the <Link href="https://developer.mozilla.org/en-US/docs/Web/API/WebSocket">WebSocket API</Link> is very generic on purpose:
+
+- There is no deep connection handling, just opening or closing the connection.
+- When a connection becomes stale and the client tries to send data, it will silently fail if unhandled by the developer.
+- There are no built-in signals for interesting events like attempting to open the connection or reconnecting after a drop.
+
+After experimenting with various available solutions, it became clear that the advantages of the technology outweighed everything else by far.
+So I tried to do what all good developers do: Get my hands dirty and create a usable interface.
+And with that, <Link href="https://github.com/weblogixx/wsclient-evented">wsclient-evented</Link> was born.
+
+## What it did
+
+The package was aimed at frontend projects that used event-based systems like <Link href="https://facebookarchive.github.io/flux/">Facebook's original Flux implementation</Link>.
+Its aim was to forward a small JSON envelope from the WebSocket server into a data store like this:
+
+```javascript
+import WsClient from 'wsclient-evented';
+import { Dispatcher } from 'flux';
+
+// Flux setup, old school
+// Mind you this was before Redux
+// became the most common Flux solution
+const ActionTypes = {
+  CONN_LOADING: 'conn_loading',
+  CONN_ESTABLISHED: 'conn_established',
+  RCV_NEW_DATA: 'rcv_new_data',
+};
+
+const dispatcher = new Dispatcher();
+
+const source = new WsClient('ws://localhost:1234', null, {
+  autoReconnect: true,
+  onBeforeWsOpen: () => {
+    dispatcher.dispatch({
+      type: ActionTypes.CONN_LOADING,
+    });
+  },
+  onWsOpen: e => {
+    dispatcher.dispatch({
+      type: ActionTypes.CONN_ESTABLISHED,
+      e,
+    });
+  },
+});
+
+// Given the following message from the server:
+// { "type": "new-data-event", "payload": { "sent": true } }
+
+// Users could connect directly to this event:
+source.addListener('new-data-event', (
+  _wsEvent,
+  { payload },
+) => {
+  // Forward all new data from the event
+  // to the flux store
+  dispatcher.dispatch({
+    type: ActionTypes.RCV_NEW_DATA,
+    data: payload,
+  });
+});
+```
+
+## This is going to get messy
+
+That's what I thought when I opened up the repository.
+I had not looked in there for ages and was directly greeted with a whopping **22** Dependabot pull requests.
+
+I looked at this little utility, one of my earliest contributions to open source.
+A thing I was proud of once.
+For a short time, this little piece of software played an important part in my daily work.
+Until it wasn't important anymore.
+It got stale.
+
+Curious, I checked what was left to salvage.
+It turned out that my carefully crafted package list and test toolchain had not stood the test of time.
+On the contrary, they looked downright dangerous.
+
+```bash
+npm outdated
+Package                    Current    Latest
+@babel/core                 7.13.0     8.1.3
+@babel/preset-env           7.13.0     8.0.7
+babel-loader                 8.2.2    10.1.1
+babel-plugin-istanbul        6.0.0     8.0.0
+chai                         4.3.0     6.3.0
+eslint                      7.20.0   10.15.0
+eslint-config-airbnb-base   14.2.1    15.0.0
+eslint-plugin-import        2.22.1    2.32.0
+http-server                 0.12.3    14.1.1
+karma                        5.2.3     6.4.4
+karma-chrome-launcher        3.1.0     3.2.0
+karma-coverage               2.0.3     2.2.1
+karma-sourcemap-loader       0.3.8     0.4.0
+karma-webpack                4.0.2     5.0.1
+mocha                        8.3.0    12.0.3
+webpack                     4.46.0   5.113.0
+webpack-cli                 3.3.12     7.3.1
+```
+
+You know that something is wrong when your dev dependencies are up to 14 major versions behind.
+Way worse was the output of `npm audit`, which reported **82** vulnerabilities, **11** of them critical.
+
+The only runtime dependency was the then bleeding edge <Link href="https://github.com/facebookarchive/emitter">fbemitter</Link>.
+It's not listed as an outdated package, because the version I use is still the latest available release.
+There won't be another one: The project was archived on GitHub in 2021.
+Still, it gets around 2 million downloads on npm per week.
+
+I sighed heavily.
+I had become one of *them*.
+You know, those people who create a one-off, a cool little idea that they push into the open source ecosystem in case it might be useful.
+
+I wanted to be a good open source maintainer and give something back.
+Turns out, what I gave back was a system so outdated that it refused to even ~~compile~~ transpile on a current Node version.
+Instead, I became the ecosystem's worst enemy:
+**The one-time maintainer**.
+
+## The rise of the one-time maintainer
+
+Back in the day, the Node ecosystem was still not as complete as it is today.
+There was a small war going on between users of CoffeeScript, TypeScript and the then new competitor Flow.
+
+Standards were already partially adopted, but parts of ECMAScript 2015 were not yet implemented natively in all browsers.
+Missing support ranged from classes and arrow functions to keywords such as `const` and `let` or `for...of` loops.
+The time had not yet come to write modern JavaScript without a transpiler, at least when you had to support <Abbr title="Internet Explorer">IE</Abbr> 10 and 11 or even below.
+
+Sharing code often meant copying it from various sources, such as Gists on GitHub or threads on Stack Overflow.
+
+In this time, <Link href="https://nodejs.org/en">Node.js</Link> gained traction.
+Not only did it allow web developers to use one language for both frontend and backend work, it also came with an <Link href="https://www.npmjs.com">ever-growing ecosystem</Link>.
+The great <Abbr title="Developer Experience">DX</Abbr> attracted lots of people with creative solutions.
+Having your own shared open source package was only a `package.json` and one `npm publish` away.
+
+This led to the creation of countless modules by people who just wanted to try it out or share their internal utilities for their own later use.
+As installing modules was as easy as publishing them, projects started pulling in external packages all the time.
+
+Most first-time publishers may not even have known what they were doing by publishing their packages.
+There were now people depending on their private work, and their mistakes could affect projects on the other side of the world.
+People they would never meet in person now wanted features to be implemented and bugs fixed, and this with priority please.
+
+> Can you please **asap** fix this bug?
+> Our company relies heavily on `i-never-thought-would-be-used-by-others`!!!
+> <cite>Anonymous Github Account, found across repos everywhere</cite>
+
+Writing small libraries in internal teams was one thing, but doing so for the whole world to see was something completely different for a lot of us.
+
+## The number that didn't matter
+
+Back to my own small contribution to the mess, and those 82 vulnerabilities.
+Before panicking, I asked the question I should have started with: Who is actually affected?
+
+`npm audit` in my repository checks everything in its lockfile, including all that ancient Babel, webpack and Karma tooling.
+None of this reaches the people installing my package, and neither does the lockfile.
+So I did what a user would do and installed it into an empty project:
+
+```bash
+npm install wsclient-evented
+npm audit
+found 0 vulnerabilities
+```
+
+Zero.
+All that drama, and the users of my package were fine.
+
+Well, sort of.
+Because that same install also added this:
+
+```text
+wsclient-evented@2.2.0
+└─ fbemitter@3.0.0
+   └─ fbjs@3.0.5
+      ├─ cross-fetch@3.2.0
+      │  └─ node-fetch@2.7.0
+      │     └─ whatwg-url@5.0.0
+      │        ├─ tr46@0.0.3
+      │        └─ webidl-conversions@3.0.1
+      ├─ fbjs-css-vars@1.0.2
+      ├─ loose-envify@1.4.0
+      │  └─ js-tokens@4.0.0
+      ├─ object-assign@4.1.1
+      ├─ promise@7.3.1
+      │  └─ asap@2.0.6
+      ├─ setimmediate@1.0.5
+      └─ ua-parser-js@1.0.41
+```
+
+That's 15 packages I never chose, for what is essentially an event emitter.
+An HTTP client and a user agent parser, installed for a library that needs neither.
+fbemitter only uses two tiny helpers from fbjs, but you get the whole thing anyway.
+
+And that last line in the tree has a history.
+
+On October 22, 2021, <Link href="https://github.com/advisories/GHSA-pjwm-rvh2-c87w">three versions of ua-parser-js were published with malware</Link>.
+Any machine that installed one of them had to be considered fully compromised.
+At that time, the latest fbjs accepted any `^0.7.18` release of ua-parser-js, and the malicious `0.7.29` was a perfect match.
+
+So for a few hours that day, a plain `npm install wsclient-evented` in a project without a lockfile could have pulled malware onto someone's machine.
+I had not touched the project in eight months.
+I didn't notice.
+I only found out five years later, while writing this article, and I have no way of knowing whether anybody was hit.
+
+That is the actual risk of an abandoned package.
+It rarely shows up as a scary number in an audit.
+It sits quietly in a dependency of a dependency, trusted by default, while nobody is looking.
+
+## Cleaning up after myself
+
+I don't use wsclient-evented anymore.
+It gets a few hundred downloads a year, and I'm sure a good part of those are bots and mirrors.
+The easy way out would be to deprecate it and move on.
+
+But somewhere there might be an old dashboard or an embedded device still relying on it.
+I put it there, so I should at least leave it in a safe state.
+
+My first instinct was a complete rewrite: modern tooling, a new API, a shiny 3.0.
+Something that I could play with and have fun with again.
+Then I noticed the flaw in my plan.
+A new major version only reaches people who actively upgrade, and the people I worry about are precisely the ones who won't.
+
+So the new release became a boring one.
+<Link href="https://www.npmjs.com/package/wsclient-evented">Version **2.3.0** is out now</Link>.
+It replaces fbemitter with a small built-in emitter and keeps the API as it is:
+
+- **No runtime dependencies.** 16 installed packages became 1.
+- **No code changes for users.** Anyone on a `^2` range gets it with their next update.
+- **Nothing left to rot.** A dependency that doesn't exist can't be hijacked.
+
+The toolchain had to go as well.
+Karma, webpack and ESLint made way for `node:test`, esbuild and oxlint, and `npm audit` in the repository went from 82 findings to 0.
+
+Of course, touching old code is never just that.
+Moving the tests to a real server turned up bugs that had been sitting there for years:
+
+- Without a subprotocol, the client asked the server for one literally named `"null"`. If the server didn't play along, Chrome refused the connection.
+- Calling `close()` while the client was waiting to reconnect didn't stop it. It happily reconnected anyway.
+- A server message with the type `onWsMessage` sent the client into infinite recursion.
+
+So much for my carefully crafted test suite.
+
+### npm raises an eyebrow
+
+Then I ran `npm run release:minor`, my first publish in almost six years, and npm answered with something I hadn't seen before:
+
+> npm notice: Your package is being processed and may take a few minutes to become available.
+
+I have no idea what happens behind that message, but I like to imagine someone at npm looking up from their coffee.
+A package that has been silent since 2021 suddenly gets a new release, its dependencies are gone, and half of its files have been replaced.
+
+After everything I just wrote about hijacked packages, I have to admit: From the outside, that is exactly what a takeover looks like.
+If anybody or anything took a second look at my release, good.
+That's the kind of suspicion this ecosystem needs more of.
+
+A few moments later, 2.3.0 was live.
+No big comeback, and no promise to maintain it for the next decade.
+
+## What I took away
+
+Publishing a package takes one command.
+When you start anew, nobody tells you that maintenance has no end date.
+Long after you've moved on, your name is still attached to code running on machines you'll never see, along with everything it happens to pull in.
+
+I still don't think the answer to these problems is to stop publishing small things.
+The low barrier is what made this ecosystem great, and I'd still push that little utility today.
+I would just think harder about what I depend on.
+Every dependency is a decision I make on behalf of people I'll never meet.
+
+I think most developers have such a side project lying around.
+Be curious and take a look.
+Install it into an empty folder and see what comes along - preferably in a virtual machine.
+You will probably sigh heavily, too.
+
+The best thing a one-time maintainer can leave behind is something that no longer needs them.

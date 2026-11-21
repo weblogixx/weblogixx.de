@@ -1,0 +1,233 @@
+---
+/**
+ * Pearloid background, like the pickguard of the Sunny guitar: small angular flakes that catch
+ * the light from different angles: cream in light mode, aged ivory in dark mode. Fills its
+ * positioned parent.
+ *
+ * The flakes are Voronoi cells of a jittered grid, sorted into a few facet angles (--a). Each
+ * group's brightness is CSS math on the light direction (--light): a broad glow plus a narrow
+ * sparkle. The script only builds the shapes (seeded, so the pattern is always the same) and
+ * moves --light with pointer and scroll (it stays still with reduced motion). Without JS the
+ * parent's own background stays.
+ */
+---
+
+<div class="pearl" data-pearl aria-hidden="true"></div>
+
+<script>
+  const BUCKETS = 18; // facet angles
+  const SX = 1.35; // flake stretch (x/y), slightly elongated
+  const SY = 0.85;
+  const NS = 'http://www.w3.org/2000/svg';
+
+  type Pt = [number, number];
+
+  /** Keeps the part of `poly` closer to p than to q (one Voronoi edge; Sutherland–Hodgman). */
+  function clip(poly: Pt[], p: Pt, q: Pt): Pt[] {
+    const mx = (p[0] + q[0]) / 2;
+    const my = (p[1] + q[1]) / 2;
+    const nx = q[0] - p[0];
+    const ny = q[1] - p[1];
+    const side = (v: Pt) => (v[0] - mx) * nx + (v[1] - my) * ny;
+    const out: Pt[] = [];
+    poly.forEach((a, k) => {
+      const b = poly[(k + 1) % poly.length];
+      const sa = side(a);
+      const sb = side(b);
+      if (sa <= 0) out.push(a);
+      if (sa <= 0 !== sb <= 0) {
+        const t = sa / (sa - sb);
+        out.push([a[0] + t * (b[0] - a[0]), a[1] + t * (b[1] - a[1])]);
+      }
+    });
+    return out;
+  }
+
+  /** One layer of flakes of size `cell`, as an <svg> of BUCKETS front + back paths and edges. */
+  function layer(w: number, h: number, cell: number, strength: number, offset: number, seed: number) {
+    let s = seed;
+    const rnd = () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646;
+    const cols = Math.ceil(w / (cell * SX)) + 2;
+    const rows = Math.ceil(h / (cell * SY)) + 2;
+    const pts: Pt[] = [];
+    for (let j = 0; j < rows; j++)
+      for (let i = 0; i < cols; i++) pts.push([(i - 1 + rnd()) * cell * SX, (j - 1 + rnd()) * cell * SY]);
+    const at = (i: number, j: number) => (i < 0 || j < 0 || i >= cols || j >= rows ? null : pts[j * cols + i]);
+
+    const groups: string[][] = Array.from({ length: BUCKETS }, () => []);
+    const edges: string[] = [];
+    for (let j = 0; j < rows; j++)
+      for (let i = 0; i < cols; i++) {
+        const p = pts[j * cols + i];
+        const r = cell * 3;
+        let poly: Pt[] = [
+          [p[0] - r, p[1] - r],
+          [p[0] + r, p[1] - r],
+          [p[0] + r, p[1] + r],
+          [p[0] - r, p[1] + r],
+        ];
+        for (let dj = -2; dj <= 2; dj++)
+          for (let di = -2; di <= 2; di++) {
+            const q = (di || dj) && at(i + di, j + dj);
+            if (q) poly = clip(poly, p, q);
+          }
+        const d = 'M' + poly.map((v) => `${v[0].toFixed(1)} ${v[1].toFixed(1)}`).join('L') + 'Z';
+        groups[Math.floor(rnd() * BUCKETS)].push(d);
+        edges.push(d);
+      }
+
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('width', String(w));
+    svg.setAttribute('height', String(h));
+    svg.style.opacity = String(strength);
+    const path = (cls: string, d: string, a?: number) => {
+      const el = document.createElementNS(NS, 'path');
+      el.setAttribute('class', cls);
+      el.setAttribute('d', d);
+      if (a !== undefined) el.style.setProperty('--a', `${a}deg`);
+      svg.append(el);
+    };
+    groups.forEach((g, b) => {
+      const a = (360 / BUCKETS) * b;
+      path('pearl-back', g.join(''), a);
+      path('pearl-front', g.join(''), a + offset);
+    });
+    path('pearl-edges', edges.join(''));
+    return svg;
+  }
+
+  for (const el of document.querySelectorAll<HTMLElement>('[data-pearl]')) {
+    let built = 0;
+    let builtHeight = 0;
+    const build = () => {
+      const { width, height } = el.getBoundingClientRect();
+      // Only rebuild when it grows: larger shapes already cover a smaller box.
+      if (width <= built && height <= builtHeight) return;
+      built = Math.max(built, Math.ceil(width / 200) * 200);
+      builtHeight = Math.max(builtHeight, Math.ceil(height / 100) * 100);
+      const h = builtHeight + 8;
+      el.replaceChildren(layer(built, h, 16, 0.7, 17, 1234567), layer(built, h, 8, 1, 0, 7654321));
+    };
+
+    // The flakes are a lot of geometry: only build and animate them near the viewport.
+    let visible = false;
+    new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        if (visible) {
+          build();
+          queue();
+        }
+      },
+      { rootMargin: '300px' },
+    ).observe(el);
+    new ResizeObserver(() => {
+      if (visible) build();
+    }).observe(el);
+
+    // Light direction: pointer x sweeps half a turn, scrolling turns it further (like tilting the guitar).
+    const calm = matchMedia('(prefers-reduced-motion: reduce)');
+    let px = 0.3;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const x = calm.matches ? 0.3 : px;
+      const turn = calm.matches ? 0 : scrollY * 0.4;
+      el.style.setProperty('--light', `${x * 180 + turn}deg`);
+      el.style.setProperty('--lx', `${x * 100}%`);
+    };
+    const queue = () => {
+      if (visible && !calm.matches) frame ||= requestAnimationFrame(update);
+    };
+    addEventListener('pointermove', (e) => {
+      px = e.clientX / innerWidth;
+      queue();
+    });
+    addEventListener('scroll', queue, { passive: true });
+    calm.addEventListener('change', update);
+    update();
+  }
+</script>
+
+<style is:global>
+  @property --light {
+    syntax: '<angle>';
+    inherits: true;
+    initial-value: 30deg;
+  }
+
+  .pearl {
+    --pearl-base: #d4cabb;
+    --pearl-front: #fffdf8;
+    --pearl-back: #f6efe6;
+    --pearl-edge: #9c8f80;
+    --pearl-gloss: #fff;
+    --pearl-warm: #ffe2c4;
+    --pearl-cool: #e6eeff;
+    --pearl-gain: 1;
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    background: var(--pearl-base);
+
+    & svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    /* Soft gloss following the pointer, with a faint warm/cool tint. */
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      mix-blend-mode: soft-light;
+      opacity: 0.7;
+      background:
+        radial-gradient(40rem 8rem at var(--lx, 30%) 50%, var(--pearl-gloss), transparent 70%),
+        linear-gradient(calc(var(--light) + 90deg), var(--pearl-warm), transparent 45%, var(--pearl-cool));
+    }
+  }
+  /* Aged ivory: chosen explicitly, or by the system when nothing is chosen. */
+  :root[data-mode='dark'] .pearl {
+    --pearl-base: #211b13;
+    --pearl-front: #f3e3c3;
+    --pearl-back: #c79d5d;
+    --pearl-edge: #0b0805;
+    --pearl-gloss: #f6d9a0;
+    --pearl-warm: #e8b563;
+    --pearl-cool: #a87a45;
+    --pearl-gain: 0.27;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-mode='light']) .pearl {
+      --pearl-base: #211b13;
+      --pearl-front: #f3e3c3;
+      --pearl-back: #c79d5d;
+      --pearl-edge: #0b0805;
+      --pearl-gloss: #f6d9a0;
+      --pearl-warm: #e8b563;
+      --pearl-cool: #a87a45;
+      --pearl-gain: 0.27;
+    }
+  }
+
+  .pearl-front {
+    --c: max(0, cos(var(--light) - var(--a)));
+    fill: var(--pearl-front);
+    /* Broad glow (most flakes light) + narrow sparkle (the ones facing the light flash). */
+    opacity: calc((0.25 + 0.38 * sqrt(var(--c)) + 0.3 * pow(var(--c), 10)) * var(--pearl-gain));
+  }
+  /* Weaker reflection from the opposite side: flakes seem to flip. */
+  .pearl-back {
+    fill: var(--pearl-back);
+    opacity: calc(0.4 * pow(max(0, cos(var(--light) - var(--a) + 180deg)), 2) * var(--pearl-gain));
+  }
+  .pearl-edges {
+    fill: none;
+    stroke: var(--pearl-edge);
+    stroke-opacity: 0.1;
+    stroke-width: 0.5;
+  }
+</style>

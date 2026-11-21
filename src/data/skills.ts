@@ -266,6 +266,11 @@ export const skills = {
 
   webdesign: { name: 'Web Design', category: 'design' },
 
+  ux: {
+    name: 'User Experience',
+    category: 'design',
+  },
+
   // ── end Design systems & UI ──
 
   // ── Architecture & platform ──
@@ -280,6 +285,15 @@ export const skills = {
   },
 
   docker: { name: 'Docker', category: 'architecture' },
+
+  dx: {
+    description: {
+      de: 'DX, kurz für "Developer Experience" ist die Fähigkeit, Software für Entwickler verständlich zu schreiben, so dass diese sie möglichst problemlos nutzen können.',
+      en: 'DX, short for "Developer Experience" is the skill to write software in a way that is easy to understand and use for developers.',
+    },
+    name: 'Developer Experience',
+    category: 'architecture',
+  },
 
   ecommerce: { name: 'E-Commerce', category: 'architecture' },
 
