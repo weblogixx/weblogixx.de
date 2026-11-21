@@ -26,3 +26,7 @@ export async function getListedPosts(lang: Locale) {
     .filter((p) => postLang(p) === lang || !own.has(postSlug(p)))
     .toSorted((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 }
+
+/** The date of the last real update, if it's later than the publication date. */
+export const postUpdated = (post: Post) =>
+  post.data.updated && post.data.updated > post.data.date ? post.data.updated : undefined;

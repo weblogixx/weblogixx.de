@@ -23,7 +23,7 @@ const blog = defineCollection({
      */
     summary: z.string().optional(),
     date: z.coerce.date(),
-    /** Last real change to the content (not typo fixes). Search engines get it as dateModified. */
+    /** Last real change to the content (not typo fixes). Shown next to the date; search engines get it as dateModified. */
     updated: z.coerce.date().optional(),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
@@ -34,6 +34,12 @@ const blog = defineCollection({
      * English-first post). The post then links to the original below its intro.
      */
     translatedFrom: z.enum(locales).optional(),
+    /**
+     * How AI assisted with this post, shown as a tag in the blog overview. `translation`: at least
+     * partially translated, `fact-check`: content was fact-checked, `writing`: at least partially
+     * written.
+     */
+    ai: z.array(z.enum(['translation', 'fact-check', 'writing'])).default([]),
   }),
 });
 

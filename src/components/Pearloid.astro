@@ -1,7 +1,7 @@
 ---
 /**
  * Pearloid background, like the pickguard of the Sunny guitar: small angular flakes that catch
- * the light from different angles: cream in light mode, black pearl in dark mode. Fills its
+ * the light from different angles: cream in light mode, aged ivory in dark mode. Fills its
  * positioned parent.
  *
  * The flakes are Voronoi cells of a jittered grid, sorted into a few facet angles (--a). Each
@@ -189,27 +189,27 @@
         linear-gradient(calc(var(--light) + 90deg), var(--pearl-warm), transparent 45%, var(--pearl-cool));
     }
   }
-  /* Black pearl: chosen explicitly, or by the system when nothing is chosen. */
+  /* Aged ivory: chosen explicitly, or by the system when nothing is chosen. */
   :root[data-mode='dark'] .pearl {
-    --pearl-base: #17161d;
-    --pearl-front: #b8c6ee;
-    --pearl-back: #9a78c8;
-    --pearl-edge: #000;
-    --pearl-gloss: #8fa6e8;
-    --pearl-warm: #c77fb0;
-    --pearl-cool: #4fa3b8;
-    --pearl-gain: 0.42;
+    --pearl-base: #211b13;
+    --pearl-front: #f3e3c3;
+    --pearl-back: #c79d5d;
+    --pearl-edge: #0b0805;
+    --pearl-gloss: #f6d9a0;
+    --pearl-warm: #e8b563;
+    --pearl-cool: #a87a45;
+    --pearl-gain: 0.27;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-mode='light']) .pearl {
-      --pearl-base: #17161d;
-      --pearl-front: #b8c6ee;
-      --pearl-back: #9a78c8;
-      --pearl-edge: #000;
-      --pearl-gloss: #8fa6e8;
-      --pearl-warm: #c77fb0;
-      --pearl-cool: #4fa3b8;
-      --pearl-gain: 0.42;
+      --pearl-base: #211b13;
+      --pearl-front: #f3e3c3;
+      --pearl-back: #c79d5d;
+      --pearl-edge: #0b0805;
+      --pearl-gloss: #f6d9a0;
+      --pearl-warm: #e8b563;
+      --pearl-cool: #a87a45;
+      --pearl-gain: 0.27;
     }
   }
 

@@ -3,8 +3,10 @@ title: The Sunny theme 🌞
 description: How a yellow guitar with a red racing stripe became this site's color scheme – six numbers, OKLCH and a few tricks.
 summary: 'How a yellow Fender Mustang with a red racing stripe became this site''s color scheme: six OKLCH numbers, light and dark mode, and three fonts.'
 date: 2026-11-15
+updated: 2026-11-21
 tags: [design, css]
 skills: [css, designtokens, responsiveDesign, designsystems, astro, claude]
+ai: [writing, fact-check]
 ---
 
 import Link from '../../../components/Link.astro';
@@ -12,9 +14,11 @@ import SunnyGuitar from '../../../components/SunnyGuitar.astro';
 import Pearloid from '../../../components/Pearloid.astro';
 import { route } from '../../../i18n/routes';
 
+## It all started with a guitar
+
 This site's color scheme is called <mark>Sunny</mark>.
-It comes from my Fender Vintera II Mustang in <mark>Competition Orange</mark> with red racing stripes.
-Those two colors are the primary and the accent color.
+It is inspired by my Fender Vintera II Mustang in <mark>Competition Orange</mark> with red racing stripes.
+Its two colors became the primary and the accent color.
 The stripe (thin, wide, then thin again, at 45°) shows up everywhere: in the logo, in the hero and at every job on the <Link href={route('career', 'en')}>Experience</Link> page.
 
 {/* Guitar and the palette taken from it, side by side. */}
@@ -44,10 +48,12 @@ The stripe (thin, wide, then thin again, at 45°) shows up everywhere: in the lo
   <div class="sunny-pearl" role="img" aria-label="Pearloid, the material of the pickguard" data-tip='{"label": "Pickguard", "items": [{"name": "Pearloid"}]}'>
     <Pearloid />
   </div>
-  <figcaption>Fender Vintera II Competition Mustang (photo: Fender) and the Sunny palette · oklch</figcaption>
+  <figcaption>Fender Vintera II Competition Mustang (photo: Fender) and the Sunny color palette · oklch</figcaption>
 </figure>
 
 The shimmering pickguard made it onto the site as well. As a live pearloid effect, it sits behind the contact box at the end of the <Link href={route('home', 'en', 'hello-title')}>home page</Link>, made of thousands of tiny flakes that catch the light as you scroll.
+A particular challenge here was dark mode: <Link href="https://en.wikipedia.org/wiki/Pearloid">Pearloid</Link> lives on light hitting it from different angles, and a dark color scheme has very little light to offer.
+So in dark mode, the effect recedes into the background instead of glaring.
 
 ## Six numbers
 

@@ -168,34 +168,48 @@ const available = availability(lang);
       }
     }
   }
-  /* Keeps the text readable: calm on the left, the Pearloid shows fully towards the stripes. */
+  /*
+   * Keeps the text readable. On wide boxes the fade runs parallel to the stripes: a 45° gradient
+   * from the top-right corner, like the stripes. A diagonal at distance a along the box's edges
+   * lies a × 0.7071 from the corner along the gradient. The stripes' outer edge is at 98% of the
+   * box's height, hence 98cqh (the veil is a size container, so cqh is the box's height).
+   */
   .veil {
+    /* The dark Pearloid stands out more behind light text, so dark mode gets a denser veil. */
+    --veil-full: light-dark(
+      color-mix(in oklch, var(--bg-raised) 80%, transparent),
+      color-mix(in oklch, var(--bg-raised) 94%, transparent)
+    );
+    --veil-mid: light-dark(
+      color-mix(in oklch, var(--bg-raised) 72%, transparent),
+      color-mix(in oklch, var(--bg-raised) 88%, transparent)
+    );
+    /* Dark mode keeps a light veil over the rest, so the flakes stay quiet next to the stripes. */
+    --veil-end: light-dark(transparent, color-mix(in oklch, var(--bg-raised) 28%, transparent));
     position: absolute;
     inset: 0;
     z-index: -1;
+    container-type: size;
     pointer-events: none;
-    /* Black pearl stands out more behind light text, so dark mode gets a denser veil. */
-    background: linear-gradient(
-      90deg,
-      light-dark(
-          color-mix(in oklch, var(--bg-raised) 80%, transparent),
-          color-mix(in oklch, var(--bg-raised) 94%, transparent)
-        )
-        0%,
-      light-dark(
-          color-mix(in oklch, var(--bg-raised) 72%, transparent),
-          color-mix(in oklch, var(--bg-raised) 88%, transparent)
-        )
-        50%,
-      transparent 78%
-    );
 
-    /* Narrower: the text spans the whole box. */
-    @media (max-width: 1100px) {
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      /* Narrower: the text spans the whole box. */
       background: light-dark(
         color-mix(in oklch, var(--bg-raised) 76%, transparent),
         color-mix(in oklch, var(--bg-raised) 88%, transparent)
       );
+
+      @media (min-width: 1101px) {
+        background: linear-gradient(
+          225deg,
+          var(--veil-end) calc(98cqh * 0.7071),
+          var(--veil-mid) calc(145cqh * 0.7071),
+          var(--veil-full) calc(185cqh * 0.7071)
+        );
+      }
     }
   }
   .block h2 {
