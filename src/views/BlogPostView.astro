@@ -3,6 +3,7 @@ import { render } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import SkillList from '../components/SkillList.astro';
 import CodeCopy from '../components/CodeCopy.astro';
+import PostToc from '../components/PostToc.astro';
 import { profile, type Locale } from '../data';
 import { type Post, postSlug } from '../i18n/blog';
 import { blogPostPath, route } from '../i18n/routes';
@@ -17,7 +18,10 @@ interface Props {
 const { lang, post, hasTranslation } = Astro.props;
 const t = useT(lang);
 const other: Locale = lang === 'de' ? 'en' : 'de';
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
+/* Table of contents: only for posts with enough sections to be worth it. */
+const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
+const hasToc = headings.filter((h) => h.depth === 2).length >= 4;
 const dateFmt = new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { dateStyle: 'long' });
 const altPath = hasTranslation ? blogPostPath(postSlug(post), other) : route('blog', other);
 /* Meta/OG description: the standalone summary, else the description after the title (see content.config.ts). */
@@ -64,8 +68,11 @@ const blogPosting = {
       }
       {post.data.skills.length > 0 && <SkillList ids={post.data.skills} lang={lang} />}
     </header>
-    <div class="content">
-      <Content />
+    <div class:list={['post-body', { 'has-toc': hasToc }]}>
+      {hasToc && <PostToc headings={tocHeadings} label={t('blog.toc')} />}
+      <div class="content">
+        <Content />
+      </div>
     </div>
     <CodeCopy lang={lang} />
   </article>
@@ -86,6 +93,20 @@ const blogPosting = {
     font-size: var(--step--1);
     color: var(--text-subtle);
   }
+  /* Wide screens: text on the left as before, table of contents in the free space next to it. */
+  @media (min-width: 1060px) {
+    .has-toc {
+      display: grid;
+      grid-template-columns: minmax(0, 42em) minmax(11rem, 15rem);
+      justify-content: space-between;
+      column-gap: var(--space-7);
+
+      & > .content {
+        grid-column: 1;
+        grid-row: 1;
+      }
+    }
+  }
   .content {
     max-width: 42em;
     margin-bottom: var(--space-9);
@@ -93,6 +114,10 @@ const blogPosting = {
     gap: var(--space-4);
 
     /* Markdown output: not part of this component, hence :global. */
+    /* Anchor jumps: keep the heading clear of the sticky header. */
+    & :global(:is(h2, h3)) {
+      scroll-margin-top: var(--space-8);
+    }
     & :global(h2) {
       font-size: var(--step-2);
       margin-top: var(--space-5);
@@ -107,16 +132,16 @@ const blogPosting = {
     }
     /*
      * Sunny post: the guitar (cut-out photo, transparent background) with the palette taken
-     * from it, side by side: guitar | nine primary steps | three accent steps, all as tall as
-     * the guitar – wide next to narrow, like the stripe. Fits down to small phones.
+     * from it, side by side: guitar | nine primary steps | three accent steps | Pearloid, all as
+     * tall as the guitar – wide next to narrow, like the stripe. Fits down to small phones.
      */
     & :global(.sunny-source) {
       margin: var(--space-4) 0;
       display: grid;
-      grid-template-columns: auto minmax(4rem, 7rem) minmax(1.75rem, 2.75rem);
+      grid-template-columns: auto minmax(4rem, 7rem) minmax(1.75rem, 2.75rem) minmax(2.25rem, 4rem);
       grid-template-areas:
-        'guitar primary accent'
-        'caption caption caption';
+        'guitar primary accent pearl'
+        'caption caption caption caption';
       justify-content: center;
       gap: var(--space-4) var(--space-5);
 
@@ -162,10 +187,22 @@ const blogPosting = {
       grid-area: accent;
       grid-template-rows: repeat(3, 1fr);
     }
+    /* The pickguard's material, live. The color shows until the Pearloid is drawn. */
+    & :global(.sunny-pearl) {
+      --glow: transparent;
+      grid-area: pearl;
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      border-radius: var(--radius-m);
+      background: light-dark(#d4cabb, #17161d);
+      box-shadow: 0 0 1.1rem var(--glow);
+      transition: box-shadow 200ms;
+    }
     /*
      * Guitar ↔ palette: hovering (or focusing/tapping) the body or a primary swatch makes the
      * body and the primary column glow in the primary color; the stripe or an accent swatch
-     * does the same in the accent color. The traced shapes (.spot) are invisible hit areas;
+     * does the same in the accent color, the pickguard or Pearloid column in pearl. The traced shapes (.spot) are invisible hit areas;
      * the halo (.glow, an SVG filter in SunnyGuitar.astro) only appears outside the shape's
      * edge. The stripe lies on top of the body and wins.
      */
@@ -184,6 +221,9 @@ const blogPosting = {
     }
     & :global(.flood-accent) {
       flood-color: var(--accent);
+    }
+    & :global(.flood-pearl) {
+      flood-color: light-dark(#fff, #fff4dc);
     }
     & :global(.sunny-source .swatches) {
       --glow: transparent;
@@ -204,6 +244,14 @@ const blogPosting = {
       }
       & :global(.swatches.accent) {
         --glow: color-mix(in oklch, var(--accent) 75%, transparent);
+      }
+    }
+    & :global(.sunny-source:has(.spot-pickguard:is(:hover, :focus-visible), .sunny-pearl:hover)) {
+      & :global(.glow-pickguard) {
+        opacity: 1;
+      }
+      & :global(.sunny-pearl) {
+        --glow: light-dark(color-mix(in oklch, #8f7f66 65%, transparent), color-mix(in oklch, #fff4dc 70%, transparent));
       }
     }
     & :global(.sunny-source figcaption) {

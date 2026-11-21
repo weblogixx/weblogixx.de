@@ -1,0 +1,221 @@
+---
+/**
+ * Table of contents for long blog posts: a sticky list next to the text on wide screens, a
+ * collapsed <details> above it on narrow ones. Plain links, so it works without JS; the script
+ * only marks the current section.
+ */
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+  label: string;
+}
+const { headings, label } = Astro.props;
+---
+
+<nav class="toc-mobile" aria-label={label}>
+  <details data-toc-mobile>
+    <summary>{label}</summary>
+    <ol>
+      {
+        headings.map((h) => (
+          <li class:list={{ sub: h.depth === 3 }}>
+            <a href={`#${h.slug}`}>{h.text}</a>
+          </li>
+        ))
+      }
+    </ol>
+  </details>
+</nav>
+
+<nav class="toc-side" aria-label={label} data-toc>
+  <p class="toc-title">{label}</p>
+  <div class="toc-track">
+    <div class="toc-rail" aria-hidden="true">
+      <div class="toc-active"></div>
+    </div>
+    <ol>
+      {
+        headings.map((h) => (
+          <li class:list={{ sub: h.depth === 3 }}>
+            <a href={`#${h.slug}`}>{h.text}</a>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</nav>
+
+<script>
+  // A heading counts as reached once it is this far from the top (below the sticky header).
+  const READ_LINE = 120;
+
+  const nav = document.querySelector<HTMLElement>('[data-toc]');
+  const track = nav?.querySelector<HTMLElement>('.toc-track');
+
+  if (nav && track) {
+    const links = [...nav.querySelectorAll<HTMLAnchorElement>('ol a')];
+    const targets = links.map((a) => document.getElementById(decodeURIComponent(a.hash.slice(1))));
+    let frame = 0;
+    let current = -2;
+
+    const place = () => {
+      const link = links[current];
+      nav.classList.toggle('has-current', Boolean(link));
+      if (!link) return;
+
+      const box = track.getBoundingClientRect();
+      const rect = link.getBoundingClientRect();
+      track.style.setProperty('--toc-top', `${rect.top - box.top}px`);
+      track.style.setProperty('--toc-bottom', `${box.bottom - rect.bottom}px`);
+    };
+
+    const update = () => {
+      frame = 0;
+      if (!nav.offsetWidth) return;
+
+      const atEnd = scrollY + innerHeight >= document.documentElement.scrollHeight - 2;
+      let next = -1;
+      targets.forEach((target, i) => {
+        if (target && target.getBoundingClientRect().top <= READ_LINE) next = i;
+      });
+      if (atEnd) next = links.length - 1;
+      if (next === current) return;
+
+      links[current]?.removeAttribute('aria-current');
+      links[next]?.setAttribute('aria-current', 'location');
+      current = next;
+      place();
+
+      // A list taller than the screen scrolls by itself: keep the current entry visible.
+      const link = links[current];
+      if (link && nav.scrollHeight > nav.clientHeight) {
+        const box = nav.getBoundingClientRect();
+        const rect = link.getBoundingClientRect();
+        nav.scrollTop += rect.top - box.top - box.height / 2 + rect.height / 2;
+      }
+    };
+
+    const queue = () => {
+      frame ||= requestAnimationFrame(update);
+    };
+    addEventListener('scroll', queue, { passive: true });
+    addEventListener('resize', () => {
+      place();
+      queue();
+    });
+    document.fonts?.ready.then(place);
+    update();
+  }
+
+  // On narrow screens, get the list out of the way after jumping to a section.
+  const mobile = document.querySelector<HTMLDetailsElement>('[data-toc-mobile]');
+  mobile?.addEventListener('click', (e) => {
+    if ((e.target as Element).closest('a')) mobile.open = false;
+  });
+</script>
+
+<style>
+  ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2);
+  }
+  .sub {
+    padding-left: var(--space-4);
+  }
+  a {
+    display: block;
+    color: var(--text-muted);
+    font-size: var(--step--1);
+    line-height: 1.35;
+    text-decoration: none;
+    transition: color 150ms;
+
+    &:hover,
+    &[aria-current] {
+      color: var(--text);
+    }
+  }
+
+  /* Narrow screens: collapsed, above the text. */
+  .toc-mobile {
+    margin-bottom: var(--space-6);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-m);
+    background: var(--surface);
+
+    & summary {
+      padding: var(--space-3) var(--space-4);
+      font-family: var(--font-mono);
+      font-size: var(--step--1);
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+    & ol {
+      padding: 0 var(--space-4) var(--space-4);
+    }
+    & a {
+      padding-block: var(--space-1);
+    }
+
+    @media (min-width: 1060px) {
+      display: none;
+    }
+  }
+
+  /* Wide screens: sticky, next to the text. */
+  .toc-side {
+    display: none;
+
+    @media (min-width: 1060px) {
+      display: block;
+      grid-column: 2;
+      grid-row: 1;
+      align-self: start;
+      position: sticky;
+      top: var(--space-8);
+      max-height: calc(100dvh - var(--space-8) - var(--space-5));
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+  }
+  .toc-title {
+    margin: 0 0 var(--space-3);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--text-subtle);
+  }
+  .toc-track {
+    position: relative;
+    padding-left: var(--space-4);
+  }
+
+  /* A thin line along the list, with the marker sitting on the current section. */
+  .toc-rail {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 2px;
+    background: var(--border);
+  }
+  .toc-active {
+    position: absolute;
+    inset: var(--toc-top, 0) 0 var(--toc-bottom, 100%);
+    border-radius: 1px;
+    background: var(--primary);
+    opacity: 0;
+    transition:
+      top 220ms ease,
+      bottom 220ms ease,
+      opacity 150ms;
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+  .has-current .toc-active {
+    opacity: 1;
+  }
+</style>

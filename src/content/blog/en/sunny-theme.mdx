@@ -9,6 +9,7 @@ skills: [css, designtokens, responsiveDesign, designsystems, astro, claude]
 
 import Link from '../../../components/Link.astro';
 import SunnyGuitar from '../../../components/SunnyGuitar.astro';
+import Pearloid from '../../../components/Pearloid.astro';
 import { route } from '../../../i18n/routes';
 
 This site's color scheme is called <mark>Sunny</mark>.
@@ -22,6 +23,7 @@ The stripe (thin, wide, then thin again, at 45°) shows up everywhere: in the lo
     alt="Yellow Fender Vintera II Competition Mustang with a red racing stripe"
     body="Body · primary color"
     stripe="Racing stripe · accent color"
+    pickguard="Pickguard · Pearloid"
   />
   <div class="swatches" role="img" aria-label="Primary color in nine steps">
     <span style="background: var(--primary-100)" data-tip='{"label": "Primary · step 100", "items": [{"name": "--primary-100", "color": "var(--primary-100)"}]}' title="--primary-100"></span>
@@ -39,8 +41,13 @@ The stripe (thin, wide, then thin again, at 45°) shows up everywhere: in the lo
     <span style="background: var(--accent-500)" data-tip='{"label": "Accent · step 500", "items": [{"name": "--accent-500", "color": "var(--accent-500)"}]}' title="--accent-500"></span>
     <span style="background: var(--accent-700)" data-tip='{"label": "Accent · step 700", "items": [{"name": "--accent-700", "color": "var(--accent-700)"}]}' title="--accent-700"></span>
   </div>
+  <div class="sunny-pearl" role="img" aria-label="Pearloid, the material of the pickguard" data-tip='{"label": "Pickguard", "items": [{"name": "Pearloid"}]}'>
+    <Pearloid />
+  </div>
   <figcaption>Fender Vintera II Competition Mustang (photo: Fender) and the Sunny palette · oklch</figcaption>
 </figure>
+
+The shimmering pickguard made it onto the site as well. As a live pearloid effect, it sits behind the contact box at the end of the <Link href={route('home', 'en', 'hello-title')}>home page</Link>, made of thousands of tiny flakes that catch the light as you scroll.
 
 ## Six numbers
 

@@ -9,6 +9,7 @@ skills: [css, designtokens, responsiveDesign, designsystems, astro, claude]
 
 import Link from '../../../components/Link.astro';
 import SunnyGuitar from '../../../components/SunnyGuitar.astro';
+import Pearloid from '../../../components/Pearloid.astro';
 import { route } from '../../../i18n/routes';
 
 Das Farbschema dieser Seite heißt <mark>Sunny</mark>.
@@ -23,6 +24,7 @@ Der Streifen (schmal, breit, dann wieder schmal, im 45°-Winkel) taucht überall
     alt="Gelbe Fender Vintera II Competition Mustang mit rotem Rennstreifen"
     body="Korpus · Primärfarbe"
     stripe="Rennstreifen · Akzentfarbe"
+    pickguard="Pickguard · Pearloid"
   />
   <div class="swatches" role="img" aria-label="Primärfarbe in neun Stufen">
     <span
@@ -92,11 +94,16 @@ Der Streifen (schmal, breit, dann wieder schmal, im 45°-Winkel) taucht überall
       title="--accent-700"
     ></span>
   </div>
+  <div class="sunny-pearl" role="img" aria-label="Pearloid, das Material des Pickguards" data-tip='{"label": "Pickguard", "items": [{"name": "Pearloid"}]}'>
+    <Pearloid />
+  </div>
   <figcaption>
     Fender Vintera II Competition Mustang (Foto: Fender) und die Sunny-Palette ·
     oklch
   </figcaption>
 </figure>
+
+Auch das schimmernde Schlagbrett hat es auf die Seite geschafft. Als lebendiger Pearloid-Effekt liegt es hinter dem Kontaktkasten am Ende der <Link href={route('home', 'de', 'hello-title')}>Startseite</Link>, aus Tausenden winziger Flocken, die beim Scrollen das Licht einfangen.
 
 ## Sechs Zahlen
 

@@ -1,12 +1,14 @@
 ---
 /**
  * Pearloid background, like the pickguard of the Sunny guitar: small angular flakes that catch
- * the light from different angles. Light mode only; fills its positioned parent.
+ * the light from different angles: cream in light mode, black pearl in dark mode. Fills its
+ * positioned parent.
  *
  * The flakes are Voronoi cells of a jittered grid, sorted into a few facet angles (--a). Each
  * group's brightness is CSS math on the light direction (--light): a broad glow plus a narrow
  * sparkle. The script only builds the shapes (seeded, so the pattern is always the same) and
- * moves --light with pointer and scroll. Without JS the parent's own background stays.
+ * moves --light with pointer and scroll (it stays still with reduced motion). Without JS the
+ * parent's own background stays.
  */
 ---
 
@@ -96,31 +98,53 @@
 
   for (const el of document.querySelectorAll<HTMLElement>('[data-pearl]')) {
     let built = 0;
+    let builtHeight = 0;
     const build = () => {
       const { width, height } = el.getBoundingClientRect();
-      // Only rebuild when it grows: wider shapes already cover a narrower box.
-      if (width <= built) return;
-      built = Math.ceil(width / 200) * 200;
-      const h = Math.ceil(height) + 8;
+      // Only rebuild when it grows: larger shapes already cover a smaller box.
+      if (width <= built && height <= builtHeight) return;
+      built = Math.max(built, Math.ceil(width / 200) * 200);
+      builtHeight = Math.max(builtHeight, Math.ceil(height / 100) * 100);
+      const h = builtHeight + 8;
       el.replaceChildren(layer(built, h, 16, 0.7, 17, 1234567), layer(built, h, 8, 1, 0, 7654321));
     };
-    build();
-    new ResizeObserver(build).observe(el);
+
+    // The flakes are a lot of geometry: only build and animate them near the viewport.
+    let visible = false;
+    new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        if (visible) {
+          build();
+          queue();
+        }
+      },
+      { rootMargin: '300px' },
+    ).observe(el);
+    new ResizeObserver(() => {
+      if (visible) build();
+    }).observe(el);
 
     // Light direction: pointer x sweeps half a turn, scrolling turns it further (like tilting the guitar).
+    const calm = matchMedia('(prefers-reduced-motion: reduce)');
     let px = 0.3;
     let frame = 0;
     const update = () => {
       frame = 0;
-      el.style.setProperty('--light', `${px * 180 + scrollY * 0.4}deg`);
-      el.style.setProperty('--lx', `${px * 100}%`);
+      const x = calm.matches ? 0.3 : px;
+      const turn = calm.matches ? 0 : scrollY * 0.4;
+      el.style.setProperty('--light', `${x * 180 + turn}deg`);
+      el.style.setProperty('--lx', `${x * 100}%`);
     };
-    const queue = () => (frame ||= requestAnimationFrame(update));
+    const queue = () => {
+      if (visible && !calm.matches) frame ||= requestAnimationFrame(update);
+    };
     addEventListener('pointermove', (e) => {
       px = e.clientX / innerWidth;
       queue();
     });
     addEventListener('scroll', queue, { passive: true });
+    calm.addEventListener('change', update);
     update();
   }
 </script>
@@ -133,13 +157,20 @@
   }
 
   .pearl {
-    display: none;
+    --pearl-base: #d4cabb;
+    --pearl-front: #fffdf8;
+    --pearl-back: #f6efe6;
+    --pearl-edge: #9c8f80;
+    --pearl-gloss: #fff;
+    --pearl-warm: #ffe2c4;
+    --pearl-cool: #e6eeff;
+    --pearl-gain: 1;
     position: absolute;
     inset: 0;
     z-index: -1;
     overflow: hidden;
     pointer-events: none;
-    background: #d4cabb;
+    background: var(--pearl-base);
 
     & svg {
       position: absolute;
@@ -154,34 +185,48 @@
       mix-blend-mode: soft-light;
       opacity: 0.7;
       background:
-        radial-gradient(40rem 8rem at var(--lx, 30%) 50%, #fff, #fff8 25%, transparent 70%),
-        linear-gradient(calc(var(--light) + 90deg), #ffe2c4, transparent 45%, #e6eeff);
+        radial-gradient(40rem 8rem at var(--lx, 30%) 50%, var(--pearl-gloss), transparent 70%),
+        linear-gradient(calc(var(--light) + 90deg), var(--pearl-warm), transparent 45%, var(--pearl-cool));
     }
   }
-  /* Light mode only: chosen explicitly, or by the system when nothing is chosen. */
-  :root[data-mode='light'] .pearl {
-    display: block;
+  /* Black pearl: chosen explicitly, or by the system when nothing is chosen. */
+  :root[data-mode='dark'] .pearl {
+    --pearl-base: #17161d;
+    --pearl-front: #b8c6ee;
+    --pearl-back: #9a78c8;
+    --pearl-edge: #000;
+    --pearl-gloss: #8fa6e8;
+    --pearl-warm: #c77fb0;
+    --pearl-cool: #4fa3b8;
+    --pearl-gain: 0.42;
   }
-  @media (prefers-color-scheme: light) {
-    :root:not([data-mode='dark']) .pearl {
-      display: block;
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-mode='light']) .pearl {
+      --pearl-base: #17161d;
+      --pearl-front: #b8c6ee;
+      --pearl-back: #9a78c8;
+      --pearl-edge: #000;
+      --pearl-gloss: #8fa6e8;
+      --pearl-warm: #c77fb0;
+      --pearl-cool: #4fa3b8;
+      --pearl-gain: 0.42;
     }
   }
 
   .pearl-front {
     --c: max(0, cos(var(--light) - var(--a)));
-    fill: #fffdf8;
+    fill: var(--pearl-front);
     /* Broad glow (most flakes light) + narrow sparkle (the ones facing the light flash). */
-    opacity: calc(0.25 + 0.38 * sqrt(var(--c)) + 0.3 * pow(var(--c), 10));
+    opacity: calc((0.25 + 0.38 * sqrt(var(--c)) + 0.3 * pow(var(--c), 10)) * var(--pearl-gain));
   }
   /* Weaker reflection from the opposite side: flakes seem to flip. */
   .pearl-back {
-    fill: #f6efe6;
-    opacity: calc(0.4 * pow(max(0, cos(var(--light) - var(--a) + 180deg)), 2));
+    fill: var(--pearl-back);
+    opacity: calc(0.4 * pow(max(0, cos(var(--light) - var(--a) + 180deg)), 2) * var(--pearl-gain));
   }
   .pearl-edges {
     fill: none;
-    stroke: #9c8f80;
+    stroke: var(--pearl-edge);
     stroke-opacity: 0.1;
     stroke-width: 0.5;
   }
