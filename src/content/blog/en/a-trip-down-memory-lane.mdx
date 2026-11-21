@@ -1,0 +1,168 @@
+---
+title: A trip down memory lane
+description: 'What I learned while revisiting one of my first open source projects after letting it sit idle on Github and npm for 6 years.'
+summary: 'TODO'
+date: 2026-11-20
+tags: [github, opensource, npm]
+skills: [ci, github, opensource, markdown, websockets, embeddedui, javascript, frontendarch, dx]
+---
+
+import { route } from '../../../i18n/routes';
+import Abbr from '../../../components/Abbr.astro';
+import Link from '../../../components/Link.astro';
+
+## Preface
+
+When I was <Link href={route('career', 'en', 'hella-gutmann')}>tasked to create "SDI"</Link>, the web based UI that would eventually power flagship <Link href="https://www.hella.com/techworld/uk/workshop-equipment/diagnostic-solutions/mega-macs-x/">diagnostic devices</Link>, I assessed multiple approaches to bring application data to the UI.
+
+<Abbr title="Asynchronous Javascript and XML">Ajax</Abbr> was the state of the art technology for transferring data in these days.
+For me, long polling was not a viable option for devices that had to respond and update the screen in milliseconds.
+Help came from the web-platform, which allows the use of TCP connections via its own <Link href="https://developer.mozilla.org/en-US/docs/Glossary/WebSockets">web-sockets</Link> protocol.
+
+However, the <Link href="https://developer.mozilla.org/en-US/docs/Web/API/WebSocket">web-sockets standard</Link> is very generic on purpose:
+
+- There is no deep connection handling, just opening or closing the connection.
+- When a connection becomes stale and the client tries to send data, it will silently fail if unhandled by the developer.
+- There are no built in signals for interesting events like attempting to open the connection or when it is finally open.
+
+After experimenting with various available solutions, it became clear that advantages of the technology outweighted other solutions by far.
+So I tried to do what all good developers do: Get my hands dirty and create a usable interface.
+And with that, <Link href="https://github.com/weblogixx/wsclient-evented">wsclient-evented</Link> was born.
+
+## What it did
+
+The package was aimed at frontend projects that used event based systems like <Link href="https://facebookarchive.github.io/flux/">Facebooks original Flux implementation</Link>.
+Its aim was to forward a small JSON envelope from the websocket-server into a data store like this:
+
+```javascript
+import wsClient from 'wsclient-evented';
+import { Dispatcher } from 'flux';
+
+// Flux setup, old school
+// Mind you this was before redux
+// became the most common flux solution
+const ActionTypes = {
+  CONN_LOADING: 'conn_loading',
+  CONN_ESTABLISHED: 'conn_established',
+  RCV_NEW_DATA: 'rcv_new_data',
+};
+
+const dispatcher = new Dispatcher();
+
+const source = new wsClient('ws://localhost:1234', null, {
+  autoReconnect: true,
+  onBeforeWsOpen: e => {
+    dispatcher.dispatch({
+      type: ActionTypes.CONN_LOADING,
+      e,
+    });
+  },
+  onWsOpen: e => {
+    dispatcher.dispatch({
+      type: ActionTypes.CONN_ESTABLISHED,
+      e,
+    });
+  },
+});
+
+// Given the following payload from the server:
+const payload = JSON.stringify({
+  type: 'new-data-event',
+  data: {
+    sent: true,
+  },
+});
+
+// Users could connect directly to this event:
+source.addListener('new-data-event', (
+  _wsEvent,
+  { payload },
+) => {
+  // Forward all new data from the event
+  // to the flux store
+  dispatcher.dispatch({
+    type: ActionTypes.RCV_NEW_DATA,
+    data: payload,
+  })
+});
+```
+
+## This is going to get messy
+
+Thats what I thought when I opened up the repository.
+I had not looked in there for ages and was directly greeted with a whopping **22** dependabot pull requests.
+
+I looked at this little utility, one of my earliest contributions to open source.
+A thing I was proud of once.
+For a short time, this little piece of software played an important part in my daily work.
+Until it wasn`t important anymore.
+It got stale.
+
+Curious, I checked what was left to salvage.
+It turned out that my carefully crafted package list and test toolchain had not stood the test of time.
+On the contrary, they had even become dangerous.
+
+```bash
+npm outdated
+Package                    Current    Latest
+@babel/core                 7.13.0     8.1.3
+@babel/preset-env           7.13.0     8.0.7
+babel-loader                 8.2.2    10.1.1
+babel-plugin-istanbul        6.0.0     8.0.0
+chai                         4.3.0     6.3.0
+eslint                      7.20.0   10.15.0
+eslint-config-airbnb-base   14.2.1    15.0.0
+eslint-plugin-import        2.22.1    2.32.0
+http-server                 0.12.3    14.1.1
+karma                        5.2.3     6.4.4
+karma-chrome-launcher        3.1.0     3.2.0
+karma-coverage               2.0.3     2.2.1
+karma-sourcemap-loader       0.3.8     0.4.0
+karma-webpack                4.0.2     5.0.1
+mocha                        8.3.0    12.0.3
+webpack                     4.46.0   5.113.0
+webpack-cli                 3.3.12     7.3.1
+```
+
+You know that something is wrong when your dev dependencies are 14 major versions behind.
+Way worse was the output of `npm audit`, which reported **82** vulnerabilities, **11** of them critical.
+
+The only frontend dependency shipped was the then bleeding edge <Link href="https://github.com/facebookarchive/emitter">fbemitter</Link>.
+Its not listed as an outdated package, in fact, it is the latest available release.
+This is because it was deprecated and archived on Github in 2021.
+Still, those packages still have around 2 million downloads on npm per week.
+
+I sighted heavily.
+I had become one of *them*.
+You know, those persons that create a one off, a cool little idea that they push into the open source ecosystem in case it might be useful.
+
+I wanted to be a good open source maintainer and give something back.
+Turns out, what I gave back was a system so outdated the I was not even able to ~~compile~~ transpile it anymore.
+Instead of that, I became the ecosystems worst enemy: 
+**The one time maintainer**.
+
+## The rise of the one time maintainer
+
+Back in the day, the node ecosystem was still not as complete as it is today.
+There was a small war going on between users of Coffeescript, TypeScript or the then new competitor Flow.
+
+Standards where already partially adopted, but some of the ECMAScript 2015 was not yet implemented in all browsers natively.
+Missing support ranged from classes over arrow functions to keywords such as `const` and `let` or `for...of` loops.
+Time was not yet come to write native modern JavaScript without a transpiler, at least when you had to support <Abbr title="Microsoft Internet Explorer">IE</Abbr> 10 and 11 or even below.
+
+Sharing code often meant copying it from various sources, such as Gists on Github or threads at Stackoverflow.
+
+In this time, <Link href="https://nodejs.org/en">node.js</Link> got traction.
+Not only did it allow web-developers to use one language for both front- and backend work, but also came with an <Link href="https://www.npmjs.com">ever growing ecosystem</Link>.
+The great DX attracted lots of people to bring creative solutions.
+Having your own shared open source package was only a `package.json` and one `npm publish` away.
+
+This led to the creation of thousands of modules by people that just wanted to try it out or sharing their internal utilities for their own later private use.
+As importing modules was as easy as deploying them, this led to projects installing external packages all the time.
+
+Most first time publishers may not even have known what they did by publishing their packages.
+There where now people depending on their private work and issues they made could potentially affect projects on the other side of the world.
+People they would never have met in person now wanted features to be implemented and bugs fixed - and this with priority please.
+
+Writing small libraries in internal teams was one thing, but doing so for the whole world to see was something completely different for a lot of us.
+

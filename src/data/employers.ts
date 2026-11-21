@@ -151,6 +151,7 @@ export const employers: Employer<SkillId>[] = [
     ],
     stack: [
       'designsystems',
+      'dx',
       'frontendarch',
       'lit',
       'webcomponents',
@@ -198,6 +199,7 @@ export const employers: Employer<SkillId>[] = [
       'markdown',
       'linting',
       'testing',
+      'ux',
     ],
   },
   {
@@ -262,6 +264,7 @@ export const employers: Employer<SkillId>[] = [
     },
     stack: [
       'frontendarch',
+      'dx',
       'designsystems',
       'embeddedui',
       'javascript',
@@ -296,6 +299,8 @@ export const employers: Employer<SkillId>[] = [
       'markdown',
       'linting',
       'testing',
+      'github',
+      'ux',
     ],
   },
   {
