@@ -36,8 +36,8 @@ export interface Skill {
 
 /**
  * All skills. The key is the id you reference in employers.ts → `stack`.
- * Grouped by category (in the order of skillCategories), alphabetical by name within each group,
- * the same order the home page shows them in.
+ * Grouped by category (in the order of skillCategories), alphabetical by name within each group.
+ * The home page uses the same order, but moves retired skills to the end of each category.
  * Mostly taken from LinkedIn; adjust freely.
  */
 export const skills = {
@@ -446,6 +446,64 @@ export const skills = {
     },
     name: 'Visual Regression Testing',
     category: 'tooling',
+  },
+
+  vsCode: {
+    description: {
+      de: 'Microsoft Visual Studio Code',
+      en: 'Microsoft Visual Studio Code',
+    },
+    name: 'VSCode',
+    category: 'tooling',
+    featured: true,
+  },
+
+  sublime: {
+    name: 'Sublime',
+    category: 'tooling',
+    retired: {
+      kind: 'movedOn',
+      successor: 'vsCode',
+    },
+  },
+
+  atom: {
+    description: {
+      de: 'Der Atom Editor von Github war das erste vollständig webbasierte IDE, der mir bekannt ist',
+      en: 'Atom by Github was the first full fledged web based IDE that I know of',
+    },
+    name: 'Atom',
+    category: 'tooling',
+    retired: {
+      kind: 'movedOn',
+      successor: 'vsCode',
+    },
+  },
+
+  dreamweaver: {
+    description: {
+      de: 'Dreamweaver ist ein IDE, die ursprünglich von Macromedia, heute von Adobe entwickelt wird',
+      en: 'Dreamweaver is an IDE that was originally created by Macromedia and how developed by Adobe',
+    },
+    name: 'Dreamweaver',
+    category: 'tooling',
+    retired: {
+      kind: 'movedOn',
+      successor: 'vsCode',
+    },
+  },
+
+  netbeans: {
+    description: {
+      de: 'TODO',
+      en: 'TODO',
+    },
+    name: 'Netbeans',
+    category: 'tooling',
+    retired: {
+      kind: 'movedOn',
+      successor: 'vsCode',
+    },
   },
 
   // ── end Tooling & quality ──

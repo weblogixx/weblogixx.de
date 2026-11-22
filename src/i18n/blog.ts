@@ -6,12 +6,15 @@ export type Post = CollectionEntry<'blog'>;
 export const postLang = (p: Post) => p.id.split('/')[0] as Locale;
 export const postSlug = (p: Post) => p.id.split('/').slice(1).join('/');
 
-/** Published posts for a language, newest first. Drafts show up in dev only. */
+/**
+ * All posts the site may show or link to, in any language. Posts with `draft: true` show up in dev
+ * only. Always load posts through this, so a build can't list or link to a draft.
+ */
+export const getVisiblePosts = () => getCollection('blog', (p) => import.meta.env.DEV || !p.data.draft);
+
+/** Visible posts for a language, newest first. */
 export async function getPosts(lang: Locale) {
-  const posts = await getCollection(
-    'blog',
-    (p) => postLang(p) === lang && (import.meta.env.DEV || !p.data.draft),
-  );
+  const posts = (await getVisiblePosts()).filter((p) => postLang(p) === lang);
   return posts.toSorted((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 }
 
@@ -20,7 +23,7 @@ export async function getPosts(lang: Locale) {
  * language (listed in their own language, so the index never hides a post).
  */
 export async function getListedPosts(lang: Locale) {
-  const all = await getCollection('blog', (p) => import.meta.env.DEV || !p.data.draft);
+  const all = await getVisiblePosts();
   const own = new Set(all.filter((p) => postLang(p) === lang).map(postSlug));
   return all
     .filter((p) => postLang(p) === lang || !own.has(postSlug(p)))
