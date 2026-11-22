@@ -181,8 +181,11 @@ export function sortSkillIds(ids: readonly SkillId[], lang: Locale) {
   );
 }
 
+/** Skills per category for the home page: active first, retired last, alphabetical within each. */
 export const skillsByCategory = (Object.keys(skillCategories) as SkillCategory[]).map((cat) => ({
   id: cat,
   label: skillCategories[cat],
-  skills: skillUsage.filter((s) => s.category === cat).toSorted((a, b) => a.name.localeCompare(b.name)),
+  skills: skillUsage
+    .filter((s) => s.category === cat)
+    .toSorted((a, b) => Number(!!a.retired) - Number(!!b.retired) || a.name.localeCompare(b.name)),
 }));

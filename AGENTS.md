@@ -38,6 +38,10 @@ Rules for blog posts and prose pages (MDX). Check new content against them.
 - `ai` (optional list) says how AI assisted with the post: `translation` (at least partially
   translated), `fact-check` (content was fact-checked), `writing` (at least partially written).
   The blog overview shows it as a tag with a tooltip.
+- `draft: true` (optional) keeps a post out of production: no page, no listing, no feed, no
+  sitemap entry, and no translation link to it. It stays visible in `astro dev`, marked "(draft)"
+  in the overview. Each language version has its own flag. Load posts through `getVisiblePosts()`
+  or the helpers built on it (src/i18n/blog.ts), never `getCollection('blog')` directly.
 
 ### Languages
 

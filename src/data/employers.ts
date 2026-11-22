@@ -82,6 +82,7 @@ export const employers: Employer<SkillId>[] = [
       'knowledgeArch',
       'linting',
       'testing',
+      'vsCode',
     ],
   },
   {
@@ -200,6 +201,7 @@ export const employers: Employer<SkillId>[] = [
       'linting',
       'testing',
       'ux',
+      'vsCode',
     ],
   },
   {
@@ -301,6 +303,9 @@ export const employers: Employer<SkillId>[] = [
       'testing',
       'github',
       'ux',
+      'netbeans',
+      'atom',
+      'vsCode',
     ],
   },
   {
@@ -392,6 +397,8 @@ export const employers: Employer<SkillId>[] = [
       'networking',
       'linting',
       'testing',
+      'dreamweaver',
+      'netbeans',
     ],
   },
   {
@@ -459,6 +466,7 @@ export const employers: Employer<SkillId>[] = [
       'networking',
       'webdesign',
       'linting',
+      'dreamweaver',
     ],
   },
   {
@@ -513,6 +521,7 @@ export const employers: Employer<SkillId>[] = [
       'fireworks',
       'linux',
       'linting',
+      'dreamweaver',
     ],
   },
   {
@@ -561,6 +570,6 @@ export const employers: Employer<SkillId>[] = [
         'Shell scripting.',
       ],
     },
-    stack: ['html', 'javascript', 'networking', 'linux', 'webserver', 'shell', 'legacyBrowsers'],
+    stack: ['html', 'javascript', 'networking', 'linux', 'webserver', 'shell', 'legacyBrowsers', 'dreamweaver'],
   },
 ];

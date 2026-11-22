@@ -1,0 +1,37 @@
+---
+/**
+ * A full-width image in a blog post, with an optional caption (the slot, so it can hold links).
+ * In MDX, keep it on one line: `<Figure src={photo} alt="…">Caption</Figure>`. Caption text on a
+ * line of its own would be wrapped in a <p>.
+ */
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+}
+const { src, alt } = Astro.props;
+const hasCaption = Astro.slots.has('default');
+---
+
+<figure>
+  <Image src={src} alt={alt} widths={[360, 720, 1080, 1440]} sizes="min(100vw, 46rem)" />
+  {hasCaption && (
+    <figcaption>
+      <slot />
+    </figcaption>
+  )}
+</figure>
+
+<style>
+  figure {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+  }
+  img {
+    width: 100%;
+    border-radius: var(--radius-m);
+  }
+</style>

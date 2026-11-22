@@ -39,7 +39,7 @@ const dateFmt = new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { dat
             const pLang = postLang(p);
             const foreign = pLang !== lang;
             const updated = postUpdated(p);
-            const aiItems = p.data.ai.map((kind) => ({ name: t(`blog.ai.${kind}`) }));
+            const aiItems = (p.data.ai ?? []).map((kind) => ({ name: t(`blog.ai.${kind}`) }));
             const aiText = `${t('blog.aiDescription')} ${t('blog.aiLabel')}: ${aiItems.map((i) => i.name).join(', ')}`;
             return (
               <li>

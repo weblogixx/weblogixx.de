@@ -95,6 +95,11 @@ svg {
   max-width: 100%;
 }
 
+/* Keeps the aspect ratio when max-width shrinks an image that has width/height attributes. */
+img {
+  height: auto;
+}
+
 .container {
   width: 100%;
   max-width: var(--content-width);
