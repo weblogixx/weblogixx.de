@@ -1,0 +1,86 @@
+---
+draft: false
+title: I will not do a live AI demo again
+description: 'Or: why AI agents need a design system to build the right UI'
+summary: 'Agents know your components, but not your rules. What a runaway live demo taught me about making design systems ready for AI.'
+date: 2026-11-22
+tags: [ai, agents, designsystems]
+skills: [frontendarch, agents, a11y, designsystems, ux, dx, mcp]
+ai: [fact-check]
+---
+
+import { route } from '../../../i18n/routes';
+import Abbr from '../../../components/Abbr.astro';
+import Figure from '../../../components/Figure.astro';
+import Link from '../../../components/Link.astro';
+
+import hero from '../../../assets/blog/blackforest-talk-2026-11-11.jpeg';
+
+<Figure src={hero} alt="Teaser for the UX Meets event “Vom Scheitern zum Erfolg: Die Evolution des Design Systems bei SICK” by SICK and Virtual Identity, with illustrated portraits of Stefan Reichert, Sebastian Klaar, Susanne Kirchner, Christian Schilling and Mario Hamann">Original teaser image of the SICK x Virtual Identity talk "From Failure to Success - The Evolution of the Design System at SICK" (German only) · Created by Black Forest UX e.V.</Figure>
+
+The <Link href="https://blackforest-ux.de">Black Forest UX e.V.</Link> is a club that connects <Abbr title="User Interfaces/User Experience">UI/UX</Abbr> enthusiasts and professionals across southern Baden-Württemberg.
+I was thrilled when they invited <Link href={route('career', 'en', 'sick')}>SICK's</Link> <Link href="https://github.com/synergy-design-system/synergy-design-system/graphs/contributors?from=2023-01-01T23%3A00%3A00.000Z">Synergy Design System team</Link> to a <Link href="https://blackforest-ux.de/veranstaltung/vom-scheitern-zum-erfolg-die-evolution-des-design-systems-bei-sick/">talk about the evolution of design systems</Link>.
+
+## A little bit of stage fright
+
+I got a little bit of stage fright right before the talk.
+After all, the club consists of true specialists, masters of their craft.
+Imagine around 30 professionals grilling you in front of your teammates (and your boss, too).
+
+My colleague Sebastian guided us nicely through a talk full of humor and hard-won wisdom that lasted a full hour.
+People laughed and engaged in discussions.
+My nervousness faded.
+A bit too early as it turned out.
+
+## Do not try this at home
+
+After the original talk, it was planned that I should showcase our use cases for AI in design systems for about five minutes.
+A small outro basically.
+In the end, it became a thirty-minute talk of its own.
+I highlighted the importance of a good data model and core rules and how these can be applied as guard rails when using AI:
+
+- Curating a set of rules for each of your components
+- Seeing your own design system through the user's eyes, whether designer or frontend developer
+- Providing AI systems with guidance and patterns
+- Making all of this machine-readable by not setting components, but knowledge to the core of the system
+
+Finally, I was given the chance to showcase all this in a custom-tailored demo project.
+We built forms with and without agentic knowledge and compared the solutions.
+
+Usually, I prepare a video for things like this, just because you can skip forward if something takes too long or breaks.
+One of the reasons I was a bit nervous was that we wanted to show a live demo of the system this time.
+Still, I was prepared and had tested it a couple of days before.
+Confident, I instructed my agent to fix a broken form to showcase our design system's ability to lint frontend patterns.
+
+Of course, it took ages.
+Turns out my prompt was written with a scope far too wide: Instead of just assessing the form, the agent started testing the whole demo application.
+While the agent wrote Playwright-based integration tests nobody had asked for, laughter arose.
+I was forced to cancel the whole process and rewrite my prompt for better results.
+The second version eventually ran through just fine, but still brought me to a conclusion:
+
+> Let me be clear: I will **not** do live AI demos in front of an audience ever again!
+> <cite>Me, after my live AI demo went sideways</cite>
+
+## Design Systems and AI - a match made in heaven?
+
+AI is getting more and more traction in development, and design systems are no exception to this.
+In <Link href="https://zeroheight.com/resources/state-of-ai-in-design-systems/">zeroheight's State of AI in Design Systems 2026</Link>, a survey of 123 practitioners, 82% of teams use AI in some form, and 61% say their usage grew significantly this year.
+At the same time, 67% call AI overhyped, while 63% feel favorable about it.
+After my demo, I understand both camps.
+
+The difference between generated backend and frontend code is quite easy to grasp.
+While suboptimal code in an API may be known to the developer, each vibe-coded frontend project is directly visible to the customer and may look like an outlier to a customer also using other applications created by your company.
+This risk is already real: 59% of the survey's respondents report UI bypassing their design system, and 50% say this kind of shadow AI is creating real problems.
+
+AI may know your button's interface, but it might just guess which variant it should use for a given use case.
+The model has seen thousands of forms, but it does not know about your wording rules or error placement.
+It might be able to format tabular data just right, but it does not know how to apply your carefully crafted master/detail view pattern.
+
+## What I took away from it
+
+My demo went sideways for the same reason generated UI does: the agent was capable, but nothing told it where to stop.
+
+Fortunately, this is where design systems shine, as long as agents can actually read them.
+The tooling is moving faster than the content: 48% of zeroheight's respondents already run an <Abbr title="Model Context Protocol">MCP</Abbr> server, but only 17% rate their documentation as very AI-ready.
+At <Link href={route('career', 'en', 'sick')}>SICK</Link>, we keep working on closing that gap with Synergy.
+The design system of the future must be consumable by agentic software, be it through MCP servers or local skills.
