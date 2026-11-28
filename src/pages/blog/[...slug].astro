@@ -15,7 +15,7 @@ interface Props {
   post: Post;
   hasTranslation: boolean;
 }
-const { post, hasTranslation } = Astro.props;
+const { post, hasTranslation }: Props = Astro.props;
 ---
 
 <BlogPostView lang="de" post={post} hasTranslation={hasTranslation} />

@@ -10,7 +10,7 @@ interface Props {
   headings: MarkdownHeading[];
   label: string;
 }
-const { headings, label } = Astro.props;
+const { headings, label }: Props = Astro.props;
 ---
 
 <nav class="toc-mobile" aria-label={label}>

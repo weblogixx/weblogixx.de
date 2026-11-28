@@ -5,7 +5,8 @@ import { useT } from '../i18n/ui';
 interface Props {
   lang: Locale;
 }
-const t = useT(Astro.props.lang);
+const { lang }: Props = Astro.props;
+const t = useT(lang);
 ---
 
 <button class="mode-toggle" type="button" aria-pressed="false" data-mode-toggle>

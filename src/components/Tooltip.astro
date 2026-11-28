@@ -10,6 +10,10 @@
  * Progressive enhancement: without popover + anchor support, nothing is touched and
  * the element's plain `title` (rendered by SkillChip as fallback) keeps working.
  *
+ * Mouse, pen and keyboard only: never on touch. A finger landing on a chip is usually the start of
+ * a scroll, and the tooltip would stick until the finger lifts. On touch, a tap opens the same
+ * content in a bottom sheet instead (TipSheet.astro).
+ *
  * Changing `data-tip` while the tooltip is open (e.g. "Kopiert" after copying): dispatch a
  * bubbling `tip:update` event on the element and the open tooltip re-renders.
  */
@@ -23,24 +27,14 @@
 </div>
 
 <script>
-  const fromEvent = (e: Event) => (e.target as Element | null)?.closest?.<HTMLElement>('[data-tip]');
+  import { parseTip, renderTip } from './tipContent';
 
-  interface TipData {
-    text?: string;
-    label: string;
-    items: { name: string; color?: string }[];
-    note?: string;
-  }
+  const fromEvent = (e: Event) => (e.target as Element | null)?.closest?.<HTMLElement>('[data-tip]');
 
   const tip = document.querySelector<HTMLElement>('[data-tooltip]');
   const supported = tip && 'showPopover' in tip && CSS.supports('anchor-name: --tip');
 
   if (tip && supported) {
-    const text = tip.querySelector<HTMLElement>('.tip-text')!;
-    const label = tip.querySelector<HTMLElement>('.tip-label')!;
-    const list = tip.querySelector<HTMLElement>('.tip-list')!;
-    const note = tip.querySelector<HTMLElement>('.tip-note')!;
-
     // Our tooltip replaces the native one.
     for (const el of document.querySelectorAll<HTMLElement>('[data-tip][title]')) el.removeAttribute('title');
 
@@ -53,28 +47,7 @@
      */
     let anchor: HTMLElement | undefined;
 
-    const render = (el: HTMLElement) => {
-      let data: TipData;
-      try {
-        data = JSON.parse(el.dataset.tip ?? '');
-      } catch {
-        data = { label: '', items: [{ name: el.dataset.tip ?? '' }] };
-      }
-      text.textContent = data.text ?? '';
-      text.hidden = !data.text;
-      label.textContent = data.label;
-      label.hidden = !data.label;
-      note.textContent = data.note ?? '';
-      note.hidden = !data.note;
-      list.replaceChildren(
-        ...data.items.map((item) => {
-          const li = document.createElement('li');
-          li.textContent = item.name;
-          if (item.color) li.style.setProperty('--dot', item.color);
-          return li;
-        }),
-      );
-    };
+    const render = (el: HTMLElement) => renderTip(tip, parseTip(el));
 
     /** Which side the browser placed us on (flip-block) and where the anchor's center is. */
     const pointArrow = () => {
@@ -109,12 +82,24 @@
       pointArrow();
     };
 
+    /** Last input: a tap focuses links and `tabindex` elements, which must not open it either. */
+    let touch = false;
+    document.addEventListener(
+      'pointerdown',
+      (e) => {
+        touch = e.pointerType === 'touch';
+        if (touch) hide();
+      },
+      { passive: true },
+    );
     document.addEventListener('pointerover', (e) => {
+      if (e.pointerType === 'touch') return;
       const el = fromEvent(e);
       if (el) show(el);
       else hide();
     });
     document.addEventListener('focusin', (e) => {
+      if (touch) return;
       const el = fromEvent(e);
       if (el) show(el);
     });
@@ -125,6 +110,7 @@
       pointArrow();
     });
     document.addEventListener('keydown', (e) => {
+      touch = false;
       if (e.key === 'Escape') hide();
     });
     // Scrolling can flip it above/below; keep the arrow honest.

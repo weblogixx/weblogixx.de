@@ -101,6 +101,8 @@ export function formatPeriod(e: Period, lang: Locale) {
       year: 'numeric',
       timeZone: 'UTC',
     });
+  // Not started yet (evaluated at build time): "heute" would read like it already runs.
+  if (!e.end && e.start > thisMonth()) return `${lang === 'de' ? 'ab' : 'from'} ${fmt(e.start)}`;
   return `${fmt(e.start)} – ${e.end ? fmt(e.end) : lang === 'de' ? 'heute' : 'present'}`;
 }
 
@@ -117,8 +119,11 @@ export interface SkillUsage {
   retired?: { kind: RetiredKind; successor?: string; reason?: L10n };
   /** Optional short explanation (see skills.ts). */
   description?: L10n;
-  /** Companies where I used it, newest first, with their brand color (CSS oklch()). */
-  usedAt: { name: string; color: string }[];
+  /**
+   * Companies where I used it, newest first, with their brand color (CSS oklch()) and the id of
+   * their entry on the career page (the newest one when there are several stints).
+   */
+  usedAt: { id: string; name: string; color: string }[];
 }
 
 /** This month at build time, e.g. "2026-11". */
@@ -152,11 +157,14 @@ export const skillUsage: SkillUsage[] = (Object.keys(skills) as SkillId[]).map((
       reason: s.retired.reason,
     },
     description: s.description,
-    // Unique: several stints at the same company (e.g. Weblogixx) list it once.
-    usedAt: [...new Map(at.map((e) => [e.name, e])).values()].map((e) => ({
-      name: e.name,
-      color: `oklch(${e.theme.primary.l} ${e.theme.primary.c} ${e.theme.primary.h})`,
-    })),
+    // Unique: several stints at the same company (e.g. Weblogixx) list it once, the newest.
+    usedAt: at
+      .filter((e, i) => at.findIndex((x) => x.name === e.name) === i)
+      .map((e) => ({
+        id: e.id,
+        name: e.name,
+        color: `oklch(${e.theme.primary.l} ${e.theme.primary.c} ${e.theme.primary.h})`,
+      })),
   };
 });
 

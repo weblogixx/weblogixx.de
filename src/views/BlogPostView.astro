@@ -15,7 +15,7 @@ interface Props {
   /** Whether a translation with the same slug exists. */
   hasTranslation: boolean;
 }
-const { lang, post, hasTranslation } = Astro.props;
+const { lang, post, hasTranslation }: Props = Astro.props;
 const t = useT(lang);
 const other: Locale = lang === 'de' ? 'en' : 'de';
 const { Content, headings } = await render(post);

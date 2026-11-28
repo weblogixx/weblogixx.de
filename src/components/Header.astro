@@ -11,7 +11,7 @@ interface Props {
   /** Path of this page in the other language, if it differs from the route map (e.g. blog posts). */
   altPath?: string;
 }
-const { lang, page, altPath } = Astro.props;
+const { lang, page, altPath }: Props = Astro.props;
 const t = useT(lang);
 const other: Locale = lang === 'de' ? 'en' : 'de';
 // The pages in the nav (not every route: the imprint is linked from the footer).

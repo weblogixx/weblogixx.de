@@ -13,7 +13,7 @@ import { skillTip } from '../i18n/skillTip';
 interface Props {
   lang: Locale;
 }
-const { lang } = Astro.props;
+const { lang }: Props = Astro.props;
 const t = useT(lang);
 const stackTip = {
   label: t('home.stackTipLabel'),

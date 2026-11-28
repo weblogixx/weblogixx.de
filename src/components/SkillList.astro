@@ -15,7 +15,7 @@ interface Props {
   /** Chips link to the skill on the home page. Turn off inside another link (blog index). */
   linked?: boolean;
 }
-const { ids, lang, linked = true } = Astro.props;
+const { ids, lang, linked = true }: Props = Astro.props;
 ---
 
 <ul class="chips">

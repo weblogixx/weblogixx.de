@@ -18,9 +18,10 @@ interface Props {
   /** Discontinued tool: muted look. */
   legacy?: boolean;
 }
-const { name, id, href, since, sinceLabel, until, tip, featured, legacy } = Astro.props;
+const { name, id, href, since, sinceLabel, until, tip, featured, legacy }: Props = Astro.props;
 const Tag = href ? 'a' : 'span';
 // Plain `title` is the no-JS / old-browser fallback; Tooltip.astro swaps it for the rich version.
+// On touch the same content opens in a bottom sheet (TipSheet.astro).
 const title = tip
   ? [tip.text, tip.items.length && `${tip.label}: ${tip.items.map((i) => i.name).join(', ')}`, tip.note]
       .filter(Boolean)
@@ -31,7 +32,14 @@ const period = since && (until ? (until === since ? `${since}` : `${since}–${u
 ---
 
 <li class:list={['chip', { featured, legacy }]} id={id}>
-  <Tag class="inner" href={href} title={title} data-tip={tipData}>
+  <Tag
+    class="inner"
+    href={href}
+    title={title}
+    data-tip={tipData}
+    data-sheet={tip ? name : undefined}
+    data-sheet-meta={tip ? period || undefined : undefined}
+  >
     <span class="name">{name}</span>
     {period && <span class="since">{period}</span>}
   </Tag>

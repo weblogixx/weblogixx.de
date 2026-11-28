@@ -16,7 +16,7 @@ interface Props {
   /** No padding: the logo fills the tile edge to edge. */
   bleed?: boolean;
 }
-const { name, logo, mark, background, color, variant = 'mark', bleed = false } = Astro.props;
+const { name, logo, mark, background, color, variant = 'mark', bleed = false }: Props = Astro.props;
 const src = variant === 'mark' ? mark : (logo ?? mark);
 const isWide = variant === 'full' && Boolean(logo);
 // "H.A.PO – Handelsagentur POPP" → "HA", "Computersysteme R. Schläger" → "CR", "Weblogixx" → "W"

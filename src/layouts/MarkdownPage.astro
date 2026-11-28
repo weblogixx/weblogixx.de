@@ -25,7 +25,7 @@ interface Props {
     variant?: 'legal';
   };
 }
-const { lang, page, title, description, eyebrow, lede, variant } = Astro.props.frontmatter;
+const { lang, page, title, description, eyebrow, lede, variant }: Props['frontmatter'] = Astro.props.frontmatter;
 ---
 
 <Base lang={lang} page={page} title={title} description={description}>

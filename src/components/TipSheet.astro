@@ -1,0 +1,396 @@
+---
+/**
+ * Bottom sheet for tooltip content on touch, where hover doesn't exist and the tooltip never
+ * opens (see Tooltip.astro). A finger tap on an element with `data-tip` opens the same content,
+ * larger, in a modal <dialog> at the bottom of the screen. It goes by the input, not
+ * the screen size: phones, tablets and touch laptops get it for a finger, mouse and pen keep the
+ * tooltip. On wide screens the sheet stays phone-sized, centered at the bottom.
+ *
+ * Heading: `data-sheet` if set, else the element's own text, else the tip's label (color swatches
+ * in the Sunny post have no text). `data-sheet-meta` is an optional line next to it (e.g. "seit
+ * 2018"). Tips on controls (the copy button, the stack switch) stay tooltip-only: the tap belongs
+ * to the control.
+ *
+ * A tap is a `click`, so a finger that starts a scroll never opens it. Links (skill chips on the
+ * Experience page) don't navigate on the first tap; the sheet shows a button to the target
+ * instead. Inside another link (tags and chips in a blog card) the tip wins too; the rest of the
+ * card still opens the post.
+ *
+ * Companies in the list link to their entry on the Experience page.
+ *
+ * Closes with the close button, a tap on the backdrop, a swipe down or Escape.
+ */
+import type { Locale } from '../data/types';
+import { useT } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+}
+const { lang }: Props = Astro.props;
+const t = useT(lang);
+---
+
+<dialog class="sheet" aria-labelledby="sheet-title" data-tip-sheet>
+  <div class="sheet-body">
+    <span class="grab" aria-hidden="true"></span>
+    <div class="sheet-head">
+      <h2 id="sheet-title" class="sheet-title"></h2>
+      <span class="sheet-meta"></span>
+      <button class="sheet-close" type="button" aria-label={t('sheet.close')}>
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
+    </div>
+    <p class="tip-text" hidden></p>
+    <p class="tip-label"></p>
+    <ul class="tip-list"></ul>
+    <p class="tip-note" hidden></p>
+    <a class="sheet-go" hidden>{t('sheet.goto')} →</a>
+  </div>
+</dialog>
+
+<script>
+  import { parseTip, renderTip } from './tipContent';
+
+  /** The element's visible text, without screen-reader-only parts (e.g. the blog tags' long form). */
+  const visibleText = (el: HTMLElement) => {
+    const copy = el.cloneNode(true) as HTMLElement;
+    for (const hidden of copy.querySelectorAll('.visually-hidden')) hidden.remove();
+    return copy.textContent?.replace(/\s+/g, ' ').trim();
+  };
+
+  const sheet = document.querySelector<HTMLDialogElement>('[data-tip-sheet]');
+
+  if (sheet && 'showModal' in sheet) {
+    const title = sheet.querySelector<HTMLElement>('.sheet-title')!;
+    const meta = sheet.querySelector<HTMLElement>('.sheet-meta')!;
+    const go = sheet.querySelector<HTMLAnchorElement>('.sheet-go')!;
+    const body = sheet.querySelector<HTMLElement>('.sheet-body')!;
+
+    const open = (el: HTMLElement) => {
+      const data = parseTip(el);
+      const heading = el.dataset.sheet || visibleText(el);
+      // No heading of its own: the label moves up (and isn't repeated above the list).
+      title.textContent = heading || data.label;
+      meta.textContent = el.dataset.sheetMeta ?? '';
+      meta.hidden = !el.dataset.sheetMeta;
+      renderTip(sheet, heading ? data : { ...data, label: '' }, { links: true });
+      const href = el instanceof HTMLAnchorElement ? el.getAttribute('href') : null;
+      go.hidden = !href;
+      if (href) go.href = href;
+      else go.removeAttribute('href');
+      sheet.showModal();
+      // Focus the dialog itself, not the close button: no focus ring flashing up on a tap.
+      sheet.focus();
+    };
+
+    /** Input of the last press: a click from a finger opens the sheet, one from a mouse doesn't. */
+    let touch = false;
+    document.addEventListener(
+      'pointerdown',
+      (e) => {
+        touch = e.pointerType === 'touch';
+      },
+      { passive: true, capture: true },
+    );
+    // Keyboard "clicks" (Enter on a link) follow the link as usual.
+    document.addEventListener('keydown', () => (touch = false), { capture: true });
+
+    document.addEventListener('click', (e) => {
+      if (!touch || e.defaultPrevented) return;
+      const el = (e.target as Element | null)?.closest?.<HTMLElement>('[data-tip]');
+      // On a control: the tap belongs to that.
+      if (!el || el.closest('button, label, input, select, textarea, summary')) return;
+      e.preventDefault();
+      open(el);
+    });
+
+    sheet.querySelector('.sheet-close')!.addEventListener('click', () => sheet.close());
+    // A tap outside the body lands on the dialog itself (its ::backdrop).
+    sheet.addEventListener('click', (e) => {
+      if (e.target === sheet) sheet.close();
+    });
+    // Leaving through a link (the button, a company): close first, so the page can scroll again
+    // and a jump to an anchor on this page works.
+    sheet.addEventListener('click', (e) => {
+      if ((e.target as Element).closest('a[href]')) sheet.close();
+    });
+
+    // Swipe down to close: the body follows the finger, past 80px (or a quick flick) it closes.
+    // Only when its content is scrolled to the top at the start of the gesture: a tall sheet
+    // (phone in landscape) scrolls first, like any bottom sheet.
+    let startY = 0;
+    let startT = 0;
+    let dy = 0;
+    let drag = false;
+    body.addEventListener(
+      'touchstart',
+      (e) => {
+        startY = e.touches[0].clientY;
+        startT = e.timeStamp;
+        dy = 0;
+        drag = body.scrollTop <= 0;
+      },
+      { passive: true },
+    );
+    body.addEventListener(
+      'touchmove',
+      (e) => {
+        if (!drag) return;
+        // Scrolled the content up and back down within the same gesture: count from here.
+        if (body.scrollTop > 0) {
+          startY = e.touches[0].clientY;
+          return;
+        }
+        dy = Math.max(0, e.touches[0].clientY - startY);
+        if (!dy) return;
+        // Moving the sheet, not scrolling (or rubber-banding) its content.
+        e.preventDefault();
+        body.style.transition = 'none';
+        body.style.translate = `0 ${dy}px`;
+      },
+      { passive: false },
+    );
+    body.addEventListener('touchend', (e) => {
+      if (!drag) return;
+      drag = false;
+      body.style.removeProperty('transition');
+      body.style.removeProperty('translate');
+      const fast = dy > 30 && dy / (e.timeStamp - startT) > 0.5;
+      if (dy > 80 || fast) sheet.close();
+    });
+    body.addEventListener('touchcancel', () => {
+      drag = false;
+      body.style.removeProperty('transition');
+      body.style.removeProperty('translate');
+    });
+  }
+</script>
+
+<style>
+  .sheet {
+    /* Dialog UA styles center it; pin it to the bottom edge. Full width on phones, phone-sized
+       and centered on tablets and touch laptops. */
+    inset: auto 0 0;
+    width: 100%;
+    max-width: 34rem;
+    margin-inline: auto;
+    max-height: min(80dvh, 32rem);
+    margin-block: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text);
+    overflow: visible;
+
+    &::backdrop {
+      background: oklch(0 0 0 / 0.4);
+      opacity: 0;
+      transition:
+        opacity 200ms ease-out,
+        display 200ms allow-discrete,
+        overlay 200ms allow-discrete;
+    }
+    &[open]::backdrop {
+      opacity: 1;
+    }
+    &:focus {
+      outline: none;
+    }
+  }
+  @starting-style {
+    .sheet[open]::backdrop {
+      opacity: 0;
+    }
+  }
+
+  .sheet-body {
+    display: grid;
+    gap: var(--space-3);
+    max-height: inherit;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: var(--space-3) max(var(--space-5), env(safe-area-inset-right, 0px))
+      calc(var(--space-5) + env(safe-area-inset-bottom, 0px)) max(var(--space-5), env(safe-area-inset-left, 0px));
+    border: 1px solid var(--border-strong);
+    border-bottom: 0;
+    border-radius: 1.25rem 1.25rem 0 0;
+    background: var(--bg-raised);
+    box-shadow: 0 -0.75rem 2rem var(--shadow);
+    font-family: var(--font-body);
+    font-size: var(--step-0);
+    line-height: 1.5;
+
+    translate: 0 100%;
+    transition: translate 250ms cubic-bezier(0.2, 0.8, 0.2, 1);
+
+    .sheet[open] & {
+      translate: 0;
+    }
+  }
+  @starting-style {
+    .sheet[open] .sheet-body {
+      translate: 0 100%;
+    }
+  }
+  .sheet {
+    transition:
+      display 250ms allow-discrete,
+      overlay 250ms allow-discrete;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sheet,
+    .sheet::backdrop,
+    .sheet-body {
+      transition: none;
+    }
+  }
+
+  .grab {
+    justify-self: center;
+    width: 2.5rem;
+    height: 0.3rem;
+    border-radius: 1rem;
+    background: var(--border-strong);
+  }
+
+  .sheet-head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+  }
+  .sheet-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+  .sheet-meta {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-subtle);
+  }
+  .sheet-close {
+    align-self: start;
+    margin-inline-start: auto;
+    /* 44px tap target around a 22px icon. */
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    margin-block: -0.6rem;
+    margin-inline-end: -0.75rem;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: var(--text-muted);
+    cursor: pointer;
+
+    & svg {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+    }
+    &:active {
+      background: var(--surface);
+      color: var(--text);
+    }
+  }
+
+  .tip-text {
+    margin: 0;
+    color: var(--text);
+  }
+  .tip-label {
+    margin: 0;
+    padding-top: var(--space-3);
+    border-top: 1px dashed var(--border-strong);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--primary);
+  }
+  /* No description above: no divider needed. */
+  .tip-text[hidden] + .tip-label {
+    padding-top: 0;
+    border-top: 0;
+  }
+  .tip-note {
+    margin: 0;
+    padding-top: var(--space-3);
+    border-top: 1px dashed var(--border-strong);
+    font-size: var(--step--1);
+    color: var(--text-muted);
+  }
+  .tip-list {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    /* Created by the script, so outside Astro's scoping. Same dots as the tooltip. */
+    & :global(li) {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-weight: 500;
+
+      & a {
+        color: inherit;
+        text-decoration: underline;
+        text-decoration-color: var(--border-strong);
+        text-underline-offset: 0.2em;
+        /* Comfortable tap target without spreading the list. */
+        padding-block: 0.15rem;
+
+        &:active {
+          color: var(--primary);
+          text-decoration-color: currentColor;
+        }
+      }
+
+      &::before {
+        content: '';
+        flex-shrink: 0;
+        width: 0.6rem;
+        height: 0.6rem;
+        border-radius: 2px;
+        --c: var(--dot, var(--text-subtle));
+        background: light-dark(oklch(from var(--c) 0.55 c h), var(--c));
+        box-shadow: 0 0 0 3px oklch(from var(--c) l c h / 0.18);
+      }
+    }
+  }
+
+  .sheet-go {
+    display: block;
+    margin-top: var(--space-2);
+    padding: var(--space-3);
+    border: 1px solid var(--primary);
+    border-radius: var(--radius-m);
+    background: var(--primary-soft);
+    color: var(--text);
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+
+    &:active {
+      translate: 0 1px;
+    }
+  }
+
+  /* `display` above would beat the UA's [hidden]. */
+  .sheet [hidden] {
+    display: none;
+  }
+
+  /* Page behind stays put while the sheet is open. */
+  :global(:root:has(.sheet[open])) {
+    overflow: hidden;
+  }
+</style>

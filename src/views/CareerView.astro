@@ -11,7 +11,7 @@ import { useT } from '../i18n/ui';
 interface Props {
   lang: Locale;
 }
-const { lang } = Astro.props;
+const { lang }: Props = Astro.props;
 const t = useT(lang);
 const firstYear = Math.min(...career.map((e) => yearOf(e.start)));
 ---

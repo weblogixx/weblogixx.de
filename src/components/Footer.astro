@@ -7,7 +7,7 @@ import { route, blogPostPath } from '../i18n/routes';
 interface Props {
   lang: Locale;
 }
-const { lang } = Astro.props;
+const { lang }: Props = Astro.props;
 const t = useT(lang);
 const year = new Date().getFullYear();
 ---

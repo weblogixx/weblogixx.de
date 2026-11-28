@@ -7,8 +7,9 @@
  * The flakes are Voronoi cells of a jittered grid, sorted into a few facet angles (--a). Each
  * group's brightness is CSS math on the light direction (--light): a broad glow plus a narrow
  * sparkle. The script only builds the shapes (seeded, so the pattern is always the same) and
- * moves --light with pointer and scroll (it stays still with reduced motion). Without JS the
- * parent's own background stays.
+ * moves --light with pointer and scroll. It stays still with reduced motion and on touch devices
+ * (no hover): there the effect is barely visible, and repainting thousands of flakes on every
+ * scroll frame made scrolling janky on phones. Without JS the parent's own background stays.
  */
 ---
 
@@ -126,7 +127,8 @@
     }).observe(el);
 
     // Light direction: pointer x sweeps half a turn, scrolling turns it further (like tilting the guitar).
-    const calm = matchMedia('(prefers-reduced-motion: reduce)');
+    // Still with reduced motion, and on touch-only devices (see the comment at the top).
+    const calm = matchMedia('(prefers-reduced-motion: reduce), (hover: none)');
     let px = 0.3;
     let frame = 0;
     const update = () => {

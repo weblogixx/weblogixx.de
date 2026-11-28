@@ -7,6 +7,7 @@ import displayFont from '@fontsource-variable/fraunces/files/fraunces-latin-full
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Tooltip from '../components/Tooltip.astro';
+import TipSheet from '../components/TipSheet.astro';
 import type { Locale } from '../data/types';
 import { profile, currentJob } from '../data';
 import { links } from '../data/links';
@@ -30,7 +31,9 @@ interface Props {
   structuredData?: object;
 }
 
-const { lang, page, title, description, altPath, translated = true, structuredData } =
+// Typed explicitly (as in every component): the VS Code extension sometimes loses the Props
+// inference for Astro.props, and everything read from it would be `any` in the editor.
+const { lang, page, title, description, altPath, translated = true, structuredData }: Props =
   Astro.props;
 const t = useT(lang);
 const fullTitle = title ? `${title} · ${profile.name}` : `${profile.name} · ${profile.title[lang]}`;
@@ -141,6 +144,7 @@ const jsonLd = (data: object) => JSON.stringify(data).replaceAll('<', '\\u003c')
     </main>
     <Footer lang={lang} />
     <Tooltip />
+    <TipSheet lang={lang} />
   </body>
 </html>
 

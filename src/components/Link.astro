@@ -9,7 +9,7 @@ import type { HTMLAttributes } from 'astro/types';
 
 type Props = HTMLAttributes<'a'> & { href: string };
 
-const { href, target, rel, ...rest } = Astro.props;
+const { href, target, rel, ...rest }: Props = Astro.props;
 
 const isExternal = /^https?:\/\//i.test(href) && new URL(href).origin !== Astro.site?.origin;
 const relTokens = [rel, isExternal && 'noopener noreferrer'].filter(Boolean).join(' ');

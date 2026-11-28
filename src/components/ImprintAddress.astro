@@ -13,7 +13,7 @@ interface Props {
   /** Label for an e-mail line, e.g. "E-Mail"; omit for no e-mail line. */
   email?: string;
 }
-const { business = true, country, email } = Astro.props;
+const { business = true, country, email }: Props = Astro.props;
 
 assertImprintComplete();
 ---

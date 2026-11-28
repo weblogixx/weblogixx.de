@@ -1,5 +1,6 @@
 import type { Locale, SkillUsage } from '../data';
 import { useT } from './ui';
+import { route } from './routes';
 
 /** Tooltip content for a skill chip (see Tooltip.astro / SkillChip.astro). */
 export interface SkillTip {
@@ -7,13 +8,14 @@ export interface SkillTip {
   text?: string;
   /** Heading of the list, e.g. "Used when working for". */
   label: string;
-  items: { name: string; color?: string }[];
+  /** Companies; `href` points to their entry on the career page (linked in the bottom sheet). */
+  items: { name: string; color?: string; href?: string }[];
   /** Below the list, e.g. the retired hint. */
   note?: string;
 }
 
 /**
- * Description → "Used when working for" + companies → retired note.
+ * Description → "Used when working for" + companies (linked to the career page) → retired note.
  * Shared by the home page and the career page. Undefined when there's nothing to show.
  */
 export function skillTip(s: SkillUsage, lang: Locale): SkillTip | undefined {
@@ -32,7 +34,7 @@ export function skillTip(s: SkillUsage, lang: Locale): SkillTip | undefined {
   return {
     text,
     label: s.usedAt.length ? t('skill.usedAt') : '',
-    items: s.usedAt,
+    items: s.usedAt.map((u) => ({ name: u.name, color: u.color, href: route('career', lang, u.id) })),
     note,
   };
 }

@@ -19,7 +19,7 @@ interface Props {
   lang: Locale;
   variant: 'hero' | 'block';
 }
-const { lang, variant } = Astro.props;
+const { lang, variant }: Props = Astro.props;
 const t = useT(lang);
 const mailto = `mailto:${profile.email}?subject=${encodeURIComponent(t('hello.subject'))}`;
 const available = availability(lang);
